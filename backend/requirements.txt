@@ -1,0 +1,28 @@
+# =====================================================================
+# Backend — dependencias (Python 3.11, Django 4.2 LTS)
+# =====================================================================
+
+# --- Core ---
+Django==4.2.16
+djangorestframework==3.15.2
+django-filter==24.3
+django-cors-headers==4.4.0
+django-environ==0.11.2
+
+# --- Base de datos ---
+psycopg[binary]==3.2.3
+
+# --- Autenticación ---
+djangorestframework-simplejwt==5.3.1
+bcrypt==4.2.0
+
+# --- Utilidades ---
+Pillow==10.4.0
+gunicorn==22.0.0
+
+# --- Servicios externos (se activan en sprints posteriores) ---
+# cloudinary==1.41.0
+# django-cloudinary-storage==0.3.0
+# stripe==11.1.0
+# resend==2.5.0
+# scikit-learn==1.5.2
