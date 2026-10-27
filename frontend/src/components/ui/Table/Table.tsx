@@ -1,7 +1,7 @@
 import type { ReactNode } from 'react'
 
-interface Columna<T> {
-  clave: keyof T | string
+export interface Columna<T> {
+  clave: string
   encabezado: string
   render?: (fila: T) => ReactNode
 }
@@ -12,11 +12,7 @@ interface TableProps<T> {
   vacio?: string
 }
 
-export function Table<T extends Record<string, unknown>>({
-  columnas,
-  datos,
-  vacio = 'Sin registros.',
-}: TableProps<T>) {
+export function Table<T>({ columnas, datos, vacio = 'Sin registros.' }: TableProps<T>) {
   return (
     <div className="overflow-x-auto rounded-lg border border-parchment-border">
       <table className="w-full border-collapse text-left font-sans text-sm">
@@ -24,7 +20,7 @@ export function Table<T extends Record<string, unknown>>({
           <tr>
             {columnas.map((c) => (
               <th
-                key={String(c.clave)}
+                key={c.clave}
                 className="px-4 py-3 text-[11px] font-semibold uppercase tracking-wider text-on-surface-variant"
               >
                 {c.encabezado}
@@ -43,8 +39,10 @@ export function Table<T extends Record<string, unknown>>({
             datos.map((fila, i) => (
               <tr key={i} className="border-t border-parchment-border hover:bg-surface-container-low">
                 {columnas.map((c) => (
-                  <td key={String(c.clave)} className="px-4 py-3 text-on-surface">
-                    {c.render ? c.render(fila) : String(fila[c.clave as keyof T] ?? '—')}
+                  <td key={c.clave} className="px-4 py-3 text-on-surface">
+                    {c.render
+                      ? c.render(fila)
+                      : String((fila as Record<string, unknown>)[c.clave] ?? '—')}
                   </td>
                 ))}
               </tr>
