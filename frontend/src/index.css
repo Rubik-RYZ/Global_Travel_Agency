@@ -29,4 +29,24 @@
   .nota-manuscrita {
     @apply font-hand text-xl text-stamp-sepia;
   }
+
+  /* Regla corta terracota que abre los eyebrows editoriales. */
+  .regla-terracota {
+    @apply inline-block h-px w-6 bg-terracotta/70;
+  }
+
+  /* Retícula cartográfica tenue, como el cuadriculado de una carta náutica. */
+  .textura-carta {
+    background-image:
+      linear-gradient(to right, rgba(180, 160, 130, 0.1) 1px, transparent 1px),
+      linear-gradient(to bottom, rgba(180, 160, 130, 0.1) 1px, transparent 1px);
+    background-size: 140px 140px;
+  }
+
+  /* Manchado radial de papel de algodón (pergamino). */
+  .papel-grano {
+    background-image:
+      radial-gradient(ellipse at 15% 20%, rgba(210, 195, 170, 0.28) 0%, transparent 60%),
+      radial-gradient(ellipse at 85% 80%, rgba(200, 185, 155, 0.22) 0%, transparent 55%);
+  }
 }

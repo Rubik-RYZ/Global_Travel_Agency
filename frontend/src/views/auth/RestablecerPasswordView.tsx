@@ -67,12 +67,14 @@ export function RestablecerPasswordView() {
 
   return (
     <div>
-      <header className="mb-8">
-        <p className="etiqueta-seccion">Nueva credencial</p>
-        <h1 className="mt-3 font-display text-3xl leading-tight text-on-surface">
+      <header className="mb-6">
+        <span className="font-sans text-[10.5px] font-semibold uppercase tracking-[0.2em] text-terracotta">
+          Nueva credencial
+        </span>
+        <h1 className="mt-4 font-display text-3xl font-normal leading-[1.15] text-on-surface">
           Restablecer clave
         </h1>
-        <p className="mt-2 font-sans text-sm text-on-surface-variant">
+        <p className="mt-3 font-sans text-sm leading-relaxed text-on-surface-variant">
           Elija una nueva clave de bóveda (mínimo 8 caracteres).
         </p>
       </header>

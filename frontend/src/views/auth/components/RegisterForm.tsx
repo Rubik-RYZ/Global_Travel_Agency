@@ -3,6 +3,7 @@ import { useForm } from 'react-hook-form'
 import { Link, useNavigate } from 'react-router-dom'
 
 import { Button } from '@/components/ui/Button/Button'
+import { IconoCandado, IconoSobre } from '@/components/ui/Iconos'
 import { Input } from '@/components/ui/Input/Input'
 import { useAuth } from '@/hooks/useAuth'
 import { registroSchema, type RegistroForm as RegistroFormType } from '@/types/auth.schemas'
@@ -47,14 +48,16 @@ export function RegisterForm() {
         />
       </div>
       <Input
+        icono={<IconoSobre />}
         label="Correo electrónico"
         type="email"
         autoComplete="email"
-        placeholder="viajero@ejemplo.com"
+        placeholder="viajero@illimanitravel.bo"
         error={errors.email?.message}
         {...register('email')}
       />
       <Input
+        icono={<IconoCandado />}
         label="Clave confidencial"
         type="password"
         autoComplete="new-password"
@@ -70,13 +73,14 @@ export function RegisterForm() {
       )}
 
       <Button type="submit" tamano="lg" disabled={isSubmitting} className="w-full">
-        {isSubmitting ? 'Emitiendo pasaporte…' : 'Solicitar pasaporte oficial'}
+        {isSubmitting ? 'Emitiendo…' : 'Crear mi cuenta'}
+        <span aria-hidden>→</span>
       </Button>
 
       <p className="text-center font-sans text-xs text-on-surface-variant">
         ¿Ya tiene credencial?{' '}
-        <Link to="/login" className="font-semibold text-primary hover:underline">
-          Iniciar sesión
+        <Link to="/login" className="font-semibold text-terracotta hover:underline">
+          Inicie sesión
         </Link>
       </p>
     </form>
