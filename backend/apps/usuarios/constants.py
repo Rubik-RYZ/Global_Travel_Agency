@@ -5,10 +5,15 @@ ROL_ADMINISTRADOR = 1
 ROL_AGENTE = 2
 ROL_CLIENTE = 3
 
+# --- Nombres canónicos de rol (compare contra Rol.nombre) ---
+NOMBRE_ADMINISTRADOR = "administrador"
+NOMBRE_AGENTE = "agente"
+NOMBRE_CLIENTE = "cliente"
+
 ROLES_INICIALES = [
-    (ROL_ADMINISTRADOR, "administrador"),
-    (ROL_AGENTE, "agente"),
-    (ROL_CLIENTE, "cliente"),
+    (ROL_ADMINISTRADOR, NOMBRE_ADMINISTRADOR),
+    (ROL_AGENTE, NOMBRE_AGENTE),
+    (ROL_CLIENTE, NOMBRE_CLIENTE),
 ]
 
 # --- Tipos de documento de identidad ---
