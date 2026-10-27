@@ -3,6 +3,7 @@
 Vuelos, hoteles, paquetes y salidas (CU4–CU6) se agregan en el Sprint 3.
 Las FK entre apps se declaran como string.
 """
+from django.contrib.postgres.fields import ArrayField
 from django.contrib.postgres.indexes import GinIndex
 from django.db import models
 
@@ -21,7 +22,7 @@ class Destino(models.Model):
     longitud = models.DecimalField(
         max_digits=9, decimal_places=6, null=True, blank=True
     )
-    etiquetas = models.ArrayField(models.TextField(), default=list)
+    etiquetas = ArrayField(models.TextField(), default=list)
     activo = models.BooleanField(default=True)
 
     class Meta:

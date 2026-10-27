@@ -113,6 +113,11 @@ DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 # ---------------------------------------------------------------------
 AUTH_USER_MODEL = "usuarios.Usuario"
 
+# El email es único de forma case-insensitive mediante
+# UniqueConstraint(Lower("email")) (fiel al índice ux_usuarios_email del DDL).
+# El check auth.E003 no reconoce constraints funcionales, por eso se silencia.
+SILENCED_SYSTEM_CHECKS = ["auth.E003"]
+
 AUTH_PASSWORD_VALIDATORS = [
     {"NAME": "django.contrib.auth.password_validation.MinimumLengthValidator",
      "OPTIONS": {"min_length": 8}},

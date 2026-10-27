@@ -4,6 +4,7 @@ Las FK entre apps se declaran SIEMPRE como string para evitar imports
 circulares (regla de AGENT.md).
 """
 from django.contrib.auth.base_user import AbstractBaseUser
+from django.contrib.postgres.fields import ArrayField
 from django.db import models
 from django.db.models.functions import Lower
 from django.utils import timezone
@@ -173,7 +174,7 @@ class ClientePreferencia(models.Model):
         max_digits=12, decimal_places=2, null=True, blank=True
     )
     moneda = models.CharField(max_length=3, default="USD", choices=MONEDAS)
-    intereses = models.ArrayField(models.TextField(), default=list)
+    intereses = ArrayField(models.TextField(), default=list)
     actualizado_en = models.DateTimeField(auto_now=True)
 
     class Meta:

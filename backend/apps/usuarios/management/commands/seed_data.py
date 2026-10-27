@@ -37,7 +37,7 @@ class Command(BaseCommand):
         )
         if creado:
             usuario.set_password("Admin12345")
-            usuario.save(update_fields=["password_hash"])
+            usuario.save(update_fields=["password"])
             self.stdout.write(f"  · admin creado: {email} / Admin12345")
         else:
             self.stdout.write(f"  · admin ya existía: {email}")
@@ -50,7 +50,7 @@ class Command(BaseCommand):
         )
         if creado:
             usuario.set_password("Cliente12345")
-            usuario.save(update_fields=["password_hash"])
+            usuario.save(update_fields=["password"])
 
         Cliente.objects.get_or_create(
             usuario=usuario,
