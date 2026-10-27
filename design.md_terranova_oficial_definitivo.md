@@ -1,5 +1,6 @@
 ---
-## Este es el stitch del proyecto: https://stitch.withgoogle.com/projects/11399679559610664478
+## Este es el stitch del proyecto: https://stitch.withgoogle.com/projects/11838724227737365150
+## Este diseño puede estar inspirado en webs como: https://www.contexttravel.com/
 name: Terranova - Viajes que cuentan historias
 colors:
   surface: '#faf5eb'

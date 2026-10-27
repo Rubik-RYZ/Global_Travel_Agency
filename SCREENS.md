@@ -15,7 +15,8 @@ El prefijo indica el portal:
 Formato de cada línea:
   Nombre legible  →  NombreArchivo.tsx  →  /ruta
 
-## Este es el stitch del proyecto: https://stitch.withgoogle.com/projects/11399679559610664478
+## Este es el stitch del proyecto: https://stitch.withgoogle.com/projects/11838724227737365150
+## Estuvo en parte basado en la web: https://www.contexttravel.com/
 ---
 
 ## SPRINT 2 · Oct 22–28 · Brayan
