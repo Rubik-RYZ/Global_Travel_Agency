@@ -21,6 +21,9 @@ db.sqlite3
 node_modules/
 /frontend/dist/
 /frontend/.vite/
+*.tsbuildinfo
+/frontend/vite.config.js
+/frontend/vite.config.d.ts
 npm-debug.log*
 yarn-error.log*
 pnpm-debug.log*
