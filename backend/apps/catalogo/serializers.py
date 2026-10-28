@@ -36,7 +36,7 @@ class DestinoSerializer(serializers.ModelSerializer):
             "latitud", "longitud",
             "duracion_dias", "duracion_noches", "precio_desde", "moneda",
             "mejor_epoca", "caracter", "caracter_display",
-            "imagen_principal", "incluye", "no_incluye",
+            "imagen_principal", "imagen_public_id", "incluye", "no_incluye",
             "etiquetas", "destacado", "activo", "itinerario",
         ]
         read_only_fields = ["id", "slug", "region_display", "caracter_display", "itinerario"]

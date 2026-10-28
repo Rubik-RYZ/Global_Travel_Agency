@@ -17,7 +17,7 @@ El equipo trabaja en 4 sprints de desarrollo (S2–S5). La base de datos ya est�
 
 **Backend**: Python 3.11 · Django 4.2 LTS · Django REST Framework · PostgreSQL 15  
 **Autenticación**: `djangorestframework-simplejwt` · bcrypt (cost 10) — sin Firebase  
-**Imágenes**: Cloudinary via `django-cloudinary-storage`  
+**Imágenes**: Cloudinary (SDK `cloudinary`, app `apps.almacen`) — la base guarda la URL y el `public_id`  
 **Pagos**: Stripe modo test (PaymentIntent API)  
 **Emails**: Resend (llamadas síncronas — sin Celery, sin Redis)  
 **Moneda**: ExchangeRate-API (BOB/USD, free tier)  
@@ -45,6 +45,8 @@ El proyecto NO sigue MVC. La arquitectura es **por capas con organización por d
 
 ```
 apps/
+├── almacen/        → Fase 3b (subida de archivos al almacén externo)
+├── notificaciones/ → Fase 3b (correo transaccional de la casa)
 ├── usuarios/       → CU1 (acceso/seguridad) + CU2 (clientes/preferencias)
 ├── catalogo/       → CU3 (destinos/proveedores) + CU4 (vuelos) + CU5 (hoteles) + CU6 (paquetes/salidas)
 ├── reservas/       → CU7 (reservas) + CU8 (itinerarios/notificaciones)
@@ -79,6 +81,8 @@ Cada app tiene esta estructura de capas:
 - **Usar ViewSets + Routers DRF**, no `APIView` genéricas salvo casos justificados (webhooks, endpoints no-CRUD).
 - **`SELECT FOR UPDATE`** obligatorio en cualquier operación que decremente `cupos_disponibles` en `PaqueteSalida` para prevenir overbooking.
 - **Resend se llama sincrónicamente** dentro del service, justo después de la operación que dispara el email. Sin colas, sin tasks asíncronas.
+- **Los servicios externos degradan con elegancia.** Si faltan las credenciales de Cloudinary o Resend, el sistema sigue operando: se deshabilita la subida (con aviso en pantalla) o se imprime el correo en el log, y se deja constancia en `Auditoria`. Nunca un error 500.
+- **La firma del almacén vive sólo en el servidor.** El navegador sube el archivo al backend (`/api/v1/almacen/subir/`) y éste lo reenvía firmado; las credenciales nunca llegan al cliente.
 - **Los secretos de proveedores NUNCA se almacenan.** El campo en DB es `secreto_ref` (una referencia o alias), no el secreto real.
 
 ---
@@ -261,9 +265,9 @@ src/
 
 | Servicio | Para qué | Notas |
 |---|---|---|
-| Cloudinary | Almacenamiento de imágenes | Free tier, `django-cloudinary-storage` |
+| Cloudinary | Almacenamiento de imágenes | Free tier, SDK `cloudinary` (app `apps.almacen`) |
 | Stripe | Pagos (modo test) | PaymentIntent, webhook directo en view |
-| Resend | Emails transaccionales | Síncrono, sin cola |
+| Resend | Emails transaccionales | Síncrono, sin cola (app `apps.notificaciones`) |
 | ExchangeRate-API | Conversión BOB/USD | Free tier, cachear en DB recomendado |
 | OurAirports CSV | Datos reales de aeropuertos | Carga única con management command |
 

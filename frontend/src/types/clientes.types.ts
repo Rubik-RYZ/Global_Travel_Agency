@@ -20,6 +20,10 @@ export interface Cliente {
   telefono: string | null
   fecha_nacimiento: string | null
   pais_origen: string | null
+  pasaporte_url: string | null
+  pasaporte_public_id: string | null
+  carnet_url: string | null
+  carnet_public_id: string | null
   preferencias: ClientePreferencia | null
   creado_en: string
 }
@@ -36,6 +40,10 @@ export interface PerfilViajero {
   telefono: string | null
   fecha_nacimiento: string | null
   pais_origen: string | null
+  pasaporte_url: string | null
+  pasaporte_public_id: string | null
+  carnet_url: string | null
+  carnet_public_id: string | null
   creado_en: string
 }
 
@@ -47,6 +55,10 @@ export interface ClientePayload {
   telefono?: string | null
   fecha_nacimiento?: string | null
   pais_origen?: string | null
+  pasaporte_url?: string | null
+  pasaporte_public_id?: string | null
+  carnet_url?: string | null
+  carnet_public_id?: string | null
 }
 
 export type PerfilPayload = ClientePayload

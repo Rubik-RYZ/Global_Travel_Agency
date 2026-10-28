@@ -4,6 +4,7 @@ import {
   ArrowLeftIcon,
   ArrowRightEndOnRectangleIcon,
   ArrowRightIcon,
+  ArrowUpTrayIcon,
   BanknotesIcon,
   Bars3Icon,
   BoltIcon,
@@ -133,6 +134,9 @@ export function IconoCerrar({ className = 'h-4 w-4', ...props }: Props) {
 }
 export function IconoDescarga({ className = 'h-4 w-4', ...props }: Props) {
   return <ArrowDownTrayIcon className={className} {...props} />
+}
+export function IconoSubir({ className = 'h-4 w-4', ...props }: Props) {
+  return <ArrowUpTrayIcon className={className} {...props} />
 }
 
 /* --- Flechas y chevrons --- */

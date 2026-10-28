@@ -6,7 +6,16 @@ día a día) + proveedores de servicio.
 
 El comando es idempotente: usa `update_or_create`, de modo que volver a
 ejecutarlo refresca la ficha comercial de cada destino sin duplicar filas.
+
+Las láminas viven en `frontend/public/assets/` (viajan en el repositorio). Si
+además existe `backend/apps/catalogo/media_catalogo.json` —generado con
+`node scripts/subir-media-catalogo.mjs`— el seed usa esos enlaces del almacén
+externo, de modo que quien clone el repositorio ve las imágenes sin
+credenciales.
 """
+import json
+from pathlib import Path
+
 from django.core.management.base import BaseCommand
 from django.db import transaction
 
@@ -17,6 +26,24 @@ from apps.usuarios.constants import (
     ROLES_INICIALES,
 )
 from apps.usuarios.models import Cliente, Rol, Usuario
+
+RUTA_MEDIA_CATALOGO = (
+    Path(__file__).resolve().parents[3] / "catalogo" / "media_catalogo.json"
+)
+
+
+def cargar_media_catalogo() -> dict[str, dict]:
+    """Enlaces de las láminas ya subidas al almacén externo (Fase 3b).
+
+    Devuelve un diccionario vacío si el archivo todavía no se ha generado, de
+    forma que el seed use siempre las rutas locales de `frontend/public/assets/`.
+    """
+    try:
+        with RUTA_MEDIA_CATALOGO.open(encoding="utf-8") as archivo:
+            return json.load(archivo)
+    except (OSError, ValueError):
+        return {}
+
 
 DESTINOS_INICIALES = [
     {
@@ -425,9 +452,16 @@ class Command(BaseCommand):
 
     def _seed_destinos(self):
         creados = actualizados = dias = 0
+        media = cargar_media_catalogo()
         for data in DESTINOS_INICIALES:
             payload = {k: v for k, v in data.items()
                        if k not in ("nombre", "pais", "itinerario")}
+            # Si las láminas ya se subieron al almacén, el seed guarda el enlace
+            # público (y su id) en lugar de la ruta local.
+            enlace = media.get(data.get("imagen_principal") or "")
+            if enlace:
+                payload["imagen_principal"] = enlace["url"]
+                payload["imagen_public_id"] = enlace.get("public_id")
             destino, nuevo = Destino.objects.update_or_create(
                 nombre=data["nombre"],
                 pais=data["pais"],

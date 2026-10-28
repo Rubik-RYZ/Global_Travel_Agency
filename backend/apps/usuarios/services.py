@@ -4,7 +4,8 @@ Toda la lógica del dominio vive aquí: autenticación, registro de clientes,
 recuperación de contraseña y bitácora de auditoría. Los ViewSets solo
 orquestan (regla de capas de AGENT.md).
 
-Nota: el envío de emails es síncrono (Resend en producción, consola en dev).
+Nota: el envío de emails sale por la API de Resend cuando hay credenciales
+(Fase 3b); si no las hay, se registra en la bitácora y se imprime en el log.
 """
 from __future__ import annotations
 
@@ -13,12 +14,12 @@ import logging
 from django.conf import settings
 from django.contrib.auth import authenticate, get_user_model
 from django.core import signing
-from django.core.mail import send_mail
 from django.db import transaction
 from django.db.models import ProtectedError
 from rest_framework.exceptions import AuthenticationFailed, ValidationError
 from rest_framework_simplejwt.tokens import RefreshToken
 
+from apps.notificaciones import services as notificaciones
 from apps.usuarios.constants import ROL_CLIENTE
 from apps.usuarios.models import Auditoria, Cliente, ClientePreferencia
 
@@ -154,6 +155,7 @@ def registrar_cliente(
         detalle={"email": email_normalizado},
         ip=ip_desde_request(request),
     )
+    notificaciones.bienvenida_cliente(usuario=usuario, nombres=nombres.strip())
     return usuario, cliente
 
 
@@ -181,17 +183,7 @@ def solicitar_recuperacion(*, email: str, request=None) -> None:
     token = signing.dumps({"uid": usuario.id}, salt=SALT_RECUPERACION)
     enlace = f"{settings.FRONTEND_URL}/restablecer?token={token}"
 
-    send_mail(
-        subject="Restablece tu contraseña — Illimani Global Travel",
-        message=(
-            "Recibimos una solicitud para restablecer tu contraseña.\n\n"
-            f"Abre este enlace (válido por 2 horas):\n{enlace}\n\n"
-            "Si no solicitaste este cambio, ignora este mensaje."
-        ),
-        from_email=settings.DEFAULT_FROM_EMAIL,
-        recipient_list=[usuario.email],
-        fail_silently=True,
-    )
+    notificaciones.recuperacion_password(usuario=usuario, enlace=enlace)
     registrar_auditoria(
         accion="recuperar_solicitado",
         usuario=usuario,
@@ -227,6 +219,7 @@ def restablecer_password(*, token: str, password: str, request=None):
         entidad_id=usuario.id,
         ip=ip_desde_request(request),
     )
+    notificaciones.password_restablecido(usuario=usuario)
     return usuario
 
 
@@ -246,6 +239,11 @@ def crear_usuario_equipo(*, datos: dict, actor=None, request=None):
         rol_id=datos["rol_id"],
         activo=datos.get("activo", True),
     )
+    # Retrato del miembro del equipo (opcional, Fase 3b).
+    if datos.get("foto_url") is not None:
+        usuario.foto_url = datos.get("foto_url")
+        usuario.foto_public_id = datos.get("foto_public_id")
+        usuario.save(update_fields=["foto_url", "foto_public_id"])
     registrar_auditoria(
         accion="usuario_creado",
         usuario=actor,
@@ -267,6 +265,11 @@ def actualizar_usuario_equipo(*, usuario, datos: dict, actor=None, request=None)
     if datos.get("activo") is not None:
         usuario.activo = datos["activo"]
         cambios["activo"] = datos["activo"]
+    if datos.get("foto_url") is not None:
+        usuario.foto_url = datos.get("foto_url")
+        usuario.foto_public_id = datos.get("foto_public_id")
+        cambios["foto_url"] = usuario.foto_url
+        cambios["foto_public_id"] = usuario.foto_public_id
     if cambios:
         usuario.save(update_fields=list(cambios))
     if datos.get("password"):
@@ -310,6 +313,11 @@ CAMPOS_CLIENTE = [
     "telefono",
     "fecha_nacimiento",
     "pais_origen",
+    # Documentos digitalizados (Fase 3b): URL + identificador del almacén.
+    "pasaporte_url",
+    "pasaporte_public_id",
+    "carnet_url",
+    "carnet_public_id",
 ]
 
 
@@ -347,6 +355,8 @@ def crear_cliente(*, datos: dict, actor=None, request=None) -> Cliente:
         detalle={"nombre_completo": cliente.nombre_completo},
         ip=ip_desde_request(request),
     )
+    if cliente.usuario_id:
+        notificaciones.ficha_viajero_abierta(cliente=cliente, usuario=cliente.usuario)
     return cliente
 
 

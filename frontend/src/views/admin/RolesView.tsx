@@ -144,7 +144,7 @@ function TarjetaUsuario({
 
       <div className="flex flex-wrap items-center justify-between gap-4 px-5 py-4">
         <div className="flex items-center gap-4">
-          <Monograma nombre={usuario.email} tamano="sm" />
+          <Monograma nombre={usuario.email} tamano="sm" foto={usuario.foto_url} />
           <div className="min-w-0">
             <p className="truncate font-sans text-sm font-medium text-on-surface">{usuario.email}</p>
             <p className="mt-0.5 font-sans text-xs text-on-surface-variant">

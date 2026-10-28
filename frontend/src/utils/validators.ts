@@ -18,8 +18,10 @@ export const nombreSchema = z
 /** Mensaje de error legible a partir de una respuesta de la API. */
 export function mensajeDeError(error: unknown): string {
   const err = error as {
-    response?: { data?: { error?: string } }
+    response?: { data?: { error?: string; detail?: unknown } }
     message?: string
   }
+  const detalle = err?.response?.data?.detail
+  if (typeof detalle === 'string' && detalle.trim()) return detalle
   return err?.response?.data?.error ?? err?.message ?? 'Ocurrió un error inesperado.'
 }

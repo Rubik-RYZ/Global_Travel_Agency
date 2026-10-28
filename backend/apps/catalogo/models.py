@@ -46,8 +46,11 @@ class Destino(models.Model):
     mejor_epoca = models.TextField(null=True, blank=True)
     caracter = models.TextField(choices=CARACTERES_VIAJE, null=True, blank=True)
 
-    # URL de la imagen principal (será una URL de Cloudinary en la Fase 3b).
+    # URL de la imagen principal (ruta local `/assets/...` o URL del almacén).
     imagen_principal = models.TextField(null=True, blank=True)
+    # Identificador en el almacén externo: sin él no se puede reemplazar ni
+    # borrar la lámina anterior cuando se sube otra (Fase 3b).
+    imagen_public_id = models.TextField(null=True, blank=True)
     incluye = ArrayField(models.TextField(), default=list, blank=True)
     no_incluye = ArrayField(models.TextField(), default=list, blank=True)
     etiquetas = ArrayField(models.TextField(), default=list, blank=True)

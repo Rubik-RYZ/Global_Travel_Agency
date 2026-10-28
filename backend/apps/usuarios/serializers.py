@@ -26,9 +26,11 @@ class UsuarioSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Usuario
-        fields = ["id", "email", "rol", "rol_id", "activo", "ultimo_acceso", "creado_en"]
+        fields = [
+            "id", "email", "rol", "rol_id", "activo",
+            "foto_url", "foto_public_id", "ultimo_acceso", "creado_en",
+        ]
         read_only_fields = fields
-
 
 # ---------------------------------------------------------------------
 # Acceso
@@ -86,6 +88,7 @@ class UsuarioEquipoSerializer(serializers.ModelSerializer):
         model = Usuario
         fields = [
             "id", "email", "rol", "rol_id", "activo",
+            "foto_url", "foto_public_id",
             "password", "ultimo_acceso", "creado_en",
         ]
         read_only_fields = ["id", "rol", "ultimo_acceso", "creado_en"]
@@ -174,6 +177,8 @@ class ClienteSerializer(serializers.ModelSerializer):
             "id", "usuario", "usuario_email", "nombres", "apellidos",
             "nombre_completo", "documento_tipo", "documento_numero",
             "telefono", "fecha_nacimiento", "pais_origen",
+            "pasaporte_url", "pasaporte_public_id",
+            "carnet_url", "carnet_public_id",
             "preferencias", "creado_en",
         ]
         read_only_fields = [
@@ -199,6 +204,8 @@ class PerfilClienteSerializer(serializers.ModelSerializer):
         fields = [
             "id", "email", "nombres", "apellidos", "nombre_completo",
             "documento_tipo", "documento_numero", "telefono",
-            "fecha_nacimiento", "pais_origen", "creado_en",
+            "fecha_nacimiento", "pais_origen",
+            "pasaporte_url", "pasaporte_public_id",
+            "carnet_url", "carnet_public_id", "creado_en",
         ]
         read_only_fields = ["id", "email", "nombre_completo", "creado_en"]

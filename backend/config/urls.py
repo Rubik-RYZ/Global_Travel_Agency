@@ -11,6 +11,7 @@ urlpatterns = [
     path("api/v1/health", health, name="health"),
     path("api/v1/", include("apps.usuarios.urls")),
     path("api/v1/", include("apps.catalogo.urls")),
+    path("api/v1/", include("apps.almacen.urls")),
 ]
 
 if settings.DEBUG:

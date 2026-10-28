@@ -32,6 +32,7 @@ export interface Destino {
   caracter: string | null
   caracter_display: string | null
   imagen_principal: string | null
+  imagen_public_id: string | null
   incluye: string[]
   no_incluye: string[]
   etiquetas: string[]

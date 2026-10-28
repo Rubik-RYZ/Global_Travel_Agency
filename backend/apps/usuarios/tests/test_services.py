@@ -1,7 +1,13 @@
-"""Tests de la capa de negocio de CU1 (services)."""
-from django.core import mail
+"""Tests de la capa de negocio de CU1 (services).
+
+El envío de correo se sustituye por un doble: lo que interesa aquí es que el
+flujo de negocio llame al servicio de notificaciones con los datos correctos,
+no que Resend responda.
+"""
+from unittest import mock
+
 from django.core import signing
-from django.test import TestCase, override_settings
+from django.test import TestCase
 from rest_framework.exceptions import AuthenticationFailed, ValidationError
 
 from apps.usuarios import services
@@ -67,17 +73,25 @@ class RegistrarClienteTest(BaseServicesTest):
             )
 
 
-@override_settings(EMAIL_BACKEND="django.core.mail.backends.locmem.EmailBackend")
 class RecuperacionTest(BaseServicesTest):
     def test_solicitar_envia_email(self):
-        services.solicitar_recuperacion(email="user@test.bo")
-        self.assertEqual(len(mail.outbox), 1)
-        self.assertIn("restablecer", mail.outbox[0].body.lower())
+        with mock.patch(
+            "apps.notificaciones.services.recuperacion_password", return_value=True
+        ) as aviso:
+            services.solicitar_recuperacion(email="user@test.bo")
+
+        aviso.assert_called_once()
+        _, kwargs = aviso.call_args
+        self.assertEqual(kwargs["usuario"].email, "user@test.bo")
+        self.assertIn("/restablecer?token=", kwargs["enlace"])
         self.assertTrue(Auditoria.objects.filter(accion="recuperar_solicitado").exists())
 
     def test_solicitar_email_inexistente_no_envia(self):
-        services.solicitar_recuperacion(email="nadie@test.bo")
-        self.assertEqual(len(mail.outbox), 0)
+        with mock.patch(
+            "apps.notificaciones.services.recuperacion_password"
+        ) as aviso:
+            services.solicitar_recuperacion(email="nadie@test.bo")
+        aviso.assert_not_called()
 
     def test_flujo_completo_restablecer(self):
         token = signing.dumps({"uid": self.usuario.id}, salt=services.SALT_RECUPERACION)
@@ -91,8 +105,6 @@ class RecuperacionTest(BaseServicesTest):
             services.restablecer_password(token="basura", password="Cambiada123")
 
     def test_token_expirado(self):
-        from unittest import mock
-
         token = signing.dumps({"uid": self.usuario.id}, salt=services.SALT_RECUPERACION)
         with mock.patch.object(services, "TOKEN_RECUPERACION_MAX_AGE", -1):
             with self.assertRaises(ValidationError):

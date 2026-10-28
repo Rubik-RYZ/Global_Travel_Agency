@@ -39,6 +39,8 @@ export interface UsuarioEquipo {
   rol: RolNombre
   rol_id: number
   activo: boolean
+  foto_url: string | null
+  foto_public_id: string | null
   ultimo_acceso: string | null
   creado_en: string
 }
@@ -48,6 +50,8 @@ export interface UsuarioEquipoPayload {
   rol_id: number
   activo?: boolean
   password?: string
+  foto_url?: string | null
+  foto_public_id?: string | null
 }
 
 export interface Auditoria {

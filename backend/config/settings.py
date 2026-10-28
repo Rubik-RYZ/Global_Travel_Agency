@@ -47,6 +47,8 @@ THIRD_PARTY_APPS = [
 ]
 
 LOCAL_APPS = [
+    "apps.almacen",    # Fase 3b (subida de archivos al almacén externo)
+    "apps.notificaciones",  # Fase 3b (correo transaccional)
     "apps.usuarios",   # CU1 (acceso/seguridad) + CU2 (clientes/preferencias)
     "apps.catalogo",   # CU3 (destinos/proveedores) + CU4..CU6
     "apps.reservas",   # CU7 (reservas) + CU8 (itinerarios/notificaciones)
@@ -177,6 +179,23 @@ if DEBUG:
     EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"
 else:
     EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
+
+# Resend (Fase 3b): si hay clave, los correos salen por su API HTTP; si no, el
+# sistema sigue funcionando y cada envío se imprime en el log del servidor.
+RESEND_API_KEY = env("RESEND_API_KEY", default="")
+CORREO_CONFIGURADO = bool(RESEND_API_KEY)
+
+# ---------------------------------------------------------------------
+# Almacén externo de archivos (Cloudinary — Fase 3b)
+# ---------------------------------------------------------------------
+# Sin credenciales el sistema sigue operando: las imágenes ya guardadas por
+# URL se muestran igual y sólo queda deshabilitada la subida desde el panel.
+CLOUDINARY_CLOUD_NAME = env("CLOUDINARY_CLOUD_NAME", default="")
+CLOUDINARY_API_KEY = env("CLOUDINARY_API_KEY", default="")
+CLOUDINARY_API_SECRET = env("CLOUDINARY_API_SECRET", default="")
+ALMACEN_CONFIGURADO = bool(
+    CLOUDINARY_CLOUD_NAME and CLOUDINARY_API_KEY and CLOUDINARY_API_SECRET
+)
 
 # ---------------------------------------------------------------------
 # Internacionalización

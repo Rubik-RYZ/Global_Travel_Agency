@@ -5,6 +5,7 @@ import { Link, useNavigate, useParams } from 'react-router-dom'
 import { catalogoApi, type Destino, type ItinerarioDia } from '@/api/catalogo'
 import { RosaVientos } from '@/components/brand/RosaVientos'
 import { Button } from '@/components/ui/Button/Button'
+import { SubidorImagen } from '@/components/ui/SubidorImagen/SubidorImagen'
 import {
   IconoCerrar,
   IconoDestello,
@@ -57,6 +58,7 @@ interface FormDestino {
   moneda: string
   mejor_epoca: string
   imagen_principal: string
+  imagen_public_id: string
   resumen: string
   lema: string
   descripcion: string
@@ -81,6 +83,7 @@ const FORM_VACIO: FormDestino = {
   moneda: 'USD',
   mejor_epoca: '',
   imagen_principal: '',
+  imagen_public_id: '',
   resumen: '',
   lema: '',
   descripcion: '',
@@ -196,6 +199,7 @@ export function EditorDestinoView() {
         moneda: form.moneda,
         mejor_epoca: texto(form.mejor_epoca),
         imagen_principal: texto(form.imagen_principal),
+        imagen_public_id: texto(form.imagen_public_id),
         resumen: texto(form.resumen),
         lema: texto(form.lema),
         descripcion: texto(form.descripcion),
@@ -450,17 +454,19 @@ export function EditorDestinoView() {
                     />
                   </Campo>
 
-                  <Campo
-                    etiqueta="Imagen principal de la lámina"
-                    ayuda="Ruta del recurso; en producción la sirve Cloudinary."
-                    className="md:col-span-2"
-                  >
-                    <Entrada
-                      value={form.imagen_principal}
-                      onChange={(v) => asignar('imagen_principal', v)}
-                      placeholder="/assets/destino-1.jpg"
+                  <div className="md:col-span-2">
+                    <SubidorImagen
+                      valor={form.imagen_principal}
+                      publicId={form.imagen_public_id || null}
+                      onChange={(url, publicId) => {
+                        asignar('imagen_principal', url)
+                        asignar('imagen_public_id', publicId ?? '')
+                      }}
+                      carpeta="destinos"
+                      etiqueta="Imagen principal de la lámina"
+                      ayuda="JPG, PNG, WEBP o AVIF. Se aloja en el almacén del proyecto y el enlace queda guardado en la ficha."
                     />
-                  </Campo>
+                  </div>
 
                   <Campo etiqueta="Titular editorial (lema)" className="md:col-span-2">
                     <Entrada
@@ -791,6 +797,7 @@ function mapearDestino(d: Destino): FormDestino {
     moneda: d.moneda || 'USD',
     mejor_epoca: d.mejor_epoca ?? '',
     imagen_principal: d.imagen_principal ?? '',
+    imagen_public_id: d.imagen_public_id ?? '',
     resumen: d.resumen ?? '',
     lema: d.lema ?? '',
     descripcion: d.descripcion ?? '',

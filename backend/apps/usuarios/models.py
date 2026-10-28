@@ -46,6 +46,9 @@ class Usuario(AbstractBaseUser):
     )
     activo = models.BooleanField(default=True)
     creado_en = models.DateTimeField(auto_now_add=True)
+    # Retrato del miembro del equipo (Fase 3b), en el almacén externo.
+    foto_url = models.TextField(null=True, blank=True)
+    foto_public_id = models.TextField(null=True, blank=True)
     # Columna `ultimo_acceso` del esquema; se expone también como propiedad.
     last_login = models.DateTimeField(
         null=True, blank=True, db_column="ultimo_acceso"
@@ -146,6 +149,12 @@ class Cliente(models.Model):
     telefono = models.TextField(null=True, blank=True)
     fecha_nacimiento = models.DateField(null=True, blank=True)
     pais_origen = models.TextField(null=True, blank=True)
+    # Documentos de viaje digitalizados (Fase 3b). Se guardan la URL pública y
+    # el identificador del almacén para poder reemplazarlos o borrarlos.
+    pasaporte_url = models.TextField(null=True, blank=True)
+    pasaporte_public_id = models.TextField(null=True, blank=True)
+    carnet_url = models.TextField(null=True, blank=True)
+    carnet_public_id = models.TextField(null=True, blank=True)
     creado_en = models.DateTimeField(auto_now_add=True)
 
     class Meta:

@@ -1,0 +1,58 @@
+{
+  "/assets/destino-1.jpg": {
+    "url": "https://res.cloudinary.com/amlvj9sf/image/upload/v1793224421/illimani/destinos/jmydhrmoaihnztfqnvrz.jpg",
+    "public_id": "illimani/destinos/jmydhrmoaihnztfqnvrz",
+    "bytes": 98888,
+    "ancho": 512,
+    "alto": 512
+  },
+  "/assets/destino-15.jpg": {
+    "url": "https://res.cloudinary.com/amlvj9sf/image/upload/v1793224421/illimani/destinos/x8gk4kair4zvxzza3rem.jpg",
+    "public_id": "illimani/destinos/x8gk4kair4zvxzza3rem",
+    "bytes": 48060,
+    "ancho": 512,
+    "alto": 286
+  },
+  "/assets/destino-2.jpg": {
+    "url": "https://res.cloudinary.com/amlvj9sf/image/upload/v1793224422/illimani/destinos/bqye0tdjiqpzfsngtez2.jpg",
+    "public_id": "illimani/destinos/bqye0tdjiqpzfsngtez2",
+    "bytes": 49671,
+    "ancho": 512,
+    "alto": 286
+  },
+  "/assets/destino-patagonia.jpg": {
+    "url": "https://res.cloudinary.com/amlvj9sf/image/upload/v1793224423/illimani/destinos/rte2augz9afpa1z43t4g.jpg",
+    "public_id": "illimani/destinos/rte2augz9afpa1z43t4g",
+    "bytes": 506066,
+    "ancho": 1920,
+    "alto": 1440
+  },
+  "/assets/destino-sahara.jpg": {
+    "url": "https://res.cloudinary.com/amlvj9sf/image/upload/v1793224424/illimani/destinos/sqmwnzympg2o9odesw0k.jpg",
+    "public_id": "illimani/destinos/sqmwnzympg2o9odesw0k",
+    "bytes": 475770,
+    "ancho": 1920,
+    "alto": 1440
+  },
+  "/assets/destino-salar.jpg": {
+    "url": "https://res.cloudinary.com/amlvj9sf/image/upload/v1793224425/illimani/destinos/xappkntlokymmlnvrghe.jpg",
+    "public_id": "illimani/destinos/xappkntlokymmlnvrghe",
+    "bytes": 639199,
+    "ancho": 1920,
+    "alto": 1026
+  },
+  "/assets/destino-tiwanaku.jpg": {
+    "url": "https://res.cloudinary.com/amlvj9sf/image/upload/v1793224425/illimani/destinos/baij8bspupwvfw96rofo.jpg",
+    "public_id": "illimani/destinos/baij8bspupwvfw96rofo",
+    "bytes": 741179,
+    "ancho": 1600,
+    "alto": 720
+  },
+  "/assets/landing-ambiente.jpg": {
+    "url": "https://res.cloudinary.com/amlvj9sf/image/upload/v1793224426/illimani/destinos/bbolxidq7w8dkp5dap3a.jpg",
+    "public_id": "illimani/destinos/bbolxidq7w8dkp5dap3a",
+    "bytes": 66052,
+    "ancho": 512,
+    "alto": 279
+  }
+}

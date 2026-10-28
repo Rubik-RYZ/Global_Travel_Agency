@@ -25,8 +25,8 @@ pytest==8.3.3
 pytest-django==4.9.0
 
 # --- Servicios externos (se activan en Fase 3b/4) ---
-# cloudinary==1.41.0
-# django-cloudinary-storage==0.3.0
+cloudinary==1.41.0
+# django-cloudinary-storage==0.3.0  # no se usa: MEDIA_ROOT sigue siendo local
+resend==2.5.1
 # stripe==11.1.0
-# resend==2.5.0
 # scikit-learn==1.5.2
