@@ -4,7 +4,10 @@ import {
   ArrowLeftIcon,
   ArrowRightEndOnRectangleIcon,
   ArrowRightIcon,
+  BanknotesIcon,
   Bars3Icon,
+  BoltIcon,
+  BookOpenIcon,
   BriefcaseIcon,
   BuildingOffice2Icon,
   CalendarDaysIcon,
@@ -12,25 +15,32 @@ import {
   ChevronDownIcon,
   ChevronUpIcon,
   ClipboardDocumentListIcon,
+  ClockIcon,
   CurrencyDollarIcon,
   DocumentTextIcon,
   EnvelopeIcon,
+  FireIcon,
   FolderOpenIcon,
   GlobeAltIcon,
   HeartIcon,
+  HomeModernIcon,
   IdentificationIcon,
   InboxIcon,
   LockClosedIcon,
   MagnifyingGlassIcon,
+  MapIcon,
   MapPinIcon,
   PencilSquareIcon,
   PhoneIcon,
+  PlayIcon,
   PlusIcon,
   ShieldCheckIcon,
   SparklesIcon,
   Squares2X2Icon,
+  SunIcon,
   TagIcon,
   TrashIcon,
+  UserGroupIcon,
   UserIcon,
   XMarkIcon,
 } from '@heroicons/react/24/outline'
@@ -161,4 +171,36 @@ export function IconoModulos({ className = 'h-4 w-4', ...props }: Props) {
 }
 export function IconoMenu({ className = 'h-4 w-4', ...props }: Props) {
   return <Bars3Icon className={className} {...props} />
+}
+
+/* --- Catálogo editorial: carácter de viaje, regiones y ficha --- */
+export function IconoLibro({ className = 'h-4 w-4', ...props }: Props) {
+  return <BookOpenIcon className={className} {...props} />
+}
+export function IconoMapa({ className = 'h-4 w-4', ...props }: Props) {
+  return <MapIcon className={className} {...props} />
+}
+export function IconoSol({ className = 'h-4 w-4', ...props }: Props) {
+  return <SunIcon className={className} {...props} />
+}
+export function IconoRayo({ className = 'h-4 w-4', ...props }: Props) {
+  return <BoltIcon className={className} {...props} />
+}
+export function IconoFuego({ className = 'h-4 w-4', ...props }: Props) {
+  return <FireIcon className={className} {...props} />
+}
+export function IconoCasa({ className = 'h-4 w-4', ...props }: Props) {
+  return <HomeModernIcon className={className} {...props} />
+}
+export function IconoReloj({ className = 'h-4 w-4', ...props }: Props) {
+  return <ClockIcon className={className} {...props} />
+}
+export function IconoBillete({ className = 'h-4 w-4', ...props }: Props) {
+  return <BanknotesIcon className={className} {...props} />
+}
+export function IconoGrupo({ className = 'h-4 w-4', ...props }: Props) {
+  return <UserGroupIcon className={className} {...props} />
+}
+export function IconoPlay({ className = 'h-4 w-4', ...props }: Props) {
+  return <PlayIcon className={className} {...props} />
 }

@@ -17,6 +17,8 @@ import { RecuperarPasswordView } from '@/views/auth/RecuperarPasswordView'
 import { RegisterView } from '@/views/auth/RegisterView'
 import { RestablecerPasswordView } from '@/views/auth/RestablecerPasswordView'
 import { SesionExpiradaView } from '@/views/auth/SesionExpiradaView'
+import { DetalleDestinoView } from '@/views/catalogo/DetalleDestinoView'
+import { ExplorarDestinosView } from '@/views/catalogo/ExplorarDestinosView'
 import { PanelViajeroView } from '@/views/cliente/PanelViajeroView'
 import { PreferenciasView } from '@/views/cliente/PreferenciasView'
 import { HomeView } from '@/views/home/HomeView'
@@ -31,7 +33,11 @@ import { HomeView } from '@/views/home/HomeView'
 export const router = createBrowserRouter([
   {
     element: <PublicLayout />,
-    children: [{ path: '/', element: <HomeView /> }],
+    children: [
+      { path: '/', element: <HomeView /> },
+      { path: '/destinos', element: <ExplorarDestinosView /> },
+      { path: '/destinos/:id', element: <DetalleDestinoView /> },
+    ],
   },
   {
     element: <AuthLayout />,

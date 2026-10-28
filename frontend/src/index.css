@@ -54,4 +54,83 @@
       radial-gradient(ellipse at 15% 20%, rgba(210, 195, 170, 0.28) 0%, transparent 60%),
       radial-gradient(ellipse at 85% 80%, rgba(200, 185, 155, 0.22) 0%, transparent 55%);
   }
+
+  /* ── Landing #14: lámina de expedición ──────────────────────────────────── */
+
+  /* Papel de expedición punteado, como una retícula de cuaderno de campo. */
+  .papel-expedicion {
+    background-color: #faf5eb;
+    background-image:
+      radial-gradient(#e0d2bf 0.8px, transparent 0.8px),
+      radial-gradient(#ebdcc8 0.8px, #faf5eb 0.8px);
+    background-size: 32px 32px;
+    background-position: 0 0, 16px 16px;
+  }
+
+  /* Máscaras orgánicas: recortes irregulares, como láminas botánicas
+     dibujadas a mano. Se aplican a las fotos de destino de la landing. */
+  .silueta-organica-1 {
+    clip-path: polygon(
+      0% 8%, 9% 3%, 22% 6%, 38% 1%, 55% 4%, 72% 0%, 88% 5%, 98% 12%,
+      100% 32%, 97% 48%, 100% 68%, 96% 84%, 99% 94%, 86% 99%,
+      68% 96%, 50% 100%, 31% 97%, 15% 99%, 3% 92%, 0% 74%,
+      4% 56%, 1% 38%, 3% 20%
+    );
+    border-radius: 28px;
+  }
+
+  .silueta-organica-2 {
+    clip-path: polygon(
+      3% 4%, 18% 1%, 36% 5%, 52% 0%, 70% 3%, 89% 1%, 99% 9%,
+      96% 28%, 100% 45%, 97% 64%, 100% 82%, 94% 97%, 78% 95%,
+      60% 99%, 42% 96%, 22% 100%, 7% 96%, 1% 82%, 4% 62%,
+      0% 44%, 3% 25%, 0% 12%
+    );
+    border-radius: 32px;
+  }
+
+  .silueta-organica-3 {
+    clip-path: polygon(
+      2% 9%, 15% 3%, 32% 1%, 51% 5%, 69% 1%, 86% 4%, 97% 12%,
+      100% 29%, 96% 49%, 100% 67%, 95% 86%, 98% 98%, 82% 97%,
+      64% 100%, 45% 96%, 26% 99%, 8% 95%, 0% 80%, 4% 60%,
+      1% 40%, 4% 22%
+    );
+    border-radius: 30px;
+  }
+
+  /* Marco con sombra cálida que se levanta al pasar el cursor. */
+  .marco-organico {
+    filter: drop-shadow(0 18px 30px rgba(36, 44, 38, 0.14));
+    transition:
+      transform 0.4s cubic-bezier(0.2, 0.8, 0.2, 1),
+      filter 0.4s ease;
+  }
+
+  .marco-organico:hover {
+    transform: translateY(-8px) scale(1.01);
+    filter: drop-shadow(0 26px 40px rgba(27, 38, 29, 0.22));
+  }
+
+  /* Capitular editorial que abre el manifiesto de la casa. */
+  .capitular::first-letter {
+    float: left;
+    padding: 0.25rem 0.75rem 0.1rem 0;
+    font-family: 'Playfair Display', serif;
+    font-size: 3.4rem;
+    font-weight: 600;
+    line-height: 0.8;
+    color: #792609;
+  }
+}
+
+@layer utilities {
+  /* Oculta la barra de scroll en carruseles/pills horizontales. */
+  .scrollbar-none {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+  .scrollbar-none::-webkit-scrollbar {
+    display: none;
+  }
 }
