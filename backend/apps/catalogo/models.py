@@ -192,8 +192,12 @@ class Proveedor(models.Model):
 
     nombre = models.TextField(unique=True)
     tipo = models.TextField(choices=TIPOS_PROVEEDOR)
+    pais = models.TextField(null=True, blank=True)
+    ciudad = models.TextField(null=True, blank=True)
+    contacto = models.TextField(null=True, blank=True)
     email = models.TextField(null=True, blank=True)
     telefono = models.TextField(null=True, blank=True)
+    notas = models.TextField(null=True, blank=True)
     activo = models.BooleanField(default=True)
 
     class Meta:

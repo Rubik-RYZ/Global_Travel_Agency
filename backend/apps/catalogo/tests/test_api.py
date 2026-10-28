@@ -276,6 +276,47 @@ def test_filtro_tipo_proveedor(client_admin, proveedor):
     assert all(p["tipo"] == "aerolinea" for p in r.json()["results"])
 
 
+@pytest.mark.django_db
+def test_crear_proveedor_con_ficha_operativa(client_admin):
+    r = client_admin.post(BASE_P, {
+        "nombre": "Casona paceña",
+        "tipo": "hotel",
+        "pais": "Bolivia",
+        "ciudad": "La Paz",
+        "contacto": "Reservas",
+        "notas": "Hospedaje patrimonial en Sopocachi.",
+    }, format="json")
+    assert r.status_code == 201, r.json()
+    cuerpo = r.json()
+    assert cuerpo["pais"] == "Bolivia"
+    assert cuerpo["ciudad"] == "La Paz"
+    assert cuerpo["contacto"] == "Reservas"
+    assert "Sopocachi" in cuerpo["notas"]
+
+
+@pytest.mark.django_db
+def test_filtro_pais_y_busqueda_proveedor(client_admin):
+    Proveedor.objects.create(nombre="Hotel Titikaka", tipo="hotel", pais="Bolivia", ciudad="Copacabana")
+    Proveedor.objects.create(nombre="Cusco Guides", tipo="operador", pais="Perú", ciudad="Cusco")
+
+    r = client_admin.get(f"{BASE_P}?pais=Bolivia")
+    assert [p["nombre"] for p in r.json()["results"]] == ["Hotel Titikaka"]
+
+    r = client_admin.get(f"{BASE_P}?q=Cusco")
+    assert [p["nombre"] for p in r.json()["results"]] == ["Cusco Guides"]
+
+
+@pytest.mark.django_db
+def test_actualizar_ficha_proveedor(client_admin, proveedor):
+    r = client_admin.patch(f"{BASE_P}{proveedor.id}/", {
+        "ciudad": "El Alto",
+        "notas": "Renovó flota en 2026.",
+    }, format="json")
+    assert r.status_code == 200
+    assert r.json()["ciudad"] == "El Alto"
+    assert r.json()["notas"] == "Renovó flota en 2026."
+
+
 # ── Destinos: ficha comercial e itinerario ────────────────────────────────────
 
 @pytest.fixture
@@ -393,3 +434,56 @@ def test_precio_negativo_rechazado(client_admin):
         "precio_desde": "-10.00",
     }, format="json")
     assert r.status_code == 400
+
+
+# ── Destinos: diario de ruta (itinerario día a día) ───────────────────────────
+
+@pytest.mark.django_db
+def test_definir_itinerario_admin(client_admin, destino_comercial):
+    r = client_admin.put(f"{BASE_D}{destino_comercial.id}/itinerario/", [
+        {"numero_dia": 1, "titulo": "Llegada a Osaka", "ubicacion": "Osaka"},
+        {"numero_dia": 2, "titulo": "Tren a Kioto", "descripcion": "Shinkansen."},
+        {"numero_dia": 3, "titulo": "Bosques de Takayama", "ubicacion": "Takayama"},
+    ], format="json")
+    assert r.status_code == 200, r.json()
+    assert [d["numero_dia"] for d in r.json()] == [1, 2, 3]
+    detalle = client_admin.get(f"{BASE_D}{destino_comercial.id}/").json()
+    assert [d["titulo"] for d in detalle["itinerario"]] == [
+        "Llegada a Osaka", "Tren a Kioto", "Bosques de Takayama",
+    ]
+
+
+@pytest.mark.django_db
+def test_definir_itinerario_reemplaza_dias_previos(client_admin, destino_comercial):
+    client_admin.put(f"{BASE_D}{destino_comercial.id}/itinerario/", [
+        {"numero_dia": 1, "titulo": "Único día"},
+    ], format="json")
+    destino_comercial.refresh_from_db()
+    assert destino_comercial.itinerario.count() == 1
+
+
+@pytest.mark.django_db
+def test_definir_itinerario_duplicado_rechazado(client_admin, destino_comercial):
+    r = client_admin.put(f"{BASE_D}{destino_comercial.id}/itinerario/", [
+        {"numero_dia": 1, "titulo": "Día uno"},
+        {"numero_dia": 1, "titulo": "Repetido"},
+    ], format="json")
+    assert r.status_code == 400
+    assert "numero_dia" in r.json()
+
+
+@pytest.mark.django_db
+def test_definir_itinerario_sin_titulo_rechazado(client_admin, destino_comercial):
+    r = client_admin.put(f"{BASE_D}{destino_comercial.id}/itinerario/", [
+        {"numero_dia": 1, "titulo": "   "},
+    ], format="json")
+    assert r.status_code == 400
+    assert "titulo" in r.content.decode()
+
+
+@pytest.mark.django_db
+def test_cliente_no_puede_definir_itinerario(client_cliente, destino_comercial):
+    r = client_cliente.put(f"{BASE_D}{destino_comercial.id}/itinerario/", [
+        {"numero_dia": 1, "titulo": "Intruso"},
+    ], format="json")
+    assert r.status_code == 403

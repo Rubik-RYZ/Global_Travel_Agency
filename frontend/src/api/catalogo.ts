@@ -68,8 +68,12 @@ export interface Proveedor {
   nombre: string
   tipo: string
   tipo_display: string
+  pais: string | null
+  ciudad: string | null
+  contacto: string | null
   email: string | null
   telefono: string | null
+  notas: string | null
   activo: boolean
 }
 
@@ -93,6 +97,7 @@ export interface FiltrosDestino {
 export interface FiltrosProveedor {
   q?: string
   tipo?: string
+  pais?: string
   page?: number
 }
 
@@ -100,6 +105,13 @@ export const catalogoApi = {
   // ── Destinos ────────────────────────────────────────────────────────────
   listarDestinos: (filtros: FiltrosDestino = {}) =>
     api.get<Paginado<DestinoResumen>>('/destinos/', { params: filtros }).then((r) => r.data),
+
+  /**
+   * Listado para el panel: el personal recibe el destino completo (con
+   * `activo`, `incluye`, `itinerario`…), a diferencia del resumen público.
+   */
+  listarDestinosAdmin: (filtros: FiltrosDestino = {}) =>
+    api.get<Paginado<Destino>>('/destinos/', { params: filtros }).then((r) => r.data),
 
   listarDestacados: (filtros: FiltrosDestino = {}) =>
     api
@@ -117,6 +129,10 @@ export const catalogoApi = {
 
   toggleActivoDestino: (id: number) =>
     api.post<Destino>(`/destinos/${id}/toggle_activo/`).then((r) => r.data),
+
+  /** Reemplaza el diario de ruta (día a día) del destino. */
+  definirItinerario: (id: number, dias: Omit<ItinerarioDia, 'id'>[]) =>
+    api.put<ItinerarioDia[]>(`/destinos/${id}/itinerario/`, dias).then((r) => r.data),
 
   // ── Proveedores ──────────────────────────────────────────────────────────
   listarProveedores: (filtros: FiltrosProveedor = {}) =>

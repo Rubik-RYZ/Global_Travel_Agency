@@ -118,8 +118,12 @@ CREATE TABLE proveedores (
     id         BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
     nombre     TEXT NOT NULL UNIQUE,
     tipo       TEXT NOT NULL CHECK (tipo IN ('aerolinea','hotel','transporte','operador','otro')),
+    pais       TEXT,
+    ciudad     TEXT,
+    contacto   TEXT,
     email      TEXT,
     telefono   TEXT,
+    notas      TEXT,
     activo     BOOLEAN NOT NULL DEFAULT TRUE
 );
 

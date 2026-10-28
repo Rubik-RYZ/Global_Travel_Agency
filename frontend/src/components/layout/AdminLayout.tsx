@@ -64,14 +64,13 @@ const MODULOS: Modulo[] = [
     titulo: 'Destinos',
     descripcion: 'Catálogo de destinos y paquetes turísticos',
     icono: <IconoUbicacion className="h-4 w-4" />,
-    proximo: true,
   },
   {
     a: '/admin/proveedores',
     titulo: 'Proveedores',
     descripcion: 'Aerolíneas, hoteles y operadores asociados',
     icono: <IconoMaletin className="h-4 w-4" />,
-    proximo: true,
+    soloAdmin: true,
   },
 ]
 

@@ -12,6 +12,7 @@ from apps.catalogo.serializers import (
     AeropuertoSerializer,
     DestinoResumenSerializer,
     DestinoSerializer,
+    ItinerarioDiaSerializer,
     ProveedorSerializer,
 )
 
@@ -81,6 +82,18 @@ class DestinoViewSet(viewsets.ModelViewSet):
             return Response(exc.message_dict, status=status.HTTP_404_NOT_FOUND)
         return Response(DestinoSerializer(destino).data)
 
+    @action(detail=True, methods=["put"], url_path="itinerario")
+    def itinerario(self, request, pk=None):
+        """Reemplaza el diario de ruta (día a día) de un destino."""
+        self.get_object()  # 404 si el destino no existe
+        ser = ItinerarioDiaSerializer(data=request.data, many=True)
+        ser.is_valid(raise_exception=True)
+        try:
+            dias = services.definir_itinerario(int(pk), ser.validated_data)
+        except DjangoValidationError as exc:
+            return Response(exc.message_dict, status=status.HTTP_400_BAD_REQUEST)
+        return Response(ItinerarioDiaSerializer(dias, many=True).data)
+
 
 class AeropuertoViewSet(viewsets.ReadOnlyModelViewSet):
     """Listado de aeropuertos (solo lectura, público)."""
@@ -110,6 +123,7 @@ class ProveedorViewSet(viewsets.ModelViewSet):
         params = self.request.query_params
         return services.listar_proveedores(
             tipo=params.get("tipo"),
+            pais=params.get("pais"),
             q=params.get("q"),
         )
 

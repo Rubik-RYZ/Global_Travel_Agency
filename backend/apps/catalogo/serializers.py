@@ -106,7 +106,8 @@ class ProveedorSerializer(serializers.ModelSerializer):
         model = Proveedor
         fields = [
             "id", "nombre", "tipo", "tipo_display",
-            "email", "telefono", "activo",
+            "pais", "ciudad", "contacto",
+            "email", "telefono", "notas", "activo",
         ]
         read_only_fields = ["id", "tipo_display"]
 

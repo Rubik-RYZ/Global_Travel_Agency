@@ -321,13 +321,48 @@ DESTINOS_INICIALES = [
 ]
 
 PROVEEDORES_INICIALES = [
-    {"nombre": "Andes Air Bolivia", "tipo": "aerolinea", "email": "operaciones@andesair.bo"},
-    {"nombre": "LATAM Airlines", "tipo": "aerolinea", "email": "cargo@latam.com"},
-    {"nombre": "Inkaterra Eco-Lodge", "tipo": "hotel", "email": "reservas@inkaterra.pe"},
-    {"nombre": "Palacio del Inca Luxury Collection", "tipo": "hotel", "email": "concierge@palaciodelinca.pe"},
-    {"nombre": "Transportes Altiplano S.R.L.", "tipo": "transporte", "email": "flota@altiplano.bo"},
-    {"nombre": "Explora Expediciones", "tipo": "operador", "email": "guias@explora.bo"},
-    {"nombre": "Condor Trek Peru", "tipo": "operador", "email": "info@condortrek.pe"},
+    {
+        "nombre": "Andes Air Bolivia", "tipo": "aerolinea",
+        "pais": "Bolivia", "ciudad": "La Paz", "contacto": "Operaciones",
+        "email": "operaciones@andesair.bo",
+        "notas": "Conexiones nacionales desde el aeropuerto de El Alto (LPB).",
+    },
+    {
+        "nombre": "LATAM Airlines", "tipo": "aerolinea",
+        "pais": "Chile", "ciudad": "Santiago", "contacto": "Carga internacional",
+        "email": "cargo@latam.com",
+        "notas": "Rutas internacionales hacia Sudamérica y conexión con Europa.",
+    },
+    {
+        "nombre": "Inkaterra Eco-Lodge", "tipo": "hotel",
+        "pais": "Perú", "ciudad": "Machu Picchu", "contacto": "Reservas",
+        "email": "reservas@inkaterra.pe",
+        "notas": "Hospedaje dentro del Santuario Histórico de Machu Picchu.",
+    },
+    {
+        "nombre": "Palacio del Inca Luxury Collection", "tipo": "hotel",
+        "pais": "Perú", "ciudad": "Cusco", "contacto": "Concierge",
+        "email": "concierge@palaciodelinca.pe",
+        "notas": "Casona patrimonial frente a la Plaza de Armas del Cusco.",
+    },
+    {
+        "nombre": "Transportes Altiplano S.R.L.", "tipo": "transporte",
+        "pais": "Bolivia", "ciudad": "El Alto", "contacto": "Flota",
+        "email": "flota@altiplano.bo",
+        "notas": "Traslados terrestres privados en el altiplano boliviano.",
+    },
+    {
+        "nombre": "Explora Expediciones", "tipo": "operador",
+        "pais": "Bolivia", "ciudad": "La Paz", "contacto": "Guías",
+        "email": "guias@explora.bo",
+        "notas": "Operador de trekking y expediciones de altura.",
+    },
+    {
+        "nombre": "Condor Trek Peru", "tipo": "operador",
+        "pais": "Perú", "ciudad": "Cusco", "contacto": "Informes",
+        "email": "info@condortrek.pe",
+        "notas": "Operador de rutas de trekking en los Andes peruanos.",
+    },
 ]
 
 
@@ -427,7 +462,7 @@ class Command(BaseCommand):
     def _seed_proveedores(self):
         creados = 0
         for data in PROVEEDORES_INICIALES:
-            _, nuevo = Proveedor.objects.get_or_create(
+            _, nuevo = Proveedor.objects.update_or_create(
                 nombre=data["nombre"],
                 defaults={k: v for k, v in data.items() if k != "nombre"},
             )

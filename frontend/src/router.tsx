@@ -8,9 +8,12 @@ import { RutaAdmin, RutaCliente, RutaPanel } from '@/components/layout/RutaProte
 import { ForbiddenView } from '@/views/ForbiddenView'
 import { NotFoundView } from '@/views/NotFoundView'
 import { AuditoriaView } from '@/views/admin/AuditoriaView'
+import { AtlasDestinosView } from '@/views/admin/AtlasDestinosView'
 import { ClientesAdminView } from '@/views/admin/ClientesAdminView'
 import { DashboardView } from '@/views/admin/DashboardView'
+import { EditorDestinoView } from '@/views/admin/EditorDestinoView'
 import { FichaClienteAdminView } from '@/views/admin/FichaClienteAdminView'
+import { ProveedoresAdminView } from '@/views/admin/ProveedoresAdminView'
 import { RolesView } from '@/views/admin/RolesView'
 import { LoginView } from '@/views/auth/LoginView'
 import { RecuperarPasswordView } from '@/views/auth/RecuperarPasswordView'
@@ -81,6 +84,14 @@ export const router = createBrowserRouter([
           },
           { path: '/admin/clientes', element: <ClientesAdminView /> },
           { path: '/admin/clientes/:id', element: <FichaClienteAdminView /> },
+          { path: '/admin/destinos', element: <AtlasDestinosView /> },
+          { path: '/admin/destinos/nuevo', element: <EditorDestinoView /> },
+          { path: '/admin/destinos/:id/editar', element: <EditorDestinoView /> },
+          {
+            path: '/admin/proveedores',
+            element: <RutaAdmin />,
+            children: [{ index: true, element: <ProveedoresAdminView /> }],
+          },
         ],
       },
     ],

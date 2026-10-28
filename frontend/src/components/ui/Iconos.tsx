@@ -31,6 +31,7 @@ import {
   MapIcon,
   MapPinIcon,
   PencilSquareIcon,
+  PauseCircleIcon,
   PhoneIcon,
   PlayIcon,
   PlusIcon,
@@ -203,4 +204,7 @@ export function IconoGrupo({ className = 'h-4 w-4', ...props }: Props) {
 }
 export function IconoPlay({ className = 'h-4 w-4', ...props }: Props) {
   return <PlayIcon className={className} {...props} />
+}
+export function IconoPausa({ className = 'h-4 w-4', ...props }: Props) {
+  return <PauseCircleIcon className={className} {...props} />
 }
