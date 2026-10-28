@@ -6,7 +6,11 @@ roles y bitácora; el agente comparte la operación del panel.
 """
 from rest_framework.permissions import SAFE_METHODS, BasePermission
 
-from apps.usuarios.constants import NOMBRE_ADMINISTRADOR, NOMBRE_AGENTE
+from apps.usuarios.constants import (
+    NOMBRE_ADMINISTRADOR,
+    NOMBRE_AGENTE,
+    NOMBRE_CLIENTE,
+)
 
 
 def rol_de(usuario) -> str | None:
@@ -44,3 +48,12 @@ class EsAdministradorOLectura(BasePermission):
         if request.method in SAFE_METHODS:
             return rol in (NOMBRE_ADMINISTRADOR, NOMBRE_AGENTE)
         return rol == NOMBRE_ADMINISTRADOR
+
+
+class EsCliente(BasePermission):
+    """Solo el rol `cliente` (área privada «Mi viaje»)."""
+
+    message = "Esta sección pertenece al área del viajero."
+
+    def has_permission(self, request, view):
+        return rol_de(request.user) == NOMBRE_CLIENTE

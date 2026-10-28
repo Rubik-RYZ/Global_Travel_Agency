@@ -308,7 +308,7 @@ CREATE TABLE notificaciones (
     reserva_id          BIGINT REFERENCES reservas(id),
     tipo                TEXT NOT NULL CHECK (tipo IN ('confirmacion_reserva','comprobante_pago','itinerario')),
     estado              TEXT NOT NULL DEFAULT 'pendiente' CHECK (estado IN ('pendiente','enviada','fallida')),
-    sendgrid_message_id TEXT,
+    resend_message_id    TEXT,
     creado_en           TIMESTAMPTZ NOT NULL DEFAULT now()
 );
 
@@ -369,7 +369,7 @@ ORDER BY reservas DESC;
 -- 9. DATOS INICIALES
 -- ---------------------------------------------------------------------
 INSERT INTO roles (id, nombre) VALUES
-    (1, 'administrador'), (2, 'personal'), (3, 'cliente');
+    (1, 'administrador'), (2, 'agente'), (3, 'cliente');
 
 INSERT INTO intenciones (nombre, descripcion) VALUES
     ('saludo',                   'El usuario saluda'),

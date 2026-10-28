@@ -8,9 +8,12 @@ from rest_framework.routers import DefaultRouter
 
 from apps.usuarios.views import (
     AuditoriaViewSet,
+    ClienteViewSet,
     LoginView,
     LogoutView,
     MeView,
+    MiPerfilView,
+    MisPreferenciasView,
     RecuperarView,
     RefreshView,
     RegistroView,
@@ -23,6 +26,7 @@ router = DefaultRouter()
 router.register("roles", RolViewSet, basename="rol")
 router.register("usuarios", UsuarioViewSet, basename="usuario")
 router.register("auditoria", AuditoriaViewSet, basename="auditoria")
+router.register("clientes", ClienteViewSet, basename="cliente")
 
 urlpatterns = [
     path("auth/login", LoginView.as_view(), name="auth-login"),
@@ -32,5 +36,7 @@ urlpatterns = [
     path("auth/registro", RegistroView.as_view(), name="auth-registro"),
     path("auth/recuperar", RecuperarView.as_view(), name="auth-recuperar"),
     path("auth/restablecer", RestablecerView.as_view(), name="auth-restablecer"),
+    path("me/perfil", MiPerfilView.as_view(), name="me-perfil"),
+    path("me/preferencias", MisPreferenciasView.as_view(), name="me-preferencias"),
     *router.urls,
 ]
