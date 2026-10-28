@@ -64,17 +64,49 @@ CREATE TABLE cliente_preferencias (
 -- 3. CATÁLOGO TURÍSTICO
 -- ---------------------------------------------------------------------
 CREATE TABLE destinos (
-    id           BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
-    nombre       TEXT NOT NULL,
-    pais         TEXT NOT NULL,
-    descripcion  TEXT,
-    latitud      NUMERIC(9,6) CHECK (latitud BETWEEN -90 AND 90),     -- Leaflet
-    longitud     NUMERIC(9,6) CHECK (longitud BETWEEN -180 AND 180),
-    etiquetas    TEXT[] NOT NULL DEFAULT '{}',   -- mismas etiquetas que 'intereses'
-    activo       BOOLEAN NOT NULL DEFAULT TRUE,
+    id                BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    nombre            TEXT NOT NULL,
+    pais              TEXT NOT NULL,
+    pais_codigo       CHAR(2) CHECK (pais_codigo ~ '^[A-Z]{2}$'),  -- ISO 3166-1 alfa-2
+    slug              VARCHAR(140) UNIQUE,            -- URL amigable (/destinos/machu-picchu-peru)
+    region            TEXT CHECK (region IN ('america_del_sur','america_del_norte',
+                                             'europa','asia','africa','oceania')),
+    resumen           TEXT,                           -- sinopsis corta para tarjetas
+    lema              TEXT,                           -- titular editorial de la ficha
+    descripcion       TEXT,
+    latitud           NUMERIC(9,6) CHECK (latitud BETWEEN -90 AND 90),     -- Leaflet
+    longitud          NUMERIC(9,6) CHECK (longitud BETWEEN -180 AND 180),
+    duracion_dias     SMALLINT CHECK (duracion_dias > 0),
+    duracion_noches   SMALLINT CHECK (duracion_noches >= 0),
+    precio_desde      NUMERIC(10,2) CHECK (precio_desde >= 0),  -- "desde" por persona
+    moneda            CHAR(3) NOT NULL DEFAULT 'USD' CHECK (moneda IN ('BOB','USD','EUR')),
+    mejor_epoca       TEXT,                           -- ventana de viaje sugerida
+    caracter          TEXT CHECK (caracter IN ('arqueologico','cultural','naturaleza',
+                                              'aventura','gastronomico','descanso')),
+    imagen_principal  TEXT,                           -- URL (Cloudinary en producción)
+    incluye           TEXT[] NOT NULL DEFAULT '{}',
+    no_incluye        TEXT[] NOT NULL DEFAULT '{}',
+    etiquetas         TEXT[] NOT NULL DEFAULT '{}',   -- mismas etiquetas que 'intereses'
+    destacado         BOOLEAN NOT NULL DEFAULT FALSE, -- aparece en portada y mega-menú
+    activo            BOOLEAN NOT NULL DEFAULT TRUE,
     UNIQUE (nombre, pais)
 );
 CREATE INDEX ix_destinos_etiquetas ON destinos USING GIN (etiquetas);
+CREATE INDEX ix_destinos_region ON destinos (region);
+CREATE INDEX ix_destinos_caracter ON destinos (caracter);
+CREATE INDEX ix_destinos_destacado ON destinos (destacado);
+
+-- Diario de ruta: un registro por día del itinerario de cada destino.
+CREATE TABLE itinerario_dias (
+    id           BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    destino_id   BIGINT NOT NULL REFERENCES destinos(id) ON DELETE CASCADE,
+    numero_dia   SMALLINT NOT NULL CHECK (numero_dia > 0),
+    titulo       TEXT NOT NULL,
+    descripcion  TEXT,
+    ubicacion    TEXT,                                -- lugar donde transcurre el día
+    UNIQUE (destino_id, numero_dia)
+);
+CREATE INDEX ix_itinerario_dias_destino ON itinerario_dias (destino_id, numero_dia);
 
 CREATE TABLE aeropuertos (
     codigo_iata  CHAR(3) PRIMARY KEY,            -- mismo código que usa Amadeus

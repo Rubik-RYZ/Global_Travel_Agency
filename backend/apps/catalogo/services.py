@@ -5,7 +5,16 @@ from django.core.exceptions import ValidationError
 from django.db import transaction
 from django.db.models import Q
 
-from apps.catalogo.models import Destino, Proveedor
+from apps.catalogo.models import Destino, ItinerarioDia, Proveedor
+
+# Campos comerciales editables de un destino (los del serializer de escritura).
+CAMPOS_DESTINO = {
+    "nombre", "pais", "pais_codigo", "region", "resumen", "descripcion",
+    "latitud", "longitud", "duracion_dias", "duracion_noches",
+    "precio_desde", "moneda", "mejor_epoca", "caracter",
+    "imagen_principal", "incluye", "no_incluye", "etiquetas",
+    "destacado", "activo",
+}
 
 
 # ── Destinos ────────────────────────────────────────────────────────────────
@@ -14,7 +23,10 @@ def listar_destinos(
     *,
     solo_activos: bool = True,
     pais: str | None = None,
+    region: str | None = None,
+    caracter: str | None = None,
     etiqueta: str | None = None,
+    solo_destacados: bool = False,
     q: str | None = None,
 ) -> "QuerySet[Destino]":
     """Devuelve destinos filtrados. Público: solo_activos=True."""
@@ -23,11 +35,22 @@ def listar_destinos(
         qs = qs.filter(activo=True)
     if pais:
         qs = qs.filter(pais__iexact=pais)
+    if region:
+        qs = qs.filter(region=region)
+    if caracter:
+        qs = qs.filter(caracter=caracter)
+    if solo_destacados:
+        qs = qs.filter(destacado=True)
     if etiqueta:
         qs = qs.filter(etiquetas__contains=[etiqueta])
     if q:
-        qs = qs.filter(Q(nombre__icontains=q) | Q(pais__icontains=q) | Q(descripcion__icontains=q))
-    return qs.order_by("pais", "nombre")
+        qs = qs.filter(
+            Q(nombre__icontains=q)
+            | Q(pais__icontains=q)
+            | Q(resumen__icontains=q)
+            | Q(descripcion__icontains=q)
+        )
+    return qs.order_by("-destacado", "pais", "nombre")
 
 
 def obtener_destino(destino_id: int) -> Destino:
@@ -38,33 +61,28 @@ def obtener_destino(destino_id: int) -> Destino:
 
 
 @transaction.atomic
-def crear_destino(*, nombre: str, pais: str, descripcion: str | None = None,
-                  latitud=None, longitud=None, etiquetas: list[str] | None = None) -> Destino:
+def crear_destino(*, nombre: str, pais: str, **campos) -> Destino:
     if Destino.objects.filter(nombre=nombre, pais=pais).exists():
         raise ValidationError({"nombre": "Ya existe un destino con ese nombre en ese país."})
-    destino = Destino.objects.create(
-        nombre=nombre,
-        pais=pais,
-        descripcion=descripcion,
-        latitud=latitud,
-        longitud=longitud,
-        etiquetas=etiquetas or [],
-    )
+    datos = {k: v for k, v in campos.items() if k in CAMPOS_DESTINO}
+    destino = Destino(nombre=nombre, pais=pais, **datos)
+    destino.full_clean(exclude=["slug"])
+    destino.save()
     return destino
 
 
 @transaction.atomic
 def actualizar_destino(destino_id: int, **kwargs) -> Destino:
     destino = obtener_destino(destino_id)
-    campos_permitidos = {"nombre", "pais", "descripcion", "latitud", "longitud", "etiquetas", "activo"}
     for campo, valor in kwargs.items():
-        if campo in campos_permitidos:
+        if campo in CAMPOS_DESTINO:
             setattr(destino, campo, valor)
     # Verificar unicidad si cambia nombre o país
     nombre = kwargs.get("nombre", destino.nombre)
     pais = kwargs.get("pais", destino.pais)
     if Destino.objects.filter(nombre=nombre, pais=pais).exclude(pk=destino_id).exists():
         raise ValidationError({"nombre": "Ya existe un destino con ese nombre en ese país."})
+    destino.full_clean(exclude=["slug"])
     destino.save()
     return destino
 
@@ -75,6 +93,24 @@ def toggle_activo_destino(destino_id: int) -> Destino:
     destino.activo = not destino.activo
     destino.save(update_fields=["activo"])
     return destino
+
+
+@transaction.atomic
+def definir_itinerario(destino_id: int, dias: list[dict]) -> list[ItinerarioDia]:
+    """Reemplaza el itinerario día a día de un destino."""
+    destino = obtener_destino(destino_id)
+    destino.itinerario.all().delete()
+    creados = [
+        ItinerarioDia.objects.create(
+            destino=destino,
+            numero_dia=d["numero_dia"],
+            titulo=d["titulo"],
+            descripcion=d.get("descripcion"),
+            ubicacion=d.get("ubicacion"),
+        )
+        for d in dias
+    ]
+    return creados
 
 
 # ── Proveedores ─────────────────────────────────────────────────────────────

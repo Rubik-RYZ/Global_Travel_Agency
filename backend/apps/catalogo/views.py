@@ -37,7 +37,10 @@ class DestinoViewSet(viewsets.ModelViewSet):
         return services.listar_destinos(
             solo_activos=not es_staff,
             pais=params.get("pais"),
+            region=params.get("region"),
+            caracter=params.get("caracter"),
             etiqueta=params.get("etiqueta"),
+            solo_destacados=params.get("destacado") in ("1", "true", "True"),
             q=params.get("q"),
         )
 

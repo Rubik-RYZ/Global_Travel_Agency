@@ -2,7 +2,7 @@
 import pytest
 from rest_framework.test import APIClient
 
-from apps.catalogo.models import Destino, Proveedor
+from apps.catalogo.models import Destino, ItinerarioDia, Proveedor
 from apps.usuarios.constants import ROL_ADMINISTRADOR, ROL_CLIENTE
 from apps.usuarios.models import Rol, Usuario
 
@@ -274,3 +274,122 @@ def test_filtro_tipo_proveedor(client_admin, proveedor):
     r = client_admin.get(f"{BASE_P}?tipo=aerolinea")
     assert r.status_code == 200
     assert all(p["tipo"] == "aerolinea" for p in r.json()["results"])
+
+
+# ── Destinos: ficha comercial e itinerario ────────────────────────────────────
+
+@pytest.fixture
+def destino_comercial(db):
+    destino = Destino.objects.create(
+        nombre="Kioto y Takayama",
+        pais="Japon",
+        pais_codigo="jp",
+        region="asia",
+        resumen="Jardines de musgo y ryokans históricos.",
+        caracter="cultural",
+        duracion_dias=12,
+        duracion_noches=11,
+        precio_desde="6200.00",
+        moneda="eur",
+        mejor_epoca="Marzo a mayo (Sakura)",
+        imagen_principal="/assets/destino-1.jpg",
+        incluye=["Ryokan con onsen"],
+        no_incluye=["Vuelos"],
+        destacado=True,
+        etiquetas=["cultural", "historia"],
+    )
+    ItinerarioDia.objects.create(
+        destino=destino, numero_dia=1, titulo="Llegada a Tokio", ubicacion="Tokio"
+    )
+    ItinerarioDia.objects.create(
+        destino=destino, numero_dia=2, titulo="Shinkansen a Kioto", ubicacion="Kioto"
+    )
+    return destino
+
+
+@pytest.mark.django_db
+def test_slug_y_codigos_normalizados(destino_comercial):
+    assert destino_comercial.slug == "kioto-y-takayama-japon"
+    assert destino_comercial.pais_codigo == "JP"
+    assert destino_comercial.moneda == "EUR"
+
+
+@pytest.mark.django_db
+def test_resumen_listado_expone_campos_comerciales(client_anon, destino_comercial):
+    r = client_anon.get(BASE_D)
+    assert r.status_code == 200
+    fila = next(d for d in r.json()["results"] if d["nombre"] == "Kioto y Takayama")
+    assert fila["region_display"] == "Asia"
+    assert fila["caracter_display"] == "Cultural y patrimonial"
+    assert fila["duracion_dias"] == 12
+    assert fila["precio_desde"] == "6200.00"
+    assert fila["imagen_principal"] == "/assets/destino-1.jpg"
+    assert fila["destacado"] is True
+
+
+@pytest.mark.django_db
+def test_detalle_incluye_itinerario_ordenado(client_anon, destino_comercial):
+    r = client_anon.get(f"{BASE_D}{destino_comercial.id}/")
+    assert r.status_code == 200
+    data = r.json()
+    assert [d["numero_dia"] for d in data["itinerario"]] == [1, 2]
+    assert data["incluye"] == ["Ryokan con onsen"]
+    assert data["region_display"] == "Asia"
+
+
+@pytest.mark.django_db
+def test_filtro_region_y_caracter(client_anon, destino_comercial, destino):
+    por_region = client_anon.get(f"{BASE_D}?region=asia")
+    assert por_region.json()["count"] == 1
+    por_caracter = client_anon.get(f"{BASE_D}?caracter=cultural")
+    assert por_caracter.json()["count"] == 1
+    assert por_caracter.json()["results"][0]["nombre"] == "Kioto y Takayama"
+
+
+@pytest.mark.django_db
+def test_filtro_destacado(client_anon, destino_comercial, destino):
+    r = client_anon.get(f"{BASE_D}?destacado=true")
+    assert r.status_code == 200
+    nombres = [d["nombre"] for d in r.json()["results"]]
+    assert nombres == ["Kioto y Takayama"]
+
+
+@pytest.mark.django_db
+def test_moneda_invalida_rechazada(client_admin):
+    r = client_admin.post(BASE_D, {
+        "nombre": "Ruta Rara",
+        "pais": "Chile",
+        "moneda": "XYZ",
+    }, format="json")
+    assert r.status_code == 400
+    assert "moneda" in r.json()["detail"]
+
+
+@pytest.mark.django_db
+def test_crear_destino_con_atributos_comerciales(client_admin):
+    r = client_admin.post(BASE_D, {
+        "nombre": "Fiordos Noruegos",
+        "pais": "Noruega",
+        "pais_codigo": "no",
+        "region": "europa",
+        "caracter": "naturaleza",
+        "duracion_dias": 7,
+        "precio_desde": "2400.00",
+        "moneda": "eur",
+        "destacado": True,
+    }, format="json")
+    assert r.status_code == 201, r.json()
+    data = r.json()
+    assert data["slug"] == "fiordos-noruegos-noruega"
+    assert data["region_display"] == "Europa"
+    assert data["moneda"] == "EUR"
+
+
+@pytest.mark.django_db
+def test_precio_negativo_rechazado(client_admin):
+    r = client_admin.post(BASE_D, {
+        "nombre": "Ruta Imposible",
+        "pais": "Narnia",
+        "precio_desde": "-10.00",
+    }, format="json")
+    assert r.status_code == 400
