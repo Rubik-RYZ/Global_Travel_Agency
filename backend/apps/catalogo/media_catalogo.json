@@ -1,4 +1,11 @@
 {
+  "/assets/proveedor-1.jpg": {
+    "url": "https://res.cloudinary.com/amlvj9sf/image/upload/v1793231045/illimani/proveedores/proveedor-1_fkh4hp.jpg",
+    "public_id": "illimani/proveedores/proveedor-1_fkh4hp",
+    "bytes": 72604,
+    "ancho": 512,
+    "alto": 279
+  },
   "/assets/destino-1.jpg": {
     "url": "https://res.cloudinary.com/amlvj9sf/image/upload/v1793224421/illimani/destinos/jmydhrmoaihnztfqnvrz.jpg",
     "public_id": "illimani/destinos/jmydhrmoaihnztfqnvrz",

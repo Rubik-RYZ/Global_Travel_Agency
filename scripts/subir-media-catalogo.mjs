@@ -21,8 +21,23 @@ const SEED = join(RAIZ, 'backend', 'apps', 'usuarios', 'management', 'commands',
 const SALIDA = join(RAIZ, 'backend', 'apps', 'catalogo', 'media_catalogo.json')
 const ORIGEN = join(RAIZ, 'frontend', 'public')
 
-/** Carpeta destino dentro del almacén (debe coincidir con apps/almacen/constants.py). */
+/** Carpeta por defecto dentro del almacén (debe coincidir con apps/almacen/constants.py). */
 const CARPETA = 'illimani/destinos'
+
+/**
+ * Carpetas por familia de archivo: la Media Library queda ordenada por dominio
+ * (una lámina de proveedor no debe caer en la carpeta de destinos).
+ */
+const CARPETAS_POR_PREFIJO = [
+  { prefijo: 'proveedor-', carpeta: 'illimani/proveedores' },
+  { prefijo: 'destino-', carpeta: 'illimani/destinos' },
+]
+
+function carpetaDe(archivo) {
+  const nombre = archivo.split('/').pop() ?? ''
+  const encontrada = CARPETAS_POR_PREFIJO.find((c) => nombre.startsWith(c.prefijo))
+  return encontrada ? encontrada.carpeta : CARPETA
+}
 
 const TIPOS = {
   '.jpg': 'image/jpeg',
@@ -85,7 +100,8 @@ async function subirUna({ archivo, cloudName, apiKey, apiSecret }) {
 
   const bytes = readFileSync(ruta)
   const timestamp = Math.floor(Date.now() / 1000)
-  const params = { folder: CARPETA, timestamp }
+  const folder = carpetaDe(archivo)
+  const params = { folder, timestamp }
   const form = new FormData()
   form.append('file', new Blob([bytes], { type: tipo }), archivo.split('/').pop())
   form.append('api_key', apiKey)
@@ -126,7 +142,7 @@ if (!cloudName || !apiKey || !apiSecret) {
 }
 
 const laminas = laminasDelSeed()
-console.log(`Almacén: ${cloudName} · carpeta ${CARPETA}`)
+console.log(`Almacén: ${cloudName} · carpeta por defecto ${CARPETA}`)
 console.log(`Láminas detectadas en el seed: ${laminas.length}\n`)
 
 const catalogo = {}

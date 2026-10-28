@@ -298,27 +298,28 @@ Antes de implementar los siguientes puntos, proponer opciones al equipo:
 ## Estado del Sprint 2 (CU1–CU3, Brayan) — al 28 oct 2026
 
 ### Completado ✅
-- **Backend CU1+CU2**: modelos, serializers, services, ViewSets, tests (45 green). Commit `8316c8a`.
+- **Backend CU1+CU2**: modelos, serializers, services, ViewSets, tests. Commit `8316c8a`.
 - **Auth redesign**: Login, Registro, Recuperar, SesionExpirada, 403, 404 — diseño editorial aprobado. Commit `9adba25`.
 - **Shell cliente** (`AppLayout.tsx`): Navbar + subnav slim + `PerfilMenu` animado (framer-motion).
 - **Shell admin** (`AdminLayout.tsx`): top bar + `SelectorModulos` dropdown framer-motion + breadcrumb + `PerfilMenu`.
 - **CU2 cliente** (#10 `/mi-cuenta`, #11 `/mi-cuenta/preferencias`): diseño cuaderno editorial validado.
 - **CU2 admin** (#12 `/admin/clientes`, #13 `/admin/clientes/:id`): dossier cards + ficha con hero oscuro.
 - **CU1 admin** (#7 `/admin`, #8 `/admin/roles`, #9 `/admin/auditoria`): hero con RosaVientos + métricas, cards custodios, folios bitácora.
+- **CU3 backend**: API de catálogo — destinos (con ficha comercial e itinerario), aeropuertos y proveedores. Commit `0032ce6`.
+- **CU3 frontend**: landing (#14), explorador y ficha de destino (CU3), atlas de destinos y libreta de proveedores (#15–#20). Commits `ca154b3`, `5ccf9d2`.
+- **Fase 3b** (acordada dentro del sprint): `apps.almacen` (subida/borrado a Cloudinary con degradación limpia) y `apps.notificaciones` (correo transaccional con Resend, plantillas de la casa). Commit `f39025f`.
 - `RutaProtegida.tsx`: fix StrictMode double-effect con `useRef(intentado)`.
 - `Iconos.tsx`: migración completa a heroicons; añadidos `IconoModulos`, `IconoMenu`.
 - `roles.ts`: añadida `etiquetaRol()`.
-- TypeScript: 0 errores (verificado en contenedor).
+- **117 tests** de backend en verde; `tsc --noEmit` y `vite build` limpios.
 
 ### Pendiente en Sprint 2 ⏳
-- **CU3 frontend**: #14 HomeView (landing), #15–#20 destinos y proveedores (admin+público).
-- Commit CU2 frontend (todas las pantallas + shell + fixes).
-- Eliminar `frontend/public/_seed.html` antes del commit.
+- Nada bloqueante: CU1, CU2, CU3 y Fase 3b quedan cerrados con commit.
+- Verificación manual del correo de Resend por parte del usuario (sin dominio verificado sólo llega a la casilla de la cuenta).
 
 ### Decisiones de diseño fijadas
 - Admin: top bar + framer-motion dropdown, **sin sidebar**.
-- Imágenes diferidas (Cloudinary/fotos): usar `RosaVientos` SVG + diseño editorial como stand-in.
-- No Stripe/Cloudinary/Resend en Sprint 2 — console email backend.
+- Imágenes: Cloudinary (Fase 3b) con `RosaVientos`/monograma como reemplazo cuando el recurso no tiene lámina.
 - Fuentes: Playfair Display (display) + Work Sans (sans) + Caveat (decorativo/handwritten).
 - Paleta: surface `#faf5eb` · primary `#792609` · terracotta `#b85434` · forest `#141d16` · gold `#c6a15b`.
 

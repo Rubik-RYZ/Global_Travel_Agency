@@ -184,13 +184,35 @@ def test_subir_archivo_demasiado_grande(client_admin, settings):
 
 
 @pytest.mark.django_db
-def test_cliente_no_puede_subir(client_cliente, settings):
+def test_cliente_sube_sus_laminas_personales(client_cliente, settings):
+    """El viajero digitaliza su retrato y sus documentos desde «Mi viaje»."""
+    for k, v in CREDENCIALES.items():
+        setattr(settings, k, v)
+    respuesta = dict(RESPUESTA_CLOUDINARY)
+    respuesta["public_id"] = "illimani/clientes/perfiles/ana"
+    with patch(
+        "apps.almacen.services.cloudinary.uploader.upload",
+        return_value=respuesta,
+    ) as simulado:
+        r = client_cliente.post(
+            f"{BASE}/subir/",
+            {"archivo": imagen(), "carpeta": "perfiles"},
+            format="multipart",
+        )
+    assert r.status_code == 201, r.json()
+    assert r.json()["carpeta_clave"] == "perfiles"
+    assert simulado.call_args.kwargs["folder"] == "illimani/clientes/perfiles"
+
+
+@pytest.mark.django_db
+def test_cliente_no_sube_a_carpetas_del_panel(client_cliente, settings):
     for k, v in CREDENCIALES.items():
         setattr(settings, k, v)
     r = client_cliente.post(
         f"{BASE}/subir/", {"archivo": imagen(), "carpeta": "destinos"}, format="multipart"
     )
-    assert r.status_code == 403
+    assert r.status_code == 400
+    assert "carpeta" in r.json()
 
 
 @pytest.mark.django_db
@@ -266,10 +288,40 @@ def test_agente_puede_reemplazar_su_lamina(agente, settings):
 
 
 @pytest.mark.django_db
-def test_cliente_no_puede_eliminar(client_cliente, settings):
+def test_cliente_no_retira_laminas_ajenas(client_cliente, settings):
+    """El viajero sólo puede retirar láminas de sus carpetas personales."""
     for k, v in CREDENCIALES.items():
         setattr(settings, k, v)
     r = client_cliente.post(
         f"{BASE}/eliminar/", {"public_id": "illimani/destinos/vieja"}, format="json"
     )
-    assert r.status_code == 403
+    assert r.status_code == 400
+    assert "public_id" in r.json()
+
+
+@pytest.mark.django_db
+def test_cliente_retira_su_propia_lamina(client_cliente, settings):
+    """Al reemplazar su retrato, el viajero no deja huérfanos en el almacén."""
+    for k, v in CREDENCIALES.items():
+        setattr(settings, k, v)
+    with patch("apps.almacen.services.cloudinary.uploader.destroy") as simulado:
+        r = client_cliente.post(
+            f"{BASE}/eliminar/",
+            {"public_id": "illimani/clientes/perfiles/ana-vieja"},
+            format="json",
+        )
+    assert r.status_code == 200
+    assert r.json()["borrado"] is True
+    simulado.assert_called_once()
+
+
+@pytest.mark.django_db
+def test_anon_no_puede_eliminar(settings):
+    for k, v in CREDENCIALES.items():
+        setattr(settings, k, v)
+    r = APIClient().post(
+        f"{BASE}/eliminar/",
+        {"public_id": "illimani/clientes/perfiles/ana"},
+        format="json",
+    )
+    assert r.status_code in (401, 403)

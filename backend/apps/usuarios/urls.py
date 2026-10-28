@@ -12,6 +12,7 @@ from apps.usuarios.views import (
     LoginView,
     LogoutView,
     MeView,
+    MiFotoView,
     MiPerfilView,
     MisPreferenciasView,
     RecuperarView,
@@ -37,6 +38,7 @@ urlpatterns = [
     path("auth/recuperar", RecuperarView.as_view(), name="auth-recuperar"),
     path("auth/restablecer", RestablecerView.as_view(), name="auth-restablecer"),
     path("me/perfil", MiPerfilView.as_view(), name="me-perfil"),
+    path("me/foto", MiFotoView.as_view(), name="me-foto"),
     path("me/preferencias", MisPreferenciasView.as_view(), name="me-preferencias"),
     *router.urls,
 ]

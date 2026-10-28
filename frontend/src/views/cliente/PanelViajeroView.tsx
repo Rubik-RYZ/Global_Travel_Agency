@@ -12,13 +12,16 @@ import {
   IconoFlechaDerecha,
   IconoEtiqueta,
   IconoLapiz,
+  IconoPasaporte,
   IconoTelefono,
   IconoUbicacion,
 } from '@/components/ui/Iconos'
+import { useAuthStore } from '@/store/authStore'
 import type { ClientePreferencia, PerfilViajero } from '@/types/clientes.types'
 import { textoDocumento, textoInteres } from '@/utils/catalogos'
 import { formatearFecha, formatearMoneda } from '@/utils/formatters'
 import { mensajeDeError } from '@/utils/validators'
+import { DocumentosViajeroForm } from '@/views/cliente/components/DocumentosViajeroForm'
 
 /** 10. Mi viaje · Resumen → /mi-cuenta */
 export function PanelViajeroView() {
@@ -73,6 +76,8 @@ export function PanelViajeroView() {
           <NotasCabina preferencias={preferencias} />
         </div>
       </div>
+
+      <CredencialesViajero perfil={perfil} onGuardado={cargar} />
     </div>
   )
 }
@@ -227,6 +232,7 @@ function ProximaExpedicion() {
 /* -------------------------------------------------------------------------- */
 
 function FichaViajero({ perfil }: { perfil: PerfilViajero }) {
+  const foto = useAuthStore((s) => s.usuario?.foto_url)
   return (
     <section className="relative h-full overflow-hidden rounded-lg border border-parchment-border bg-surface-container-lowest p-6 shadow-paper sm:p-8">
       <div aria-hidden className="pointer-events-none absolute -right-10 -top-10 opacity-[0.05]">
@@ -251,7 +257,7 @@ function FichaViajero({ perfil }: { perfil: PerfilViajero }) {
       </div>
 
       <div className="relative mt-6 flex flex-wrap items-center gap-x-4 gap-y-3 border-y border-parchment-border/70 py-5">
-        <Monograma nombre={perfil.nombre_completo} tamano="md" />
+        <Monograma nombre={perfil.nombre_completo} tamano="md" foto={foto} />
         <div className="min-w-0 flex-1">
           <p className="font-display text-xl leading-tight text-on-surface">
             {perfil.nombre_completo}
@@ -375,6 +381,47 @@ function NotasCabina({ preferencias }: { preferencias: ClientePreferencia }) {
           Modificar mis preferencias
           <IconoFlechaDerecha className="h-3.5 w-3.5" />
         </Link>
+      </div>
+    </section>
+  )
+}
+
+/* -------------------------------------------------------------------------- */
+/* 4. Credenciales de viaje (retrato + documentos digitalizados)              */
+/* -------------------------------------------------------------------------- */
+
+function CredencialesViajero({
+  perfil,
+  onGuardado,
+}: {
+  perfil: PerfilViajero
+  onGuardado: () => void
+}) {
+  return (
+    <section className="mt-10">
+      <div className="flex items-center gap-3">
+        <span className="regla-terracota" />
+        <p className="etiqueta-seccion">Credenciales de viaje</p>
+        <span aria-hidden className="h-px flex-1 bg-parchment-border" />
+      </div>
+
+      <div className="mt-4 overflow-hidden rounded-lg border border-parchment-border bg-surface-container-lowest shadow-paper">
+        <header className="flex items-start gap-3 border-b border-parchment-border/70 bg-surface-container-low px-6 py-5 sm:px-8">
+          <span className="mt-0.5 inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-terracotta/10 text-primary">
+            <IconoPasaporte className="h-4 w-4" />
+          </span>
+          <div>
+            <h2 className="font-display text-2xl leading-tight text-on-surface">
+              Su retrato y documentos
+            </h2>
+            <p className="mt-1 font-sans text-sm italic text-on-surface-variant">
+              Súbalos una sola vez: los usaremos en cada reserva y en cada embarque.
+            </p>
+          </div>
+        </header>
+        <div className="px-6 py-6 sm:px-8">
+          <DocumentosViajeroForm perfil={perfil} onGuardado={onGuardado} />
+        </div>
       </div>
     </section>
   )

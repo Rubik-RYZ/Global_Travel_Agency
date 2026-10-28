@@ -317,6 +317,32 @@ def test_actualizar_ficha_proveedor(client_admin, proveedor):
     assert r.json()["notas"] == "Renovó flota en 2026."
 
 
+@pytest.mark.django_db
+def test_crear_proveedor_con_logo(client_admin):
+    r = client_admin.post(BASE_P, {
+        "nombre": "Sky Air",
+        "tipo": "aerolinea",
+        "logo_url": "https://res.cloudinary.com/demo/image/upload/illimani/proveedores/sky.png",
+        "logo_public_id": "illimani/proveedores/sky",
+    }, format="json")
+    assert r.status_code == 201
+    assert r.json()["logo_url"].endswith("sky.png")
+    assert r.json()["logo_public_id"] == "illimani/proveedores/sky"
+
+
+@pytest.mark.django_db
+def test_actualizar_logo_proveedor(client_admin, proveedor):
+    r = client_admin.patch(
+        f"{BASE_P}{proveedor.id}/",
+        {"logo_url": None, "logo_public_id": None},
+        format="json",
+    )
+    assert r.status_code == 200
+    assert r.json()["logo_url"] is None
+    proveedor.refresh_from_db()
+    assert proveedor.logo_public_id is None
+
+
 # ── Destinos: ficha comercial e itinerario ────────────────────────────────────
 
 @pytest.fixture

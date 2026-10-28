@@ -4,6 +4,7 @@ import type { ReactNode } from 'react'
 import { perfilApi } from '@/api/clientes'
 import { Monograma } from '@/components/shared/Monograma'
 import { IconoCorazon, IconoPasaporte, IconoSello } from '@/components/ui/Iconos'
+import { useAuthStore } from '@/store/authStore'
 import type { ClientePreferencia, PerfilViajero } from '@/types/clientes.types'
 import { formatearFecha } from '@/utils/formatters'
 import { mensajeDeError } from '@/utils/validators'
@@ -65,6 +66,7 @@ function Capitulo({ numero, kicker, titulo, nota, icono, children }: CapituloPro
 
 /** 11. Mi viaje · Perfil y preferencias → /mi-cuenta/preferencias */
 export function PreferenciasView() {
+  const usuario = useAuthStore((s) => s.usuario)
   const [perfil, setPerfil] = useState<PerfilViajero | null>(null)
   const [preferencias, setPreferencias] = useState<ClientePreferencia | null>(null)
   const [cargando, setCargando] = useState(true)
@@ -119,7 +121,7 @@ export function PreferenciasView() {
         <div className="relative p-6 sm:p-8">
           <div className="flex flex-wrap items-start justify-between gap-4">
             <div className="flex items-center gap-3">
-              <Monograma nombre={perfil.nombre_completo} tamano="md" />
+              <Monograma nombre={perfil.nombre_completo} tamano="md" foto={usuario?.foto_url} />
               <div>
                 <p className="coord">Cuaderno de preferencias</p>
                 <p className="font-display text-lg leading-tight text-on-surface">

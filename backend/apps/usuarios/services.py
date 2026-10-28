@@ -288,6 +288,32 @@ def actualizar_usuario_equipo(*, usuario, datos: dict, actor=None, request=None)
 
 
 @transaction.atomic
+def actualizar_foto_usuario(*, usuario, datos: dict, actor=None, request=None):
+    """Guarda el retrato propio del usuario autenticado (opcional, Fase 3b).
+
+    Lo usan el propio viajero desde «Mi viaje» y el personal desde el panel.
+    La URL y el `public_id` se aceptan tal cual: la subida al almacén ya pasó
+    por `apps.almacen`.
+    """
+    cambios: dict = {}
+    for campo in ("foto_url", "foto_public_id"):
+        if campo in datos:
+            setattr(usuario, campo, datos[campo] or None)
+            cambios[campo] = getattr(usuario, campo)
+    if cambios:
+        usuario.save(update_fields=list(cambios))
+    registrar_auditoria(
+        accion="usuario_foto_actualizada",
+        usuario=actor or usuario,
+        entidad="usuarios",
+        entidad_id=usuario.id,
+        detalle={"campos": sorted(cambios)},
+        ip=ip_desde_request(request),
+    )
+    return usuario
+
+
+@transaction.atomic
 def desactivar_usuario_equipo(*, usuario, actor=None, request=None) -> None:
     """Baja lógica: conserva el histórico de auditoría (no borra la fila)."""
     usuario.activo = False

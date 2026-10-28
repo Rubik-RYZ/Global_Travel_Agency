@@ -7,6 +7,8 @@ export interface Usuario {
   rol: RolNombre
   rol_id: number
   activo: boolean
+  foto_url: string | null
+  foto_public_id: string | null
   ultimo_acceso: string | null
   creado_en: string
 }

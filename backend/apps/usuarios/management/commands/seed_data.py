@@ -371,6 +371,7 @@ PROVEEDORES_INICIALES = [
         "pais": "Perú", "ciudad": "Cusco", "contacto": "Concierge",
         "email": "concierge@palaciodelinca.pe",
         "notas": "Casona patrimonial frente a la Plaza de Armas del Cusco.",
+        "logo": "/assets/proveedor-1.jpg",
     },
     {
         "nombre": "Transportes Altiplano S.R.L.", "tipo": "transporte",
@@ -495,10 +496,21 @@ class Command(BaseCommand):
 
     def _seed_proveedores(self):
         creados = 0
+        media = cargar_media_catalogo()
         for data in PROVEEDORES_INICIALES:
+            payload = {k: v for k, v in data.items() if k != "nombre"}
+            # La lámina del prestador también puede vivir en el almacén externo.
+            logo = payload.pop("logo", None)
+            if logo:
+                enlace = media.get(logo)
+                if enlace:
+                    payload["logo_url"] = enlace["url"]
+                    payload["logo_public_id"] = enlace.get("public_id")
+                else:
+                    payload["logo_url"] = logo
             _, nuevo = Proveedor.objects.update_or_create(
                 nombre=data["nombre"],
-                defaults={k: v for k, v in data.items() if k != "nombre"},
+                defaults=payload,
             )
             if nuevo:
                 creados += 1

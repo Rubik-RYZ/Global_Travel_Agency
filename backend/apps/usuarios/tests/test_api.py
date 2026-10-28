@@ -283,3 +283,43 @@ class ClientesPreferenciasAPITest(BaseAPITest):
             HTTP_AUTHORIZATION=f"Bearer {token}",
         )
         self.assertTrue(Auditoria.objects.filter(accion="perfil_actualizado").exists())
+
+    # --- Retrato propio: /me/foto ---
+    def test_me_foto_requiere_autenticacion(self):
+        respuesta = self.client.patch(
+            "/api/v1/me/foto", {"foto_url": "https://x/f.jpg"}, format="json"
+        )
+        self.assertEqual(respuesta.status_code, status.HTTP_401_UNAUTHORIZED)
+
+    def test_cliente_guarda_su_retrato(self):
+        token = self.autenticar_cliente()
+        respuesta = self.client.patch(
+            "/api/v1/me/foto",
+            {
+                "foto_url": "https://res.cloudinary.com/demo/image/upload/illimani/equipo/ana.jpg",
+                "foto_public_id": "illimani/equipo/ana",
+            },
+            format="json",
+            HTTP_AUTHORIZATION=f"Bearer {token}",
+        )
+        self.assertEqual(respuesta.status_code, status.HTTP_200_OK)
+        self.assertEqual(respuesta.data["foto_url"].endswith("ana.jpg"), True)
+        self.cliente.refresh_from_db()
+        self.assertEqual(self.cliente.foto_public_id, "illimani/equipo/ana")
+        self.assertTrue(
+            Auditoria.objects.filter(accion="usuario_foto_actualizada").exists()
+        )
+
+    def test_cliente_retira_su_retrato(self):
+        self.cliente.foto_url = "https://x/ana.jpg"
+        self.cliente.save(update_fields=["foto_url"])
+        token = self.autenticar_cliente()
+        respuesta = self.client.patch(
+            "/api/v1/me/foto",
+            {"foto_url": "", "foto_public_id": ""},
+            format="json",
+            HTTP_AUTHORIZATION=f"Bearer {token}",
+        )
+        self.assertEqual(respuesta.status_code, status.HTTP_200_OK)
+        self.cliente.refresh_from_db()
+        self.assertIsNone(self.cliente.foto_url)

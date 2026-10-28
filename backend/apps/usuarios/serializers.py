@@ -113,6 +113,17 @@ class UsuarioEquipoSerializer(serializers.ModelSerializer):
         return datos
 
 
+class FotoUsuarioSerializer(serializers.Serializer):
+    """Retrato propio del usuario autenticado (área «Mi viaje» y panel)."""
+
+    foto_url = serializers.CharField(
+        required=False, allow_null=True, allow_blank=True, max_length=500
+    )
+    foto_public_id = serializers.CharField(
+        required=False, allow_null=True, allow_blank=True, max_length=500
+    )
+
+
 class AuditoriaSerializer(serializers.ModelSerializer):
     usuario_email = serializers.CharField(
         source="usuario.email", read_only=True, default=None

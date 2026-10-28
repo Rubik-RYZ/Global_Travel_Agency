@@ -22,6 +22,7 @@ from apps.usuarios.serializers import (
     AuditoriaSerializer,
     ClientePreferenciaSerializer,
     ClienteSerializer,
+    FotoUsuarioSerializer,
     LoginSerializer,
     LogoutSerializer,
     PerfilClienteSerializer,
@@ -244,6 +245,23 @@ class MiPerfilView(APIView):
             accion="perfil_actualizado",
         )
         return Response(PerfilClienteSerializer(cliente).data)
+
+
+class MiFotoView(APIView):
+    """Retrato propio del usuario autenticado (área «Mi viaje» y panel)."""
+
+    permission_classes = [IsAuthenticated]
+
+    def patch(self, request):
+        entrada = FotoUsuarioSerializer(data=request.data, partial=True)
+        entrada.is_valid(raise_exception=True)
+        usuario = services.actualizar_foto_usuario(
+            usuario=request.user,
+            datos=entrada.validated_data,
+            actor=request.user,
+            request=request,
+        )
+        return Response(UsuarioSerializer(usuario).data)
 
 
 class MisPreferenciasView(APIView):

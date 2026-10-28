@@ -75,6 +75,8 @@ export interface Proveedor {
   email: string | null
   telefono: string | null
   notas: string | null
+  logo_url: string | null
+  logo_public_id: string | null
   activo: boolean
 }
 

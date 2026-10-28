@@ -28,6 +28,14 @@ export const useAuthStore = create<AuthState>()(
     }),
     {
       name: 'illimani-auth',
+      // Si cambia la forma del usuario persistido subimos la versión: el estado
+      // viejo se descarta y `/auth/me` vuelve a hidratar la sesión, de modo que
+      // un `usuario` rancio (sin `foto_url`, con rol viejo...) no se congele.
+      version: 1,
+      migrate: (persistido, version) => {
+        if (version < 1) return { usuario: null }
+        return persistido as { usuario: Usuario | null }
+      },
       partialize: (state) => ({ usuario: state.usuario }),
     },
   ),

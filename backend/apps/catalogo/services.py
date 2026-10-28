@@ -159,12 +159,15 @@ def obtener_proveedor(proveedor_id: int) -> Proveedor:
 def crear_proveedor(*, nombre: str, tipo: str, pais: str | None = None,
                     ciudad: str | None = None, contacto: str | None = None,
                     email: str | None = None, telefono: str | None = None,
-                    notas: str | None = None) -> Proveedor:
+                    notas: str | None = None,
+                    logo_url: str | None = None,
+                    logo_public_id: str | None = None) -> Proveedor:
     if Proveedor.objects.filter(nombre=nombre).exists():
         raise ValidationError({"nombre": "Ya existe un proveedor con ese nombre."})
     return Proveedor.objects.create(
         nombre=nombre, tipo=tipo, pais=pais, ciudad=ciudad,
         contacto=contacto, email=email, telefono=telefono, notas=notas,
+        logo_url=logo_url, logo_public_id=logo_public_id,
     )
 
 
@@ -173,7 +176,8 @@ def actualizar_proveedor(proveedor_id: int, **kwargs) -> Proveedor:
     proveedor = obtener_proveedor(proveedor_id)
     campos_permitidos = {
         "nombre", "tipo", "pais", "ciudad", "contacto",
-        "email", "telefono", "notas", "activo",
+        "email", "telefono", "notas",
+        "logo_url", "logo_public_id", "activo",
     }
     for campo, valor in kwargs.items():
         if campo in campos_permitidos:

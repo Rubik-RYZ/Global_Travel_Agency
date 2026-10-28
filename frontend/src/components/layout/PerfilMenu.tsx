@@ -65,7 +65,7 @@ export function PerfilMenu() {
         onClick={() => setAbierto((v) => !v)}
         className="group inline-flex items-center gap-2.5 rounded-full border border-parchment-border bg-surface-container-low py-1.5 pl-1.5 pr-2.5 transition-colors hover:border-terracotta/50"
       >
-        <Monograma nombre={usuario.email} tamano="sm" />
+        <Monograma nombre={usuario.email} tamano="sm" foto={usuario.foto_url} />
         <span className="hidden text-left leading-tight sm:block">
           <span className="block max-w-[170px] truncate font-sans text-xs text-on-surface">
             {usuario.email}

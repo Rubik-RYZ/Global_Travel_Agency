@@ -131,6 +131,8 @@ CREATE TABLE proveedores (
     email      TEXT,
     telefono   TEXT,
     notas      TEXT,
+    logo_url       TEXT,                              -- lámina del prestador (Fase 3b)
+    logo_public_id TEXT,                              -- id del recurso para reemplazarlo
     activo     BOOLEAN NOT NULL DEFAULT TRUE
 );
 

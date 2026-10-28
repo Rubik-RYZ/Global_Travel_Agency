@@ -5,6 +5,7 @@ import { catalogoApi, type Proveedor } from '@/api/catalogo'
 import { RosaVientos } from '@/components/brand/RosaVientos'
 import { Button } from '@/components/ui/Button/Button'
 import { Modal } from '@/components/ui/Modal/Modal'
+import { SubidorImagen } from '@/components/ui/SubidorImagen/SubidorImagen'
 import {
   IconoBuzon,
   IconoCerrar,
@@ -371,11 +372,21 @@ export function ProveedoresAdminView() {
                   </span>
                 </div>
 
-                {/* Lámina cartográfica: no hay fotografía de proveedor, se usa el sello de la casa */}
+                {/* Lámina del prestador: logotipo subido o sello de la casa */}
                 <div className="relative flex h-64 items-center justify-center overflow-hidden rounded bg-gradient-to-br from-surface-container-high via-surface-container-low to-surface-dim">
-                  <div className="textura-carta absolute inset-0 opacity-70" />
-                  <RosaVientos className="h-40 w-40 text-primary/15" />
-                  <span className="absolute left-4 top-4 coord text-stamp-sepia">
+                  {seleccionado.logo_url ? (
+                    <img
+                      src={seleccionado.logo_url}
+                      alt={seleccionado.nombre}
+                      className="h-full w-full object-cover"
+                    />
+                  ) : (
+                    <>
+                      <div className="textura-carta absolute inset-0 opacity-70" />
+                      <RosaVientos className="h-40 w-40 text-primary/15" />
+                    </>
+                  )}
+                  <span className="absolute left-4 top-4 rounded bg-surface/85 px-2 py-0.5 coord text-stamp-sepia">
                     Lámina de registro · {seleccionado.tipo_display}
                   </span>
                   <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-forest-night/90 via-forest-night/45 to-transparent px-5 pb-4 pt-10">
@@ -707,10 +718,20 @@ function TarjetaRed({
     >
       <div className="flex flex-col gap-4 p-4">
         <div className="relative flex h-32 items-center justify-center overflow-hidden rounded bg-surface-container-high">
-          <div className="textura-carta absolute inset-0 opacity-60" />
-          <span className="font-display text-4xl text-primary/25">
-            {iniciales(proveedor.nombre) || 'ILL'}
-          </span>
+          {proveedor.logo_url ? (
+            <img
+              src={proveedor.logo_url}
+              alt={proveedor.nombre}
+              className="h-full w-full object-cover"
+            />
+          ) : (
+            <>
+              <div className="textura-carta absolute inset-0 opacity-60" />
+              <span className="font-display text-4xl text-primary/25">
+                {iniciales(proveedor.nombre) || 'ILL'}
+              </span>
+            </>
+          )}
           <span className="absolute left-2 top-2 rounded bg-surface/90 px-2 py-0.5 coord text-on-surface">
             {proveedor.pais ?? 'Global'}
             {proveedor.ciudad ? ` · ${proveedor.ciudad}` : ''}
@@ -760,6 +781,8 @@ interface FormProveedor {
   email: string
   telefono: string
   notas: string
+  logo_url: string
+  logo_public_id: string
 }
 
 const FORM_VACIO: FormProveedor = {
@@ -771,6 +794,8 @@ const FORM_VACIO: FormProveedor = {
   email: '',
   telefono: '',
   notas: '',
+  logo_url: '',
+  logo_public_id: '',
 }
 
 function textoOpcional(valor: string): string | null {
@@ -808,6 +833,8 @@ function ProveedorFormModal({
             email: proveedor.email ?? '',
             telefono: proveedor.telefono ?? '',
             notas: proveedor.notas ?? '',
+            logo_url: proveedor.logo_url ?? '',
+            logo_public_id: proveedor.logo_public_id ?? '',
           }
         : FORM_VACIO,
     )
@@ -835,6 +862,8 @@ function ProveedorFormModal({
         email: textoOpcional(form.email),
         telefono: textoOpcional(form.telefono),
         notas: textoOpcional(form.notas),
+        logo_url: textoOpcional(form.logo_url),
+        logo_public_id: textoOpcional(form.logo_public_id),
       }
       if (proveedor) {
         await catalogoApi.actualizarProveedor(proveedor.id, payload)
@@ -866,6 +895,19 @@ function ProveedorFormModal({
       </p>
       <form onSubmit={enviar} className="flex flex-col gap-4" noValidate>
         <div className="grid gap-4 sm:grid-cols-2">
+          <div className="sm:col-span-2">
+            <SubidorImagen
+              valor={form.logo_url}
+              publicId={form.logo_public_id || null}
+              onChange={(url, publicId) => {
+                setForm((f) => ({ ...f, logo_url: url, logo_public_id: publicId ?? '' }))
+              }}
+              carpeta="proveedores"
+              etiqueta="Lámina del prestador (logotipo o sede)"
+              ayuda="JPG, PNG, WEBP o AVIF · hasta 8 MB. Se muestra en la libreta y en la ficha."
+            />
+          </div>
+
           <label className="flex flex-col gap-1.5 sm:col-span-2">
             <span className="coord">Nombre del prestador o taller *</span>
             <input

@@ -201,6 +201,10 @@ class Proveedor(models.Model):
     email = models.TextField(null=True, blank=True)
     telefono = models.TextField(null=True, blank=True)
     notas = models.TextField(null=True, blank=True)
+    # Lámina del prestador (Fase 3b): logotipo o fotografía de su sede. Se
+    # guardan la URL pública y el identificador del almacén para reemplazarla.
+    logo_url = models.TextField(null=True, blank=True)
+    logo_public_id = models.TextField(null=True, blank=True)
     activo = models.BooleanField(default=True)
 
     class Meta:

@@ -22,7 +22,6 @@ interface ModuloAcceso {
   descripcion: string
   a: string
   icono: ReactNode
-  deshabilitado?: boolean
 }
 
 const ACCESOS: ModuloAcceso[] = [
@@ -46,17 +45,15 @@ const ACCESOS: ModuloAcceso[] = [
   },
   {
     titulo: 'Destinos & expediciones',
-    descripcion: 'Catálogo de rutas, paquetes y destinos turísticos. Disponible en CU3.',
+    descripcion: 'Atlas de rutas, itinerarios día a día y láminas del catálogo.',
     a: '/admin/destinos',
     icono: <IconoUbicacion className="h-5 w-5" />,
-    deshabilitado: true,
   },
   {
     titulo: 'Proveedores',
-    descripcion: 'Aerolíneas, hoteles y operadores de campo asociados. Disponible en CU3.',
+    descripcion: 'Aerolíneas, hospedajes y operadores de la red de confianza.',
     a: '/admin/proveedores',
     icono: <IconoMaletin className="h-5 w-5" />,
-    deshabilitado: true,
   },
 ]
 
@@ -139,41 +136,25 @@ export function DashboardView() {
       </div>
 
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-        {ACCESOS.map((m) =>
-          m.deshabilitado ? (
-            <div
-              key={m.a}
-              className="flex flex-col gap-4 rounded-lg border border-dashed border-parchment-border bg-surface-container-lowest p-6 opacity-55"
-            >
-              <span className="inline-flex h-10 w-10 items-center justify-center rounded-full bg-surface-container text-on-surface-variant">
-                {m.icono}
-              </span>
-              <div>
-                <p className="font-display text-xl text-on-surface">{m.titulo}</p>
-                <p className="mt-1 font-sans text-sm text-on-surface-variant">{m.descripcion}</p>
-              </div>
-              <span className="coord mt-auto text-on-surface-variant">Próximamente · CU3</span>
+        {ACCESOS.map((m) => (
+          <Link
+            key={m.a}
+            to={m.a}
+            className="group flex flex-col gap-4 rounded-lg border border-parchment-border bg-surface-container-lowest p-6 shadow-paper transition-all hover:-translate-y-0.5 hover:border-terracotta/40 hover:shadow-paper-lg"
+          >
+            <span className="inline-flex h-10 w-10 items-center justify-center rounded-full bg-terracotta/10 text-terracotta transition-colors group-hover:bg-terracotta group-hover:text-white">
+              {m.icono}
+            </span>
+            <div className="flex-1">
+              <p className="font-display text-xl text-on-surface group-hover:text-primary">{m.titulo}</p>
+              <p className="mt-1 font-sans text-sm leading-relaxed text-on-surface-variant">{m.descripcion}</p>
             </div>
-          ) : (
-            <Link
-              key={m.a}
-              to={m.a}
-              className="group flex flex-col gap-4 rounded-lg border border-parchment-border bg-surface-container-lowest p-6 shadow-paper transition-all hover:-translate-y-0.5 hover:border-terracotta/40 hover:shadow-paper-lg"
-            >
-              <span className="inline-flex h-10 w-10 items-center justify-center rounded-full bg-terracotta/10 text-terracotta transition-colors group-hover:bg-terracotta group-hover:text-white">
-                {m.icono}
-              </span>
-              <div className="flex-1">
-                <p className="font-display text-xl text-on-surface group-hover:text-primary">{m.titulo}</p>
-                <p className="mt-1 font-sans text-sm leading-relaxed text-on-surface-variant">{m.descripcion}</p>
-              </div>
-              <span className="inline-flex items-center gap-1.5 font-sans text-[11px] font-semibold uppercase tracking-wider text-primary">
-                Abrir módulo
-                <IconoFlechaDerecha className="h-3.5 w-3.5 transition-transform group-hover:translate-x-0.5" />
-              </span>
-            </Link>
-          )
-        )}
+            <span className="inline-flex items-center gap-1.5 font-sans text-[11px] font-semibold uppercase tracking-wider text-primary">
+              Abrir módulo
+              <IconoFlechaDerecha className="h-3.5 w-3.5 transition-transform group-hover:translate-x-0.5" />
+            </span>
+          </Link>
+        ))}
       </div>
     </div>
   )
