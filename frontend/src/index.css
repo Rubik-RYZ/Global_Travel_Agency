@@ -30,6 +30,11 @@
     @apply font-hand text-xl text-stamp-sepia;
   }
 
+  /* Micro-etiqueta de coordenadas, como las leyendas de una carta náutica. */
+  .coord {
+    @apply font-sans text-[10px] font-semibold uppercase tracking-[0.22em] text-stamp-sepia;
+  }
+
   /* Regla corta terracota que abre los eyebrows editoriales. */
   .regla-terracota {
     @apply inline-block h-px w-6 bg-terracotta/70;

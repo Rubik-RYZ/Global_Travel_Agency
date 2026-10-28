@@ -1,5 +1,5 @@
 /** Guardas de ruta: exigen sesión y, opcionalmente, un rol concreto. */
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { Navigate, Outlet, useLocation } from 'react-router-dom'
 
 import { authApi } from '@/api/auth'
@@ -11,21 +11,23 @@ function useRestaurarSesion() {
   const usuario = useAuthStore((s) => s.usuario)
   const setUsuario = useAuthStore((s) => s.setUsuario)
   const limpiar = useAuthStore((s) => s.logout)
-  const [cargando, setCargando] = useState(false)
+  // Si hay token pero aún no hay usuario restaurado, arrancamos en «cargando»
+  // para no expulsar a /login durante el primer render (recarga profunda).
+  const [cargando, setCargando] = useState(() => !usuario && !!tokenStorage.getAccess())
+  const intentado = useRef(false)
 
   useEffect(() => {
-    let activo = true
-    if (!usuario && tokenStorage.getAccess()) {
-      setCargando(true)
-      authApi
-        .me()
-        .then((u) => activo && setUsuario(u))
-        .catch(() => activo && limpiar())
-        .finally(() => activo && setCargando(false))
-    }
-    return () => {
-      activo = false
-    }
+    // Una sola restauración por montaje: el doble efecto de StrictMode no debe
+    // disparar dos `/auth/me` ni cancelar la promesa en curso.
+    if (intentado.current) return
+    if (usuario || !tokenStorage.getAccess()) return
+
+    intentado.current = true
+    authApi
+      .me()
+      .then(setUsuario)
+      .catch(limpiar)
+      .finally(() => setCargando(false))
   }, [usuario, setUsuario, limpiar])
 
   return { usuario, cargando }
@@ -42,7 +44,7 @@ export function RutaProtegida({ roles }: RutaProtegidaProps) {
   if (cargando) {
     return (
       <div className="flex min-h-screen items-center justify-center bg-surface">
-        <span className="nota-manuscrita text-stamp-sepia">Verificando credenciales…</span>
+        <span className="nota-manuscrita text-stamp-sepia">Verificando credenciales...</span>
       </div>
     )
   }
@@ -66,4 +68,9 @@ export function RutaPanel() {
 /** Solo administrador. */
 export function RutaAdmin() {
   return <RutaProtegida roles={[ROLES.ADMINISTRADOR]} />
+}
+
+/** Solo cliente (área privada «Mi viaje»). */
+export function RutaCliente() {
+  return <RutaProtegida roles={[ROLES.CLIENTE]} />
 }

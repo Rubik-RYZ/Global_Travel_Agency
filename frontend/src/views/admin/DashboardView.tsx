@@ -1,89 +1,194 @@
 import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
+import type { ReactNode } from 'react'
 
 import { authApi } from '@/api/auth'
+import { clientesApi } from '@/api/clientes'
+import { RosaVientos } from '@/components/brand/RosaVientos'
+import {
+  IconoEscudo,
+  IconoFlechaDerecha,
+  IconoMaletin,
+  IconoPersona,
+  IconoPortapapeles,
+  IconoSello,
+  IconoUbicacion,
+} from '@/components/ui/Iconos'
 import { useAuthStore } from '@/store/authStore'
+import { etiquetaRol } from '@/utils/roles'
 
-/** 7. Panel · Inicio (esqueleto) → /admin */
+interface ModuloAcceso {
+  titulo: string
+  descripcion: string
+  a: string
+  icono: ReactNode
+  deshabilitado?: boolean
+}
+
+const ACCESOS: ModuloAcceso[] = [
+  {
+    titulo: 'Directorio de viajeros',
+    descripcion: 'Padrón de clientes, fichas y preferencias de cada expedicionario.',
+    a: '/admin/clientes',
+    icono: <IconoPersona className="h-5 w-5" />,
+  },
+  {
+    titulo: 'Equipo y accesos',
+    descripcion: 'Gabinete de custodios, jerarquías de acceso y credenciales internas.',
+    a: '/admin/roles',
+    icono: <IconoEscudo className="h-5 w-5" />,
+  },
+  {
+    titulo: 'Bitácora de seguridad',
+    descripcion: 'Libro de actas: accesos, intentos fallidos y cambios sellados.',
+    a: '/admin/auditoria',
+    icono: <IconoPortapapeles className="h-5 w-5" />,
+  },
+  {
+    titulo: 'Destinos & expediciones',
+    descripcion: 'Catálogo de rutas, paquetes y destinos turísticos. Disponible en CU3.',
+    a: '/admin/destinos',
+    icono: <IconoUbicacion className="h-5 w-5" />,
+    deshabilitado: true,
+  },
+  {
+    titulo: 'Proveedores',
+    descripcion: 'Aerolíneas, hoteles y operadores de campo asociados. Disponible en CU3.',
+    a: '/admin/proveedores',
+    icono: <IconoMaletin className="h-5 w-5" />,
+    deshabilitado: true,
+  },
+]
+
+/** 7. Panel · Inicio → /admin */
 export function DashboardView() {
   const usuario = useAuthStore((s) => s.usuario)
-  const [cifras, setCifras] = useState({ equipo: 0, eventos: 0 })
+  const [cifras, setCifras] = useState({ equipo: 0, eventos: 0, viajeros: 0 })
 
   useEffect(() => {
     let activo = true
-    Promise.all([authApi.usuarios(), authApi.auditoria()])
-      .then(([equipo, auditoria]) => {
-        if (activo) setCifras({ equipo: equipo.count, eventos: auditoria.count })
+    Promise.all([authApi.usuarios(), authApi.auditoria(), clientesApi.listar()])
+      .then(([equipo, auditoria, clientes]) => {
+        if (activo)
+          setCifras({ equipo: equipo.count, eventos: auditoria.count, viajeros: clientes.count })
       })
       .catch(() => undefined)
-    return () => {
-      activo = false
-    }
+    return () => { activo = false }
   }, [])
+
+  const hora = new Date().getHours()
+  const saludo = hora < 12 ? 'Buenos días' : hora < 19 ? 'Buenas tardes' : 'Buenas noches'
+  const rol = etiquetaRol(usuario?.rol as 'administrador' | 'agente' | 'cliente' | null)
 
   return (
     <div className="mx-auto max-w-6xl">
-      <header className="mb-10">
-        <p className="etiqueta-seccion">Panel de administración</p>
-        <h1 className="mt-3 font-display text-4xl text-on-surface">
-          Buen día, {usuario?.email.split('@')[0] ?? 'expedicionario'}
-        </h1>
-        <p className="mt-2 font-sans text-sm text-on-surface-variant">
-          Resumen operativo de Illimani Global Travel.
-        </p>
-      </header>
 
-      <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-        <TarjetaCifra etiqueta="Miembros del equipo" valor={cifras.equipo} nota="cuentas internas" />
-        <TarjetaCifra etiqueta="Eventos de seguridad" valor={cifras.eventos} nota="en la bitácora" />
-        <TarjetaCifra etiqueta="Destinos activos" valor="—" nota="se habilita en CU3" />
+      {/* ── Hero editorial ────────────────────────────────────────────── */}
+      <section className="relative mb-10 overflow-hidden rounded-lg border border-secondary/40 bg-secondary shadow-paper-lg">
+        <div aria-hidden className="textura-carta pointer-events-none absolute inset-0 opacity-[0.04]" />
+
+        {/* Rosa de vientos marca de agua */}
+        <div aria-hidden className="pointer-events-none absolute -right-16 top-1/2 -translate-y-1/2 opacity-[0.06]">
+          <RosaVientos className="h-80 w-80 text-gold" />
+        </div>
+
+        {/* Cinta superior */}
+        <div className="flex flex-wrap items-center justify-between gap-2 border-b border-white/10 px-6 py-2.5 sm:px-10">
+          <span className="coord text-gold">Registro de Ruta · Sprint II</span>
+          <span className="coord hidden text-on-secondary-container sm:inline">
+            16°30′ S · 68°09′ W · La Paz, Bolivia
+          </span>
+          <span className="coord text-on-secondary-container">Estado: vigilancia activa</span>
+        </div>
+
+        {/* Cuerpo */}
+        <div className="relative grid gap-6 p-6 sm:p-10 lg:grid-cols-[1fr_auto]">
+          <div>
+            <p className="coord text-gold">Códice administrativo · {rol}</p>
+            <h1 className="mt-3 font-display text-4xl leading-tight text-on-secondary sm:text-5xl">
+              {saludo},
+              <br />
+              <em className="text-gold not-italic">{usuario?.email.split('@')[0] ?? 'expedicionario'}</em>
+            </h1>
+            <p className="mt-5 max-w-lg font-sans text-sm leading-relaxed text-on-secondary-container">
+              Gabinete editorial de Illimani Global Travel. Consulte los módulos
+              desde el selector o acceda directamente a las secciones más frecuentes.
+            </p>
+          </div>
+
+          {/* Métricas laterales */}
+          <div className="grid gap-3 self-center sm:grid-cols-3 lg:grid-cols-1 lg:gap-4">
+            <MetricaHero valor={cifras.viajeros} etiqueta="Viajeros" sub="en el padrón" />
+            <MetricaHero valor={cifras.equipo} etiqueta="Custodios" sub="en servicio" />
+            <MetricaHero valor={cifras.eventos} etiqueta="Actas" sub="en la bitácora" />
+          </div>
+        </div>
+
+        {/* Sello decorativo */}
+        <div className="flex items-center gap-3 border-t border-white/10 px-6 py-3 sm:px-10">
+          <IconoSello className="h-3.5 w-3.5 text-gold" />
+          <span className="coord text-gold">Illimani Global Travel S.R.L. · Panel oficial</span>
+        </div>
+      </section>
+
+      {/* ── Accesos rápidos ───────────────────────────────────────────── */}
+      <div className="mb-3 flex items-center gap-3">
+        <span className="regla-terracota" />
+        <p className="etiqueta-seccion">Módulos disponibles</p>
+        <span aria-hidden className="h-px flex-1 bg-parchment-border" />
       </div>
 
-      <section className="mt-10 grid gap-6 md:grid-cols-2">
-        <Acceso
-          titulo="Equipo y accesos"
-          descripcion="Altas, roles y estado de las cuentas internas."
-          a="/admin/roles"
-        />
-        <Acceso
-          titulo="Bitácora de seguridad"
-          descripcion="Accesos, intentos fallidos y cambios registrados."
-          a="/admin/auditoria"
-        />
-      </section>
+      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+        {ACCESOS.map((m) =>
+          m.deshabilitado ? (
+            <div
+              key={m.a}
+              className="flex flex-col gap-4 rounded-lg border border-dashed border-parchment-border bg-surface-container-lowest p-6 opacity-55"
+            >
+              <span className="inline-flex h-10 w-10 items-center justify-center rounded-full bg-surface-container text-on-surface-variant">
+                {m.icono}
+              </span>
+              <div>
+                <p className="font-display text-xl text-on-surface">{m.titulo}</p>
+                <p className="mt-1 font-sans text-sm text-on-surface-variant">{m.descripcion}</p>
+              </div>
+              <span className="coord mt-auto text-on-surface-variant">Próximamente · CU3</span>
+            </div>
+          ) : (
+            <Link
+              key={m.a}
+              to={m.a}
+              className="group flex flex-col gap-4 rounded-lg border border-parchment-border bg-surface-container-lowest p-6 shadow-paper transition-all hover:-translate-y-0.5 hover:border-terracotta/40 hover:shadow-paper-lg"
+            >
+              <span className="inline-flex h-10 w-10 items-center justify-center rounded-full bg-terracotta/10 text-terracotta transition-colors group-hover:bg-terracotta group-hover:text-white">
+                {m.icono}
+              </span>
+              <div className="flex-1">
+                <p className="font-display text-xl text-on-surface group-hover:text-primary">{m.titulo}</p>
+                <p className="mt-1 font-sans text-sm leading-relaxed text-on-surface-variant">{m.descripcion}</p>
+              </div>
+              <span className="inline-flex items-center gap-1.5 font-sans text-[11px] font-semibold uppercase tracking-wider text-primary">
+                Abrir módulo
+                <IconoFlechaDerecha className="h-3.5 w-3.5 transition-transform group-hover:translate-x-0.5" />
+              </span>
+            </Link>
+          )
+        )}
+      </div>
     </div>
   )
 }
 
-function TarjetaCifra({
-  etiqueta,
-  valor,
-  nota,
-}: {
-  etiqueta: string
-  valor: string | number
-  nota: string
-}) {
-  return (
-    <div className="rounded-lg border border-parchment-border bg-surface-container-lowest p-6 shadow-paper">
-      <p className="etiqueta-seccion">{etiqueta}</p>
-      <p className="mt-3 font-display text-5xl text-primary">{valor}</p>
-      <p className="mt-1 font-sans text-xs text-on-surface-variant">{nota}</p>
-    </div>
-  )
-}
+/* -------------------------------------------------------------------------- */
 
-function Acceso({ titulo, descripcion, a }: { titulo: string; descripcion: string; a: string }) {
+function MetricaHero({ valor, etiqueta, sub }: { valor: number; etiqueta: string; sub: string }) {
   return (
-    <Link
-      to={a}
-      className="group rounded-lg border border-parchment-border bg-surface-container-low p-6 transition-colors hover:border-terracotta/50 hover:bg-surface-container"
-    >
-      <h2 className="font-display text-2xl text-on-surface group-hover:text-primary">{titulo}</h2>
-      <p className="mt-2 font-sans text-sm text-on-surface-variant">{descripcion}</p>
-      <span className="mt-4 inline-block font-sans text-xs uppercase tracking-wider text-primary">
-        Abrir sección →
-      </span>
-    </Link>
+    <div className="rounded-md border border-white/10 bg-white/5 px-4 py-3 text-center">
+      <p className="font-display text-3xl leading-none text-gold">{valor}</p>
+      <p className="mt-1 font-sans text-xs font-semibold uppercase tracking-wider text-on-secondary">
+        {etiqueta}
+      </p>
+      <p className="font-sans text-[10px] text-on-secondary-container">{sub}</p>
+    </div>
   )
 }

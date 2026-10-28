@@ -1,8 +1,7 @@
 import { Link, NavLink } from 'react-router-dom'
 
-import { useAuth } from '@/hooks/useAuth'
+import { PerfilMenu } from '@/components/layout/PerfilMenu'
 import { useAuthStore } from '@/store/authStore'
-import { esPanel } from '@/utils/roles'
 
 const enlaces = [
   { a: '/', texto: 'Inicio', fin: true },
@@ -12,7 +11,6 @@ const enlaces = [
 
 export function Navbar() {
   const usuario = useAuthStore((s) => s.usuario)
-  const { cerrarSesion } = useAuth()
 
   return (
     <header className="sticky top-0 z-40 border-b border-parchment-border/60 bg-surface/85 backdrop-blur">
@@ -42,21 +40,7 @@ export function Navbar() {
 
         <div className="flex items-center gap-3">
           {usuario ? (
-            <>
-              <Link
-                to={esPanel(usuario.rol) ? '/admin' : '/'}
-                className="hidden font-sans text-sm text-on-surface-variant transition-colors hover:text-primary sm:inline"
-              >
-                {usuario.email}
-              </Link>
-              <button
-                type="button"
-                onClick={() => void cerrarSesion()}
-                className="rounded-full border border-outline-variant px-5 py-2.5 font-sans text-xs font-medium uppercase tracking-wider text-on-surface-variant transition-colors hover:border-terracotta hover:text-primary"
-              >
-                Salir
-              </button>
-            </>
+            <PerfilMenu />
           ) : (
             <>
               <Link

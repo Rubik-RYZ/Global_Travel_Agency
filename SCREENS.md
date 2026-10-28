@@ -23,22 +23,22 @@ Formato de cada línea:
 
 ### CU1 · Seguridad y Acceso
 
- 1. Iniciar sesión                      →  LoginView.tsx                    →  /login
- 2. Crear cuenta                        →  RegisterView.tsx                 →  /registro
- 3. Recuperar contraseña                →  RecuperarPasswordView.tsx        →  /recuperar
- 4. Sesión expirada                     →  SesionExpiradaView.tsx           →  /sesion-expirada
- 5. Sin permiso                         →  ForbiddenView.tsx                →  /403
- 6. Página no encontrada                →  NotFoundView.tsx                 →  /* (catch-all)
- 7. Panel · Inicio (esqueleto)          →  DashboardView.tsx                →  /admin
- 8. Panel · Equipo y accesos            →  RolesView.tsx                    →  /admin/roles
- 9. Panel · Bitácora de seguridad       →  AuditoriaView.tsx                →  /admin/auditoria
+ 1. Iniciar sesión                      →  LoginView.tsx                    →  /login                    ✅ done
+ 2. Crear cuenta                        →  RegisterView.tsx                 →  /registro                 ✅ done
+ 3. Recuperar contraseña                →  RecuperarPasswordView.tsx        →  /recuperar                ✅ done
+ 4. Sesión expirada                     →  SesionExpiradaView.tsx           →  /sesion-expirada          ✅ done
+ 5. Sin permiso                         →  ForbiddenView.tsx                →  /403                      ✅ done
+ 6. Página no encontrada                →  NotFoundView.tsx                 →  /* (catch-all)            ✅ done
+ 7. Panel · Inicio                      →  DashboardView.tsx                →  /admin                    ✅ done (hero oscuro + métricas + módulos)
+ 8. Panel · Equipo y accesos            →  RolesView.tsx                    →  /admin/roles              ✅ done (cards por usuario + chips rol/estado)
+ 9. Panel · Bitácora de seguridad       →  AuditoriaView.tsx                →  /admin/auditoria          ✅ done (folios, chips acción, paginación)
 
 ### CU2 · Clientes y Preferencias
 
-10. Mi viaje · Resumen                  →  PanelViajeroView.tsx             →  /mi-cuenta
-11. Mi viaje · Perfil y preferencias    →  PreferenciasView.tsx             →  /mi-cuenta/preferencias
-12. Panel · Directorio de viajeros      →  ClientesAdminView.tsx            →  /admin/clientes
-13. Panel · Ficha del viajero           →  FichaClienteAdminView.tsx        →  /admin/clientes/:id
+10. Mi viaje · Resumen                  →  PanelViajeroView.tsx             →  /mi-cuenta                ✅ done (cuaderno editorial)
+11. Mi viaje · Perfil y preferencias    →  PreferenciasView.tsx             →  /mi-cuenta/preferencias   ✅ done (capítulos I·II)
+12. Panel · Directorio de viajeros      →  ClientesAdminView.tsx            →  /admin/clientes           ✅ done (dossier cards + filtros + métricas)
+13. Panel · Ficha del viajero           →  FichaClienteAdminView.tsx        →  /admin/clientes/:id       ✅ done (hero oscuro + expediente + 2col)
 
 ### CU3 · Destinos y Proveedores
 
