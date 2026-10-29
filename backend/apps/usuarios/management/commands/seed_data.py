@@ -8,10 +8,9 @@ El comando es idempotente: usa `update_or_create`, de modo que volver a
 ejecutarlo refresca la ficha comercial de cada destino sin duplicar filas.
 
 Las láminas viven en `frontend/public/assets/` (viajan en el repositorio). Si
-además existe `backend/apps/catalogo/media_catalogo.json` —generado con
-`node scripts/subir-media-catalogo.mjs`— el seed usa esos enlaces del almacén
-externo, de modo que quien clone el repositorio ve las imágenes sin
-credenciales.
+además existe `backend/apps/catalogo/media_catalogo.json` —con los enlaces del
+almacén externo— el seed usa esas URLs, de modo que quien clone el repositorio
+ve las imágenes sin credenciales.
 """
 import json
 from pathlib import Path

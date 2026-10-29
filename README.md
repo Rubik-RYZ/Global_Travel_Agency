@@ -59,10 +59,9 @@ verificado, el remitente debe ser `onboarding@resend.dev` y los envíos sólo
 llegan a la dirección con la que se creó la cuenta de Resend; sin
 `RESEND_API_KEY` cada correo se imprime en el log del servidor y el flujo sigue.
 
-Las imágenes del seed se subieron con `node scripts/subir-media-catalogo.mjs`,
-que escribe los enlaces en `backend/apps/catalogo/media_catalogo.json`. Ese
-archivo **sí se versiona**: es lo que permite que todos vean las fotos sin
-tener credenciales.
+Los enlaces de las láminas del seed viven en
+`backend/apps/catalogo/media_catalogo.json`. Ese archivo **sí se versiona**: es
+lo que permite que todos vean las fotos sin tener credenciales.
 
 ## Estructura
 
