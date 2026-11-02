@@ -1,1 +1,1 @@
-"""App de almacenamiento externo de archivos (Fase 3b)."""
+"""App de almacenamiento externo de archivos."""

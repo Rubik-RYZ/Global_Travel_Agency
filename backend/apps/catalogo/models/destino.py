@@ -50,7 +50,7 @@ class Destino(models.Model):
     # URL de la imagen principal (ruta local `/assets/...` o URL del almacén).
     imagen_principal = models.TextField(null=True, blank=True)
     # Identificador en el almacén externo: sin él no se puede reemplazar ni
-    # borrar la lámina anterior cuando se sube otra (Fase 3b).
+    # borrar la lámina anterior cuando se sube otra.
     imagen_public_id = models.TextField(null=True, blank=True)
     incluye = ArrayField(models.TextField(), default=list, blank=True)
     no_incluye = ArrayField(models.TextField(), default=list, blank=True)

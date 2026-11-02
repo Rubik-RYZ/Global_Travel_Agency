@@ -33,7 +33,7 @@ def crear_usuario_equipo(*, datos: dict, actor=None, request=None):
         rol_id=datos["rol_id"],
         activo=datos.get("activo", True),
     )
-    # Retrato del miembro del equipo (opcional, Fase 3b).
+    # Retrato del miembro del equipo (opcional).
     if datos.get("foto_url") is not None:
         usuario.foto_url = datos.get("foto_url")
         usuario.foto_public_id = datos.get("foto_public_id")
@@ -84,7 +84,7 @@ def actualizar_usuario_equipo(*, usuario, datos: dict, actor=None, request=None)
 
 @transaction.atomic
 def actualizar_foto_usuario(*, usuario, datos: dict, actor=None, request=None):
-    """Guarda el retrato propio del usuario autenticado (opcional, Fase 3b).
+    """Guarda el retrato propio del usuario autenticado (opcional).
 
     Lo usan el propio viajero desde «Mi viaje» y el personal desde el panel.
     La URL y el `public_id` se aceptan tal cual: la subida al almacén ya pasó

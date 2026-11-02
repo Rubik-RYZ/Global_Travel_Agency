@@ -24,7 +24,7 @@ class Cliente(models.Model):
     telefono = models.TextField(null=True, blank=True)
     fecha_nacimiento = models.DateField(null=True, blank=True)
     pais_origen = models.TextField(null=True, blank=True)
-    # Documentos de viaje digitalizados (Fase 3b). Se guardan la URL pública y
+    # Documentos de viaje digitalizados. Se guardan la URL pública y
     # el identificador del almacén para poder reemplazarlos o borrarlos.
     pasaporte_url = models.TextField(null=True, blank=True)
     pasaporte_public_id = models.TextField(null=True, blank=True)

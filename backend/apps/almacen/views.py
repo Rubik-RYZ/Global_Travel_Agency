@@ -1,4 +1,4 @@
-"""Endpoints del almacén externo de archivos (Fase 3b)."""
+"""Endpoints del almacén externo de archivos."""
 from django.core.exceptions import ValidationError as DjangoValidationError
 from rest_framework import status
 from rest_framework.parsers import FormParser, MultiPartParser

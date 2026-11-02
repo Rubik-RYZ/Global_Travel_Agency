@@ -1,4 +1,4 @@
-"""Plantillas de correo de la casa (Fase 3b).
+"""Plantillas de correo de la casa.
 
 Los clientes de correo no entienden hojas de estilo externas ni fuentes web
 fiables, así que el diseño va **inline** y con tipografías de sistema que

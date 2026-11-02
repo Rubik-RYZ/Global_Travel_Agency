@@ -21,7 +21,7 @@ CREATE TABLE usuarios (
     activo         BOOLEAN NOT NULL DEFAULT TRUE,
     creado_en      TIMESTAMPTZ NOT NULL DEFAULT now(),
     ultimo_acceso  TIMESTAMPTZ,
-    foto_url       TEXT,                              -- retrato en el almacén (Fase 3b)
+    foto_url       TEXT,                              -- retrato en el almacén
     foto_public_id TEXT                               -- id del recurso para reemplazarlo
 );
 CREATE UNIQUE INDEX ux_usuarios_email ON usuarios (lower(email));
@@ -51,7 +51,7 @@ CREATE TABLE clientes (
     telefono          TEXT,
     fecha_nacimiento  DATE,
     pais_origen       TEXT,
-    pasaporte_url       TEXT,                          -- documento digitalizado (Fase 3b)
+    pasaporte_url       TEXT,                          -- documento digitalizado
     pasaporte_public_id TEXT,
     carnet_url          TEXT,
     carnet_public_id    TEXT,
@@ -131,7 +131,7 @@ CREATE TABLE proveedores (
     email      TEXT,
     telefono   TEXT,
     notas      TEXT,
-    logo_url       TEXT,                              -- lámina del prestador (Fase 3b)
+    logo_url       TEXT,                              -- lámina del prestador
     logo_public_id TEXT,                              -- id del recurso para reemplazarlo
     activo     BOOLEAN NOT NULL DEFAULT TRUE
 );

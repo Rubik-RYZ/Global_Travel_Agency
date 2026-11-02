@@ -22,7 +22,7 @@ class Usuario(AbstractBaseUser):
     )
     activo = models.BooleanField(default=True)
     creado_en = models.DateTimeField(auto_now_add=True)
-    # Retrato del miembro del equipo (Fase 3b), en el almacén externo.
+    # Retrato del miembro del equipo, en el almacén externo.
     foto_url = models.TextField(null=True, blank=True)
     foto_public_id = models.TextField(null=True, blank=True)
     # Columna `ultimo_acceso` del esquema; se expone también como propiedad.

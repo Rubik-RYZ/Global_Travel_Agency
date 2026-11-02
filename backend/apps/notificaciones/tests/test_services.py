@@ -1,4 +1,4 @@
-"""Tests del correo transaccional (Fase 3b).
+"""Tests del correo transaccional.
 
 Ningún envío sale a la red: `resend.Emails.send` se sustituye por un doble. Se
 comprueba lo importante para la casa: **sin credenciales el sistema no falla**,

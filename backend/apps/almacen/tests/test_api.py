@@ -1,4 +1,4 @@
-"""Tests del API de almacén externo (Fase 3b).
+"""Tests del API de almacén externo.
 
 Las subidas se simulan (`cloudinary.uploader.upload`) para no gastar cuota ni
 depender de la red: aquí se prueba la validación, los permisos y —sobre todo—

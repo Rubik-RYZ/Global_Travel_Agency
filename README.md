@@ -35,7 +35,7 @@ docker compose exec backend python manage.py seed_data
 - Frontend: http://localhost:5173/
 - Admin Django: http://localhost:8000/admin/
 
-## Archivos, imágenes y correo (Fase 3b)
+## Archivos, imágenes y correo
 
 Las imágenes (láminas de destinos, documentos de viajeros, retratos del equipo)
 se alojan en **Cloudinary** y sólo se guarda su URL en la base de datos. El

@@ -45,70 +45,46 @@ El proyecto NO sigue MVC. La arquitectura es **por capas con organización por d
 
 ```
 apps/
-├── almacen/        → Fase 3b (subida de archivos al almacén externo)
-├── notificaciones/ → Fase 3b (correo transaccional de la casa)
 ├── usuarios/       → CU1 (acceso/seguridad) + CU2 (clientes/preferencias)
 ├── catalogo/       → CU3 (destinos/proveedores) + CU4 (vuelos) + CU5 (hoteles) + CU6 (paquetes/salidas)
 ├── reservas/       → CU7 (reservas) + CU8 (itinerarios/notificaciones)
 ├── pagos/          → CU9 (pagos/tipos de cambio)
 ├── ia/             → CU10 (chatbot) + CU11 (recomendaciones)
-└── reportes/       → CU12 (reportes gerenciales)
+├── reportes/       → CU12 (reportes gerenciales)
+├── almacen/        → almacenamiento externo de archivos
+└── notificaciones/ → correo transaccional
 ```
 
-Cada app tiene estas capas internas. Hay **dos niveles de organización**: archivo plano (apps simples o capas pequeñas) y paquete (apps que crecen). Se empieza plano y se escala cuando la regla lo pide.
-
-**Nivel 1 — capas planas** (apps chicas, o capas con poca complejidad):
-
-```
-<app>/
-├── models.py           # Capa de dominio: entidades y relaciones
-├── managers.py         # QuerySets reutilizables (solo cuando la complejidad lo justifique)
-├── serializers.py      # Capa de esquema: validación de entrada y serialización de salida
-├── services.py         # Capa de negocio: toda la lógica del dominio vive aquí
-├── views.py            # Capa de presentación: ViewSets delgados, solo orquestan
-├── permissions.py      # Permisos por dominio (IsAdminUser, IsOwner, etc.)
-├── urls.py             # Registro de routers DRF
-└── tests/
-    ├── test_models.py
-    ├── test_services.py
-    └── test_api.py
-```
-
-**Nivel 2 — capas como paquete** (apps que crecen: varios módulos o varios CU):
+Cada dominio tiene las **mismas capas internas**, colocadas dentro de su app. Cada capa puede vivir como **archivo** (mientras es pequeña) o como **paquete** (cuando crece); el resto del código la importa **siempre igual**, así que pasar de archivo a paquete no rompe nada.
 
 ```
 <app>/
-├── models/
-│   ├── __init__.py     # re-exporta TODAS las entidades (OBLIGATORIO, ver aviso)
-│   ├── <entidad>.py    # un archivo por entidad
-│   └── ...
-├── serializers/
-│   ├── __init__.py     # re-exporta
-│   └── <modulo>.py     # un archivo por módulo
-├── services/
-│   ├── __init__.py     # re-exporta
-│   └── <subdominio>.py # un archivo por subdominio (p. ej. vuelos.py, hoteles.py)
-├── views/
-│   ├── __init__.py     # re-exporta
-│   └── <modulo>.py     # un archivo por módulo
-├── permissions.py
-├── urls.py
+├── models/         # Dominio — entidades y relaciones
+├── serializers/    # Esquema — validación de entrada y salida
+├── services/       # Negocio — toda la lógica del dominio
+├── views/          # Presentación — ViewSets delgados, solo orquestan
+├── managers.py     # QuerySets reutilizables (opcional, si la complejidad lo pide)
+├── permissions.py  # Permisos del dominio
+├── urls.py         # Registro de routers DRF
 └── tests/
 ```
 
-En ambos niveles, el código externo importa igual (`from apps.<app>.models import <Entidad>`, `from apps.<app>.services import <funcion>`): el `__init__.py` del paquete re-exporta, así que **no hay que cambiar los imports existentes**.
+Cuando una capa se vuelve **paquete**, agrupa **un archivo por unidad** (una entidad en `models/`, un módulo en `serializers/` y `views/`, un subdominio en `services/`) y su `__init__.py` **re-exporta la API pública**. Cuando es **archivo**, esa misma API vive en un solo módulo. En ambos casos el import externo es idéntico:
 
-### Regla de división (cuándo pasar de nivel 1 a nivel 2)
+```python
+from apps.<app>.models import <Entidad>
+from apps.<app>.services import <funcion>
+```
 
-Convertir una capa en paquete cuando se cumpla **cualquiera** de estas condiciones:
+### Regla de crecimiento (igual para todos los dominios)
+
+Una capa pasa de archivo a paquete cuando se cumpla **cualquiera** de estas condiciones:
 
 - El archivo de la capa **supera ~300–400 líneas**.
-- Entra un **módulo o CU nuevo** a la app (p. ej. CU4 vuelos en `catalogo`): se crean los archivos nuevos ya dentro del paquete.
+- Entra un **módulo o caso de uso nuevo** a la app.
 - La capa agrupa **más de una entidad** con lógica de negocio propia.
 
-> El momento más barato de dividir es **antes** de que el archivo crezca. No dividir por dividir: solo cuando la regla se cumple.
-
-Estado por app: `catalogo` y `usuarios` usan **nivel 2**; `almacen` y `notificaciones` siguen en **nivel 1** (bajo el umbral); `reservas`, `pagos`, `ia` y `reportes` están vacías y se empaquetan cuando nazcan en su sprint.
+> El momento más barato de dividir es **antes** de que el archivo crezca. No dividir por dividir: solo cuando la regla se cumple. **Todo dominio —existente o por nacer— se crea y se mantiene con esta misma estructura**, sin mezclar formas distintas.
 
 ### Aviso crítico: `models/__init__.py`
 
@@ -381,19 +357,19 @@ Antes de implementar los siguientes puntos, proponer opciones al equipo:
 - **CU1 admin** (#7 `/admin`, #8 `/admin/roles`, #9 `/admin/auditoria`): hero con RosaVientos + métricas, cards custodios, folios bitácora.
 - **CU3 backend**: API de catálogo — destinos (con ficha comercial e itinerario), aeropuertos y proveedores. Commit `0032ce6`.
 - **CU3 frontend**: landing (#14), explorador y ficha de destino (CU3), atlas de destinos y libreta de proveedores (#15–#20). Commits `ca154b3`, `5ccf9d2`.
-- **Fase 3b** (acordada dentro del sprint): `apps.almacen` (subida/borrado a Cloudinary con degradación limpia) y `apps.notificaciones` (correo transaccional con Resend, plantillas de la casa). Commit `f39025f`.
+- `apps.almacen` (subida/borrado a Cloudinary con degradación limpia) y `apps.notificaciones` (correo transaccional con Resend, plantillas de la casa). Commit `f39025f`.
 - `RutaProtegida.tsx`: fix StrictMode double-effect con `useRef(intentado)`.
 - `Iconos.tsx`: migración completa a heroicons; añadidos `IconoModulos`, `IconoMenu`.
 - `roles.ts`: añadida `etiquetaRol()`.
 - **117 tests** de backend en verde; `tsc --noEmit` y `vite build` limpios.
 
 ### Pendiente en Sprint 2 ⏳
-- Nada bloqueante: CU1, CU2, CU3 y Fase 3b quedan cerrados con commit.
+- Nada bloqueante: CU1, CU2 y CU3 quedan cerrados con commit.
 - Verificación manual del correo de Resend por parte del usuario (sin dominio verificado sólo llega a la casilla de la cuenta).
 
 ### Decisiones de diseño fijadas
 - Admin: top bar + framer-motion dropdown, **sin sidebar**.
-- Imágenes: Cloudinary (Fase 3b) con `RosaVientos`/monograma como reemplazo cuando el recurso no tiene lámina.
+- Imágenes: Cloudinary con `RosaVientos`/monograma como reemplazo cuando el recurso no tiene lámina.
 - Fuentes: Playfair Display (display) + Work Sans (sans) + Caveat (decorativo/handwritten).
 - Paleta: surface `#faf5eb` · primary `#792609` · terracotta `#b85434` · forest `#141d16` · gold `#c6a15b`.
 

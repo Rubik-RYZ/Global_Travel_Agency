@@ -1,4 +1,4 @@
-"""Carpetas del almacén externo (Cloudinary, Fase 3b).
+"""Carpetas del almacén externo (Cloudinary).
 
 Cada entidad sube sus archivos a su propia carpeta para que la Media Library
 del proyecto quede ordenada sin que nadie tenga que hacerlo a mano. El valor

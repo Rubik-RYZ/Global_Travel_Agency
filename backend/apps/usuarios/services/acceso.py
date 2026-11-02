@@ -1,7 +1,7 @@
 """Servicios de acceso: autenticación, registro y recuperación (CU1).
 
-El envío de emails sale por la API de Resend cuando hay credenciales
-(Fase 3b); si no las hay, se registra en la bitácora y se imprime en el log.
+El envío de emails sale por la API de Resend cuando hay credenciales;
+si no las hay, se registra en la bitácora y se imprime en el log.
 """
 from __future__ import annotations
 

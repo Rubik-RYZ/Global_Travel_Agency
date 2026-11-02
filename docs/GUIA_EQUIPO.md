@@ -37,8 +37,8 @@ docker compose exec backend python manage.py seed_data
   directorio y ficha del viajero en el panel.
 - **CU3 — Destinos y proveedores**: landing, explorador y ficha de destino;
   atlas de destinos y libreta de proveedores en el panel.
-- **Fase 3b**: subida de imágenes a Cloudinary (destinos, proveedores, retratos y
-  documentos del viajero) y correo transaccional con Resend.
+- Subida de imágenes a Cloudinary (destinos, proveedores, retratos y documentos
+  del viajero) y correo transaccional con Resend.
 - 117 pruebas de backend en verde; `tsc` y `vite build` limpios.
 
 ## Qué falta

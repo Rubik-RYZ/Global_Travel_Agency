@@ -32,7 +32,7 @@ RUTA_MEDIA_CATALOGO = (
 
 
 def cargar_media_catalogo() -> dict[str, dict]:
-    """Enlaces de las láminas ya subidas al almacén externo (Fase 3b).
+    """Enlaces de las láminas ya subidas al almacén externo.
 
     Devuelve un diccionario vacío si el archivo todavía no se ha generado, de
     forma que el seed use siempre las rutas locales de `frontend/public/assets/`.

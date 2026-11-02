@@ -17,7 +17,7 @@ CAMPOS_CLIENTE = [
     "telefono",
     "fecha_nacimiento",
     "pais_origen",
-    # Documentos digitalizados (Fase 3b): URL + identificador del almacén.
+    # Documentos digitalizados: URL + identificador del almacén.
     "pasaporte_url",
     "pasaporte_public_id",
     "carnet_url",

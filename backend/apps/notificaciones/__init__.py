@@ -1,1 +1,1 @@
-"""App de notificaciones transaccionales (Fase 3b)."""
+"""App de notificaciones transaccionales."""

@@ -1,5 +1,5 @@
 /**
- * API del almacén externo de archivos (Cloudinary — Fase 3b).
+ * API del almacén externo de archivos (Cloudinary).
  */
 import { api } from '@/lib/axios'
 

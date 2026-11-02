@@ -1,6 +1,6 @@
 -- =====================================================================
 -- Illimani Global Travel S.R.L. â€” Esquema implementado (Sprint 2)
--- DDL real de la base: CU1 (acceso) + CU2 (clientes) + CU3 (catalogo) + Fase 3b.
+-- DDL real de la base: CU1 (acceso) + CU2 (clientes) + CU3 (catalogo).
 -- Generado con: pg_dump --schema-only (desde la base en ejecucion).
 -- Util para ingenieria inversa y para el diagrama ER. Incluye PK, FK,
 -- UNIQUE, CHECK e indices.
