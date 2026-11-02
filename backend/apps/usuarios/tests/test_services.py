@@ -106,7 +106,9 @@ class RecuperacionTest(BaseServicesTest):
 
     def test_token_expirado(self):
         token = signing.dumps({"uid": self.usuario.id}, salt=services.SALT_RECUPERACION)
-        with mock.patch.object(services, "TOKEN_RECUPERACION_MAX_AGE", -1):
+        with mock.patch(
+            "apps.usuarios.services.acceso.TOKEN_RECUPERACION_MAX_AGE", -1
+        ):
             with self.assertRaises(ValidationError):
                 services.restablecer_password(token=token, password="Cambiada123")
 
