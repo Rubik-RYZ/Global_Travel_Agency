@@ -1,14 +1,15 @@
-"""Capa de dominio del catálogo turístico (CU3 · destinos y proveedores).
+"""Destino turístico internacional (CU3).
 
-Vuelos, hoteles, paquetes y salidas (CU4–CU6) se agregan en el Sprint 3.
-Las FK entre apps se declaran como string.
+Incluye la ficha geográfica y los atributos comerciales que se muestran en el
+catálogo: duración sugerida, precio "desde", mejor época, carácter del viaje,
+imagen principal e inclusiones.
 """
 from django.contrib.postgres.fields import ArrayField
 from django.contrib.postgres.indexes import GinIndex
 from django.db import models
 from django.utils.text import slugify
 
-from apps.catalogo.constants import CARACTERES_VIAJE, REGIONES, TIPOS_PROVEEDOR
+from apps.catalogo.constants import CARACTERES_VIAJE, REGIONES
 
 
 class Destino(models.Model):
@@ -136,82 +137,3 @@ class Destino(models.Model):
 
     def __str__(self):
         return f"{self.nombre}, {self.pais}"
-
-
-class ItinerarioDia(models.Model):
-    """Un día del itinerario de un destino (diario de ruta día a día)."""
-
-    destino = models.ForeignKey(
-        Destino,
-        on_delete=models.CASCADE,
-        related_name="itinerario",
-        db_column="destino_id",
-    )
-    numero_dia = models.PositiveSmallIntegerField()
-    titulo = models.TextField()
-    descripcion = models.TextField(null=True, blank=True)
-    ubicacion = models.TextField(null=True, blank=True)
-
-    class Meta:
-        db_table = "itinerario_dias"
-        verbose_name = "Día de itinerario"
-        verbose_name_plural = "Días de itinerario"
-        ordering = ["numero_dia"]
-        constraints = [
-            models.UniqueConstraint(
-                fields=["destino", "numero_dia"],
-                name="ux_itinerario_destino_dia",
-            ),
-            models.CheckConstraint(
-                check=models.Q(numero_dia__gt=0),
-                name="ck_itinerario_numero_dia",
-            ),
-        ]
-
-    def __str__(self):
-        return f"Día {self.numero_dia} · {self.titulo}"
-
-
-class Aeropuerto(models.Model):
-    """Aeropuerto identificado por su código IATA."""
-
-    codigo_iata = models.CharField(max_length=3, primary_key=True)
-    nombre = models.TextField()
-    destino = models.ForeignKey(
-        "catalogo.Destino", on_delete=models.PROTECT, db_column="destino_id"
-    )
-
-    class Meta:
-        db_table = "aeropuertos"
-        verbose_name = "Aeropuerto"
-        verbose_name_plural = "Aeropuertos"
-
-    def __str__(self):
-        return f"{self.codigo_iata} · {self.nombre}"
-
-
-class Proveedor(models.Model):
-    """Proveedor de servicios (aerolínea, hotel, transporte, operador)."""
-
-    nombre = models.TextField(unique=True)
-    tipo = models.TextField(choices=TIPOS_PROVEEDOR)
-    pais = models.TextField(null=True, blank=True)
-    ciudad = models.TextField(null=True, blank=True)
-    contacto = models.TextField(null=True, blank=True)
-    email = models.TextField(null=True, blank=True)
-    telefono = models.TextField(null=True, blank=True)
-    notas = models.TextField(null=True, blank=True)
-    # Lámina del prestador (Fase 3b): logotipo o fotografía de su sede. Se
-    # guardan la URL pública y el identificador del almacén para reemplazarla.
-    logo_url = models.TextField(null=True, blank=True)
-    logo_public_id = models.TextField(null=True, blank=True)
-    activo = models.BooleanField(default=True)
-
-    class Meta:
-        db_table = "proveedores"
-        verbose_name = "Proveedor"
-        verbose_name_plural = "Proveedores"
-        indexes = [models.Index(fields=["tipo"], name="ix_proveedores_tipo")]
-
-    def __str__(self):
-        return self.nombre
