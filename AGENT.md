@@ -55,7 +55,9 @@ apps/
 └── reportes/       → CU12 (reportes gerenciales)
 ```
 
-Cada app tiene esta estructura de capas:
+Cada app tiene estas capas internas. Hay **dos niveles de organización**: archivo plano (apps simples o capas pequeñas) y paquete (apps que crecen). Se empieza plano y se escala cuando la regla lo pide.
+
+**Nivel 1 — capas planas** (apps chicas, o capas con poca complejidad):
 
 ```
 <app>/
@@ -72,6 +74,56 @@ Cada app tiene esta estructura de capas:
     └── test_api.py
 ```
 
+**Nivel 2 — capas como paquete** (apps que crecen: varios módulos o varios CU):
+
+```
+<app>/
+├── models/
+│   ├── __init__.py     # re-exporta TODAS las entidades (OBLIGATORIO, ver aviso)
+│   ├── <entidad>.py    # un archivo por entidad
+│   └── ...
+├── serializers/
+│   ├── __init__.py     # re-exporta
+│   └── <modulo>.py     # un archivo por módulo
+├── services/
+│   ├── __init__.py     # re-exporta
+│   └── <subdominio>.py # un archivo por subdominio (p. ej. vuelos.py, hoteles.py)
+├── views/
+│   ├── __init__.py     # re-exporta
+│   └── <modulo>.py     # un archivo por módulo
+├── permissions.py
+├── urls.py
+└── tests/
+```
+
+En ambos niveles, el código externo importa igual (`from apps.<app>.models import <Entidad>`, `from apps.<app>.services import <funcion>`): el `__init__.py` del paquete re-exporta, así que **no hay que cambiar los imports existentes**.
+
+### Regla de división (cuándo pasar de nivel 1 a nivel 2)
+
+Convertir una capa en paquete cuando se cumpla **cualquiera** de estas condiciones:
+
+- El archivo de la capa **supera ~300–400 líneas**.
+- Entra un **módulo o CU nuevo** a la app (p. ej. CU4 vuelos en `catalogo`): se crean los archivos nuevos ya dentro del paquete.
+- La capa agrupa **más de una entidad** con lógica de negocio propia.
+
+> El momento más barato de dividir es **antes** de que el archivo crezca. No dividir por dividir: solo cuando la regla se cumple.
+
+Estado por app: `catalogo` y `usuarios` usan **nivel 2**; `almacen` y `notificaciones` siguen en **nivel 1** (bajo el umbral); `reservas`, `pagos`, `ia` y `reportes` están vacías y se empaquetan cuando nazcan en su sprint.
+
+### Aviso crítico: `models/__init__.py`
+
+Al convertir `models.py` en paquete, el `__init__.py` **debe importar todos los módulos**. Si se olvida uno, Django cree que ese modelo desapareció y **genera una migración que borra la tabla** (`DROP TABLE`). 💀
+
+Antes de dar por buena cualquier división, verificar SIEMPRE:
+
+```bash
+python manage.py makemigrations --check --dry-run   # debe decir "No changes detected"
+python manage.py check
+pytest -q
+```
+
+Mover código dentro de la misma app **no genera migración** (mismo `app_label`, mismo nombre de modelo y `db_table` explícito).
+
 ### Reglas de capas (no negociables)
 
 - **`services.py` es el corazón.** Toda lógica de negocio, validaciones de dominio, operaciones atómicas y llamadas a servicios externos van aquí. Los ViewSets llaman a services, no procesan lógica directamente.
@@ -84,6 +136,28 @@ Cada app tiene esta estructura de capas:
 - **Los servicios externos degradan con elegancia.** Si faltan las credenciales de Cloudinary o Resend, el sistema sigue operando: se deshabilita la subida (con aviso en pantalla) o se imprime el correo en el log, y se deja constancia en `Auditoria`. Nunca un error 500.
 - **La firma del almacén vive sólo en el servidor.** El navegador sube el archivo al backend (`/api/v1/almacen/subir/`) y éste lo reenvía firmado; las credenciales nunca llegan al cliente.
 - **Los secretos de proveedores NUNCA se almacenan.** El campo en DB es `secreto_ref` (una referencia o alias), no el secreto real.
+
+### Equivalencias con otros stacks (para quien viene de Laravel/Spring/Nest)
+
+No hay una carpeta por capa en la raíz: cada **app es un dominio** y las capas viven dentro. Varias piezas que en otros frameworks son clases propias, aquí las cubre el propio framework:
+
+| Concepto de otros stacks | Aquí equivale a | Dónde |
+|---|---|---|
+| DTO | Serializer (esquema de entrada/salida) | `serializers.py` |
+| Repository | Manager + QuerySet del ORM | `managers.py` / `services.py` |
+| Guard (autorización) | Permission class de DRF | `permissions.py` |
+| Controller | ViewSet (o `APIView` para casos no-CRUD) | `views.py` |
+| Service | Service (misma idea) | `services.py` |
+
+No hay capa "repository" aparte: el ORM de Django **ya es** el repositorio (Manager/QuerySet); poner otra capa encima sería redundante.
+
+**Validación en 3 niveles** (la BD es la última barrera):
+
+1. **Campo/formato** → serializer (`ListField`, `max_length`, ...).
+2. **Dominio** → service (`raise ValidationError({...})`).
+3. **Integridad** → modelo (`UniqueConstraint`, `CheckConstraint`).
+
+En el frontend, Zod cubre la validación de UX y `RutaProtegida.tsx` los guards de ruta.
 
 ---
 
