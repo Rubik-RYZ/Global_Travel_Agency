@@ -12,6 +12,7 @@ export interface Cliente {
   id: number
   usuario: number | null
   usuario_email: string | null
+  foto_url: string | null
   nombres: string
   apellidos: string
   nombre_completo: string

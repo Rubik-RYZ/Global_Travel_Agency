@@ -43,13 +43,19 @@ class ClienteSerializer(serializers.ModelSerializer):
     usuario_email = serializers.CharField(
         source="usuario.email", read_only=True, default=None
     )
+    # Retrato del viajero: vive en su cuenta (`usuarios.foto_url`), no en la
+    # ficha. Se expone en solo lectura para que el panel lo muestre sin
+    # duplicar el dato (la consulta ya trae la cuenta con `select_related`).
+    foto_url = serializers.CharField(
+        source="usuario.foto_url", read_only=True, default=None
+    )
     nombre_completo = serializers.CharField(read_only=True)
     preferencias = serializers.SerializerMethodField()
 
     class Meta:
         model = Cliente
         fields = [
-            "id", "usuario", "usuario_email", "nombres", "apellidos",
+            "id", "usuario", "usuario_email", "foto_url", "nombres", "apellidos",
             "nombre_completo", "documento_tipo", "documento_numero",
             "telefono", "fecha_nacimiento", "pais_origen",
             "pasaporte_url", "pasaporte_public_id",
@@ -57,7 +63,7 @@ class ClienteSerializer(serializers.ModelSerializer):
             "preferencias", "creado_en",
         ]
         read_only_fields = [
-            "id", "usuario", "usuario_email", "nombre_completo",
+            "id", "usuario", "usuario_email", "foto_url", "nombre_completo",
             "preferencias", "creado_en",
         ]
 

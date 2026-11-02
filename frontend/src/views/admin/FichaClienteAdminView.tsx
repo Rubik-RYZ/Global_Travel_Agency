@@ -252,6 +252,7 @@ function TarjetaCabecera({
           <Monograma
             nombre={cliente.nombre_completo}
             tamano="lg"
+            foto={cliente.foto_url}
             className="border-gold/40 bg-gold/10 text-gold"
           />
           <div>

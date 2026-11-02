@@ -228,7 +228,7 @@ function Dossier({ cliente }: { cliente: Cliente }) {
 
       <div className="flex flex-1 flex-col gap-4 px-5 py-5">
         <div className="flex items-start gap-3">
-          <Monograma nombre={cliente.nombre_completo} tamano="md" />
+          <Monograma nombre={cliente.nombre_completo} tamano="md" foto={cliente.foto_url} />
           <div className="min-w-0">
             <h3 className="font-display text-xl leading-tight text-on-surface">
               {cliente.nombre_completo}
