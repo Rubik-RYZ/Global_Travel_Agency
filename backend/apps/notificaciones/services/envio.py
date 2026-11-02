@@ -1,4 +1,4 @@
-"""Envío de correo transaccional (Fase 3b).
+"""Envío de correo transaccional.
 
 Reglas de la casa:
 

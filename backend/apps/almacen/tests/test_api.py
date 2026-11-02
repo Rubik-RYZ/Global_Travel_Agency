@@ -121,7 +121,7 @@ def test_subir_imagen_ok(client_admin, settings):
         setattr(settings, k, v)
 
     with patch(
-        "apps.almacen.services.cloudinary.uploader.upload",
+        "apps.almacen.services.archivos.cloudinary.uploader.upload",
         return_value=RESPUESTA_CLOUDINARY,
     ) as simulado:
         r = client_admin.post(
@@ -191,7 +191,7 @@ def test_cliente_sube_sus_laminas_personales(client_cliente, settings):
     respuesta = dict(RESPUESTA_CLOUDINARY)
     respuesta["public_id"] = "illimani/clientes/perfiles/ana"
     with patch(
-        "apps.almacen.services.cloudinary.uploader.upload",
+        "apps.almacen.services.archivos.cloudinary.uploader.upload",
         return_value=respuesta,
     ) as simulado:
         r = client_cliente.post(
@@ -223,7 +223,7 @@ def test_fallo_del_almacen_no_es_500(client_admin, settings):
     for k, v in CREDENCIALES.items():
         setattr(settings, k, v)
     with patch(
-        "apps.almacen.services.cloudinary.uploader.upload",
+        "apps.almacen.services.archivos.cloudinary.uploader.upload",
         side_effect=CloudinaryError("cuota agotada"),
     ):
         r = client_admin.post(
@@ -251,7 +251,7 @@ def test_eliminar_solo_del_proyecto(client_admin, settings):
 def test_eliminar_ok(client_admin, settings):
     for k, v in CREDENCIALES.items():
         setattr(settings, k, v)
-    with patch("apps.almacen.services.cloudinary.uploader.destroy") as simulado:
+    with patch("apps.almacen.services.archivos.cloudinary.uploader.destroy") as simulado:
         r = client_admin.post(
             f"{BASE}/eliminar/",
             {"public_id": "illimani/destinos/vieja"},
@@ -278,7 +278,7 @@ def test_agente_puede_reemplazar_su_lamina(agente, settings):
         setattr(settings, k, v)
     cliente = APIClient()
     cliente.force_authenticate(user=agente)
-    with patch("apps.almacen.services.cloudinary.uploader.destroy"):
+    with patch("apps.almacen.services.archivos.cloudinary.uploader.destroy"):
         r = cliente.post(
             f"{BASE}/eliminar/",
             {"public_id": "illimani/destinos/vieja"},
@@ -304,7 +304,7 @@ def test_cliente_retira_su_propia_lamina(client_cliente, settings):
     """Al reemplazar su retrato, el viajero no deja huérfanos en el almacén."""
     for k, v in CREDENCIALES.items():
         setattr(settings, k, v)
-    with patch("apps.almacen.services.cloudinary.uploader.destroy") as simulado:
+    with patch("apps.almacen.services.archivos.cloudinary.uploader.destroy") as simulado:
         r = client_cliente.post(
             f"{BASE}/eliminar/",
             {"public_id": "illimani/clientes/perfiles/ana-vieja"},
