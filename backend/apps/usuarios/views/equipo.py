@@ -3,6 +3,7 @@ from rest_framework import status, viewsets
 from rest_framework.response import Response
 
 from apps.usuarios import services
+from apps.usuarios.constants import ROLES_EQUIPO
 from apps.usuarios.models import Auditoria, Rol, Usuario
 from apps.usuarios.permissions import EsAdministrador, EsPanel
 from apps.usuarios.serializers import (
@@ -20,7 +21,17 @@ class RolViewSet(viewsets.ReadOnlyModelViewSet):
 
 
 class UsuarioViewSet(viewsets.ModelViewSet):
-    queryset = Usuario.objects.select_related("rol").order_by("email")
+    """Cuentas del equipo interno (administrador y agente).
+
+    Solo el administrador gestiona esta sección; el rol `cliente` no aparece
+    aquí (sus cuentas se crean por registro y sus fichas viven en «Viajeros»).
+    """
+
+    queryset = (
+        Usuario.objects.filter(rol_id__in=ROLES_EQUIPO)
+        .select_related("rol")
+        .order_by("email")
+    )
     serializer_class = UsuarioEquipoSerializer
     permission_classes = [EsAdministrador]
     filterset_fields = ["rol", "activo"]

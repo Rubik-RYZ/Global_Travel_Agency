@@ -16,6 +16,11 @@ ROLES_INICIALES = [
     (ROL_CLIENTE, NOMBRE_CLIENTE),
 ]
 
+# Roles que forman el equipo interno (los que se gestionan en «Equipo y accesos»).
+# El rol `cliente` NO entra aquí: las cuentas de viajero se crean por registro o
+# viven como ficha en «Viajeros».
+ROLES_EQUIPO = (ROL_ADMINISTRADOR, ROL_AGENTE)
+
 # --- Tipos de documento de identidad ---
 DOCUMENTO_CI = "CI"
 DOCUMENTO_PASAPORTE = "PASAPORTE"

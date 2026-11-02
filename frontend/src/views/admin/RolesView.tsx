@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from 'react'
+import { useCallback, useEffect, useMemo, useState } from 'react'
 
 import { authApi } from '@/api/auth'
 import { Monograma } from '@/components/shared/Monograma'
@@ -7,7 +7,7 @@ import { Button } from '@/components/ui/Button/Button'
 import { IconoEscudo, IconoLapiz, IconoMas } from '@/components/ui/Iconos'
 import type { Rol, UsuarioEquipo } from '@/types/auth.types'
 import { formatearFecha, formatearFechaHora } from '@/utils/formatters'
-import { etiquetaRol } from '@/utils/roles'
+import { ROLES, etiquetaRol } from '@/utils/roles'
 import { mensajeDeError } from '@/utils/validators'
 import { UsuarioFormModal } from '@/views/admin/components/UsuarioFormModal'
 
@@ -50,6 +50,13 @@ export function RolesView() {
 
   const activos = usuarios.filter((u) => u.activo).length
 
+  // «Equipo y accesos» solo gestiona cuentas internas: el rol `cliente` no se
+  // ofrece aquí (sus cuentas se crean por registro y su ficha vive en Viajeros).
+  const rolesEquipo = useMemo(
+    () => roles.filter((r) => r.nombre !== ROLES.CLIENTE),
+    [roles],
+  )
+
   return (
     <div className="mx-auto max-w-5xl">
       <header className="mb-8 flex flex-wrap items-start justify-between gap-4">
@@ -80,8 +87,8 @@ export function RolesView() {
           <p className="mt-1 font-display text-3xl leading-none text-primary">{activos}</p>
         </div>
         <div className="rounded-lg border border-parchment-border bg-surface-container-lowest px-5 py-4 shadow-paper">
-          <p className="coord">Roles configurados</p>
-          <p className="mt-1 font-display text-3xl leading-none text-primary">{roles.length}</p>
+          <p className="coord">Roles de equipo</p>
+          <p className="mt-1 font-display text-3xl leading-none text-primary">{rolesEquipo.length}</p>
         </div>
       </div>
 
@@ -113,7 +120,7 @@ export function RolesView() {
       <UsuarioFormModal
         abierto={modalAbierto}
         onCerrar={() => setModalAbierto(false)}
-        roles={roles}
+        roles={rolesEquipo}
         usuario={enEdicion}
         onGuardado={cargar}
       />

@@ -5,9 +5,18 @@ from django.contrib.auth import get_user_model
 from django.db import transaction
 from rest_framework.exceptions import ValidationError
 
+from apps.usuarios.constants import ROLES_EQUIPO
 from apps.usuarios.services.auditoria import ip_desde_request, registrar_auditoria
 
 Usuario = get_user_model()
+
+
+def _verificar_rol_equipo(rol_id) -> None:
+    """El equipo interno solo admite roles administrador o agente."""
+    if rol_id is not None and rol_id not in ROLES_EQUIPO:
+        raise ValidationError(
+            {"rol_id": "Solo se admiten roles internos (administrador o agente)."}
+        )
 
 
 @transaction.atomic
@@ -16,6 +25,7 @@ def crear_usuario_equipo(*, datos: dict, actor=None, request=None):
     email = (datos.get("email") or "").strip().lower()
     if Usuario.objects.filter(email__iexact=email).exists():
         raise ValidationError({"email": "Ya existe un usuario con este email."})
+    _verificar_rol_equipo(datos.get("rol_id"))
 
     usuario = Usuario.objects.create_user(
         email=email,
@@ -42,6 +52,7 @@ def crear_usuario_equipo(*, datos: dict, actor=None, request=None):
 @transaction.atomic
 def actualizar_usuario_equipo(*, usuario, datos: dict, actor=None, request=None):
     """Actualiza rol/estado y, opcionalmente, la contraseña de un usuario."""
+    _verificar_rol_equipo(datos.get("rol_id"))
     cambios: dict = {}
     if datos.get("rol_id") is not None:
         usuario.rol_id = datos["rol_id"]

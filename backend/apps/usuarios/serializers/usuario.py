@@ -1,6 +1,7 @@
 """Capa de esquema — usuarios y equipo (CU1)."""
 from rest_framework import serializers
 
+from apps.usuarios.constants import ROLES_EQUIPO
 from apps.usuarios.models import Rol, Usuario
 
 
@@ -50,6 +51,11 @@ class UsuarioEquipoSerializer(serializers.ModelSerializer):
     def validate_rol_id(self, valor: int) -> int:
         if not Rol.objects.filter(id=valor).exists():
             raise serializers.ValidationError("El rol indicado no existe.")
+        if valor not in ROLES_EQUIPO:
+            raise serializers.ValidationError(
+                "En «Equipo y accesos» solo se asignan roles internos "
+                "(administrador o agente)."
+            )
         return valor
 
     def validate(self, datos: dict) -> dict:
