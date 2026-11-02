@@ -55,36 +55,34 @@ apps/
 └── notificaciones/ → correo transaccional
 ```
 
-Cada dominio tiene las **mismas capas internas**, colocadas dentro de su app. Cada capa puede vivir como **archivo** (mientras es pequeña) o como **paquete** (cuando crece); el resto del código la importa **siempre igual**, así que pasar de archivo a paquete no rompe nada.
+Cada app **encapsula un dominio** y lleva **sus capas dentro**. Es el patrón de **capa de servicios** de Django (services + serializers + views), el que se usa en proyectos Django REST profesionales.
+
+### Forma de cada app
 
 ```
 <app>/
-├── models/         # Dominio — entidades y relaciones
-├── serializers/    # Esquema — validación de entrada y salida
-├── services/       # Negocio — toda la lógica del dominio
-├── views/          # Presentación — ViewSets delgados, solo orquestan
-├── managers.py     # QuerySets reutilizables (opcional, si la complejidad lo pide)
-├── permissions.py  # Permisos del dominio
-├── urls.py         # Registro de routers DRF
+├── models/         # Dominio — una entidad por archivo
+├── serializers/    # Esquema — un módulo por recurso
+├── services/       # Negocio — un módulo por subdominio
+├── views/          # Presentación — un módulo por recurso
+├── permissions.py  # Permisos del dominio (archivo)
+├── constants.py    # Constantes del dominio (archivo, si hacen falta)
+├── managers.py     # QuerySets reutilizables (archivo, si la complejidad lo pide)
+├── urls.py         # Router DRF (archivo)
 └── tests/
 ```
 
-Cuando una capa se vuelve **paquete**, agrupa **un archivo por unidad** (una entidad en `models/`, un módulo en `serializers/` y `views/`, un subdominio en `services/`) y su `__init__.py` **re-exporta la API pública**. Cuando es **archivo**, esa misma API vive en un solo módulo. En ambos casos el import externo es idéntico:
+- Las cuatro capas son siempre paquetes: `models/`, `serializers/`, `services/` y `views/`.
+- Cada paquete agrupa un archivo por unidad y su `__init__.py` re-exporta la API pública. El import externo no cambia:
 
 ```python
 from apps.<app>.models import <Entidad>
 from apps.<app>.services import <funcion>
+from apps.<app>.views import <ViewSet>
 ```
 
-### Regla de crecimiento (igual para todos los dominios)
-
-Una capa pasa de archivo a paquete cuando se cumpla **cualquiera** de estas condiciones:
-
-- El archivo de la capa **supera ~300–400 líneas**.
-- Entra un **módulo o caso de uso nuevo** a la app.
-- La capa agrupa **más de una entidad** con lógica de negocio propia.
-
-> El momento más barato de dividir es **antes** de que el archivo crezca. No dividir por dividir: solo cuando la regla se cumple. **Todo dominio —existente o por nacer— se crea y se mantiene con esta misma estructura**, sin mezclar formas distintas.
+- `permissions.py`, `urls.py`, `constants.py` y `managers.py` son archivos.
+- Las capas que un dominio no necesita no existen: `almacen` no tiene `models/` ni `serializers/`; `notificaciones` no tiene `views/` ni `urls.py`.
 
 ### Aviso crítico: `models/__init__.py`
 
