@@ -8,7 +8,7 @@ Documentación de referencia (leer en este orden):
 1. [`AGENT.md`](./AGENT.md) — arquitectura, stack y reglas.
 2. [`esquema_agencia_viajes.sql`](./esquema_agencia_viajes.sql) — esquema de base de datos.
 3. [`SCREENS.md`](./SCREENS.md) — guía de pantallas por sprint.
-4. [`design.md_terranova_oficial_definitivo.md`](./design.md_terranova_oficial_definitivo.md) — tokens de diseño (marca Terranova).
+4. [`DESIGN.md`](./DESIGN.md) — tokens de diseño (marca Terranova).
 
 ## Stack
 
