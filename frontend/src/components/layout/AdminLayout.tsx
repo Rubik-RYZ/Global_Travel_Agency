@@ -6,10 +6,13 @@ import { Link, Outlet, useLocation } from 'react-router-dom'
 import { Footer } from '@/components/layout/Footer'
 import { PerfilMenu } from '@/components/layout/PerfilMenu'
 import {
+  IconoBillete,
+  IconoCalendario,
   IconoChevron,
   IconoEdificio,
   IconoEscudo,
   IconoFlechaDerecha,
+  IconoLibro,
   IconoMaletin,
   IconoModulos,
   IconoPersona,
@@ -64,6 +67,30 @@ const MODULOS: Modulo[] = [
     titulo: 'Destinos',
     descripcion: 'Catálogo de destinos y paquetes turísticos',
     icono: <IconoUbicacion className="h-4 w-4" />,
+  },
+  {
+    a: '/admin/vuelos',
+    titulo: 'Vuelos',
+    descripcion: 'Rutas, horarios, tarifas y cupos de aerolíneas',
+    icono: <IconoBillete className="h-4 w-4" />,
+  },
+  {
+    a: '/admin/hoteles',
+    titulo: 'Hospedajes',
+    descripcion: 'Hoteles, categorías y casas asociadas a cada destino',
+    icono: <IconoEdificio className="h-4 w-4" />,
+  },
+  {
+    a: '/admin/paquetes',
+    titulo: 'Paquetes',
+    descripcion: 'Armador de ofertas con destino, hotel y precio base',
+    icono: <IconoLibro className="h-4 w-4" />,
+  },
+  {
+    a: '/admin/salidas',
+    titulo: 'Salidas',
+    descripcion: 'Calendario de fechas, vuelos y cupos por paquete',
+    icono: <IconoCalendario className="h-4 w-4" />,
   },
   {
     a: '/admin/proveedores',

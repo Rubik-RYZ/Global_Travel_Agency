@@ -13,14 +13,20 @@ import { ClientesAdminView } from '@/views/admin/ClientesAdminView'
 import { DashboardView } from '@/views/admin/DashboardView'
 import { EditorDestinoView } from '@/views/admin/EditorDestinoView'
 import { FichaClienteAdminView } from '@/views/admin/FichaClienteAdminView'
+import { HotelesAdminView } from '@/views/admin/HotelesAdminView'
+import { PaquetesAdminView } from '@/views/admin/PaquetesAdminView'
+import { SalidasAdminView } from '@/views/admin/SalidasAdminView'
 import { ProveedoresAdminView } from '@/views/admin/ProveedoresAdminView'
 import { RolesView } from '@/views/admin/RolesView'
+import { VuelosAdminView } from '@/views/admin/VuelosAdminView'
 import { LoginView } from '@/views/auth/LoginView'
 import { RecuperarPasswordView } from '@/views/auth/RecuperarPasswordView'
 import { RegisterView } from '@/views/auth/RegisterView'
 import { RestablecerPasswordView } from '@/views/auth/RestablecerPasswordView'
 import { SesionExpiradaView } from '@/views/auth/SesionExpiradaView'
 import { DetalleDestinoView } from '@/views/catalogo/DetalleDestinoView'
+import { DetallePaqueteView } from '@/views/catalogo/DetallePaqueteView'
+import { CatalogoPaquetesView } from '@/views/catalogo/CatalogoPaquetesView'
 import { ExplorarDestinosView } from '@/views/catalogo/ExplorarDestinosView'
 import { PanelViajeroView } from '@/views/cliente/PanelViajeroView'
 import { PreferenciasView } from '@/views/cliente/PreferenciasView'
@@ -40,6 +46,8 @@ export const router = createBrowserRouter([
       { path: '/', element: <HomeView /> },
       { path: '/destinos', element: <ExplorarDestinosView /> },
       { path: '/destinos/:id', element: <DetalleDestinoView /> },
+      { path: '/viajes', element: <CatalogoPaquetesView /> },
+      { path: '/viajes/:id', element: <DetallePaqueteView /> },
     ],
   },
   {
@@ -87,6 +95,10 @@ export const router = createBrowserRouter([
           { path: '/admin/destinos', element: <AtlasDestinosView /> },
           { path: '/admin/destinos/nuevo', element: <EditorDestinoView /> },
           { path: '/admin/destinos/:id/editar', element: <EditorDestinoView /> },
+          { path: '/admin/vuelos', element: <VuelosAdminView /> },
+          { path: '/admin/hoteles', element: <HotelesAdminView /> },
+          { path: '/admin/paquetes', element: <PaquetesAdminView /> },
+          { path: '/admin/salidas', element: <SalidasAdminView /> },
           {
             path: '/admin/proveedores',
             element: <RutaAdmin />,

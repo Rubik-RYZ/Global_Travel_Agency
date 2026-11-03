@@ -6,8 +6,12 @@ import { authApi } from '@/api/auth'
 import { clientesApi } from '@/api/clientes'
 import { RosaVientos } from '@/components/brand/RosaVientos'
 import {
+  IconoBillete,
+  IconoCalendario,
+  IconoEdificio,
   IconoEscudo,
   IconoFlechaDerecha,
+  IconoLibro,
   IconoMaletin,
   IconoPersona,
   IconoPortapapeles,
@@ -48,6 +52,30 @@ const ACCESOS: ModuloAcceso[] = [
     descripcion: 'Atlas de rutas, itinerarios día a día y láminas del catálogo.',
     a: '/admin/destinos',
     icono: <IconoUbicacion className="h-5 w-5" />,
+  },
+  {
+    titulo: 'Vuelos & conexiones',
+    descripcion: 'Rutas, horarios, tarifas y cupos de las aerolíneas aliadas.',
+    a: '/admin/vuelos',
+    icono: <IconoBillete className="h-5 w-5" />,
+  },
+  {
+    titulo: 'Hospedajes',
+    descripcion: 'Casas y hoteles asociados a cada destino del catálogo.',
+    a: '/admin/hoteles',
+    icono: <IconoEdificio className="h-5 w-5" />,
+  },
+  {
+    titulo: 'Armador de paquetes',
+    descripcion: 'Ofertas con destino, hospedaje, duración y precio base.',
+    a: '/admin/paquetes',
+    icono: <IconoLibro className="h-5 w-5" />,
+  },
+  {
+    titulo: 'Calendario de salidas',
+    descripcion: 'Fechas confirmadas, vuelos asignados y cupos vigentes.',
+    a: '/admin/salidas',
+    icono: <IconoCalendario className="h-5 w-5" />,
   },
   {
     titulo: 'Proveedores',

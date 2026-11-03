@@ -18,6 +18,18 @@ class EsAdminOAgente(BasePermission):
         return user.rol_id in (ROL_ADMINISTRADOR, ROL_AGENTE_ID)
 
 
+class EsPersonal(BasePermission):
+    """Administradores y agentes autenticados, tanto en lectura como en escritura."""
+
+    def has_permission(self, request, view):
+        user = request.user
+        return bool(
+            user
+            and user.is_authenticated
+            and user.rol_id in (ROL_ADMINISTRADOR, ROL_AGENTE_ID)
+        )
+
+
 class EsAdmin(BasePermission):
     """Solo administradores (rol_id == ROL_ADMINISTRADOR)."""
 

@@ -27,6 +27,7 @@ interface EnlaceNav {
 /** Enlaces permanentes de la barra. Los que apuntan a la home usan hash. */
 const ENLACES: EnlaceNav[] = [
   { a: '/destinos', texto: 'Expediciones' },
+  { a: '/viajes', texto: 'Viajes' },
   { a: '/#itinerarios', texto: 'Itinerarios de autor', ancla: true },
   { a: '/#manifiesto', texto: 'Manifiesto', ancla: true },
 ]

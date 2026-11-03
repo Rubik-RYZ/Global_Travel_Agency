@@ -13,12 +13,23 @@ almacén externo— el seed usa esas URLs, de modo que quien clone el repositori
 ve las imágenes sin credenciales.
 """
 import json
+from datetime import date, datetime
 from pathlib import Path
 
 from django.core.management.base import BaseCommand
 from django.db import transaction
+from django.utils import timezone
 
-from apps.catalogo.models import Destino, ItinerarioDia, Proveedor
+from apps.catalogo.models import (
+    Aeropuerto,
+    Destino,
+    Hotel,
+    ItinerarioDia,
+    Paquete,
+    PaqueteSalida,
+    Proveedor,
+    Vuelo,
+)
 from apps.usuarios.constants import (
     ROL_ADMINISTRADOR,
     ROL_CLIENTE,
@@ -393,6 +404,134 @@ PROVEEDORES_INICIALES = [
 ]
 
 
+AEROPUERTOS_INICIALES = [
+    {"codigo_iata": "LPB", "nombre": "Aeropuerto Internacional El Alto", "destino": "Tiwanaku"},
+    {"codigo_iata": "UYU", "nombre": "Aeropuerto Joya Andina", "destino": "Salar de Uyuni"},
+    {"codigo_iata": "CUZ", "nombre": "Aeropuerto Alejandro Velasco Astete", "destino": "Machu Picchu"},
+    {"codigo_iata": "LIM", "nombre": "Aeropuerto Jorge Chavez", "destino": "Valle Sagrado de los Incas"},
+    {"codigo_iata": "NAP", "nombre": "Aeropuerto de Napoles", "destino": "Costa Amalfitana"},
+    {"codigo_iata": "KIX", "nombre": "Aeropuerto de Kansai", "destino": "Kioto y Takayama"},
+    {"codigo_iata": "CMN", "nombre": "Aeropuerto Mohammed V", "destino": "Atlas y Desierto del Sahara"},
+    {"codigo_iata": "PUQ", "nombre": "Aeropuerto Presidente Carlos Ibanez", "destino": "Patagonia Austral"},
+]
+
+# (numero, aerolinea, origen, destino, salida, llegada, precio, cupos)
+VUELOS_INICIALES = [
+    {"numero_vuelo": "OB 720", "proveedor": "Andes Air Bolivia", "origen": "LPB", "destino": "CUZ",
+     "salida": (2027, 1, 19, 7, 0), "llegada": (2027, 1, 19, 8, 20), "precio": "320.00", "cupos": 90},
+    {"numero_vuelo": "OB 721", "proveedor": "Andes Air Bolivia", "origen": "CUZ", "destino": "LPB",
+     "salida": (2027, 1, 24, 18, 0), "llegada": (2027, 1, 24, 19, 20), "precio": "320.00", "cupos": 90},
+    {"numero_vuelo": "OB 710", "proveedor": "Andes Air Bolivia", "origen": "LPB", "destino": "UYU",
+     "salida": (2027, 1, 19, 8, 0), "llegada": (2027, 1, 19, 9, 0), "precio": "180.00", "cupos": 60},
+    {"numero_vuelo": "OB 711", "proveedor": "Andes Air Bolivia", "origen": "UYU", "destino": "LPB",
+     "salida": (2027, 1, 22, 17, 0), "llegada": (2027, 1, 22, 18, 0), "precio": "180.00", "cupos": 60},
+    {"numero_vuelo": "LA 840", "proveedor": "LATAM Airlines", "origen": "LIM", "destino": "CUZ",
+     "salida": (2027, 1, 18, 9, 30), "llegada": (2027, 1, 18, 11, 0), "precio": "240.00", "cupos": 80},
+    {"numero_vuelo": "LA 841", "proveedor": "LATAM Airlines", "origen": "CUZ", "destino": "LIM",
+     "salida": (2027, 1, 25, 12, 0), "llegada": (2027, 1, 25, 13, 30), "precio": "240.00", "cupos": 80},
+    {"numero_vuelo": "LA 900", "proveedor": "LATAM Airlines", "origen": "LIM", "destino": "NAP",
+     "salida": (2027, 2, 4, 10, 0), "llegada": (2027, 2, 5, 8, 30), "precio": "1350.00", "cupos": 40},
+    {"numero_vuelo": "LA 901", "proveedor": "LATAM Airlines", "origen": "NAP", "destino": "LIM",
+     "salida": (2027, 2, 13, 9, 0), "llegada": (2027, 2, 13, 20, 0), "precio": "1350.00", "cupos": 40},
+    {"numero_vuelo": "LA 950", "proveedor": "LATAM Airlines", "origen": "LIM", "destino": "PUQ",
+     "salida": (2027, 3, 4, 6, 0), "llegada": (2027, 3, 4, 12, 30), "precio": "720.00", "cupos": 50},
+    {"numero_vuelo": "LA 951", "proveedor": "LATAM Airlines", "origen": "PUQ", "destino": "LIM",
+     "salida": (2027, 3, 13, 14, 0), "llegada": (2027, 3, 13, 20, 30), "precio": "720.00", "cupos": 50},
+]
+
+HOTELES_INICIALES = [
+    {
+        "nombre": "Inkaterra Machu Picchu Pueblo",
+        "proveedor": "Inkaterra Eco-Lodge",
+        "destino": "Machu Picchu",
+        "estrellas": 5,
+        "direccion": "Santuario Historico de Machu Picchu, Aguas Calientes",
+        "latitud": "-13.154000",
+        "longitud": "-72.545000",
+        "descripcion": "Casona de piedra entre jardines de orquideas, a orillas del rio Vilcanota.",
+    },
+    {
+        "nombre": "Palacio del Inca Cusco",
+        "proveedor": "Palacio del Inca Luxury Collection",
+        "destino": "Valle Sagrado de los Incas",
+        "estrellas": 5,
+        "direccion": "Plaza de Armas, Cusco",
+        "latitud": "-13.517000",
+        "longitud": "-71.978000",
+        "descripcion": "Casona colonial frente a la Plaza de Armas, con patio de piedra inca.",
+    },
+]
+
+PAQUETES_INICIALES = [
+    {
+        "nombre": "Machu Picchu Esencial",
+        "destino": "Machu Picchu",
+        "hotel": "Inkaterra Machu Picchu Pueblo",
+        "descripcion": "Cinco dias entre Cusco, el Valle Sagrado y la ciudadela inca.",
+        "duracion_dias": 5,
+        "precio_base": "1490.00",
+        "etiquetas": ["inca", "patrimonio", "naturaleza"],
+        "salidas": [
+            {"fecha": "2027-01-20", "vuelo_ida": "OB 720", "vuelo_vuelta": "OB 721", "cupos": 16},
+            {"fecha": "2027-02-17", "cupos": 16},
+            {"fecha": "2027-03-17", "cupos": 16},
+        ],
+    },
+    {
+        "nombre": "Valle Sagrado & Cusco",
+        "destino": "Valle Sagrado de los Incas",
+        "hotel": "Palacio del Inca Cusco",
+        "descripcion": "Cuatro dias de mercados, andenes y casonas coloniales.",
+        "duracion_dias": 4,
+        "precio_base": "980.00",
+        "etiquetas": ["cultura", "andino"],
+        "salidas": [
+            {"fecha": "2027-01-21", "vuelo_ida": "LA 840", "vuelo_vuelta": "LA 841", "cupos": 20},
+            {"fecha": "2027-02-18", "cupos": 20},
+        ],
+    },
+    {
+        "nombre": "Salar de Uyuni Magico",
+        "destino": "Salar de Uyuni",
+        "descripcion": "Tres dias por el salar, islas de cactus y noches de estrellas.",
+        "duracion_dias": 3,
+        "precio_base": "520.00",
+        "etiquetas": ["naturaleza", "aventura"],
+        "salidas": [
+            {"fecha": "2027-01-20", "vuelo_ida": "OB 710", "vuelo_vuelta": "OB 711", "cupos": 24},
+            {"fecha": "2027-02-10", "cupos": 24},
+        ],
+    },
+    {
+        "nombre": "Costa Amalfitana",
+        "destino": "Costa Amalfitana",
+        "descripcion": "Siete dias entre Positano, Ravello y la cocina del Mediterraneo.",
+        "duracion_dias": 7,
+        "precio_base": "2200.00",
+        "etiquetas": ["costa", "gastronomia"],
+        "salidas": [
+            {"fecha": "2027-02-05", "vuelo_ida": "LA 900", "vuelo_vuelta": "LA 901", "cupos": 12},
+        ],
+    },
+    {
+        "nombre": "Patagonia Austral",
+        "destino": "Patagonia Austral",
+        "descripcion": "Seis dias de glaciares, fiordos y trekking en el fin del mundo.",
+        "duracion_dias": 6,
+        "precio_base": "1650.00",
+        "etiquetas": ["naturaleza", "trekking"],
+        "salidas": [
+            {"fecha": "2027-03-05", "vuelo_ida": "LA 950", "vuelo_vuelta": "LA 951", "cupos": 14},
+        ],
+    },
+]
+
+
+def _aware(fecha_hora: tuple[int, int, int, int, int]):
+    anio, mes, dia, hora, minuto = fecha_hora
+    return timezone.make_aware(datetime(anio, mes, dia, hora, minuto))
+
+
 class Command(BaseCommand):
     help = "Puebla la BD con datos iniciales: roles, usuarios, destinos y proveedores."
 
@@ -403,6 +542,10 @@ class Command(BaseCommand):
         self._seed_cliente()
         self._seed_destinos()
         self._seed_proveedores()
+        self._seed_aeropuertos()
+        self._seed_vuelos()
+        self._seed_hoteles()
+        self._seed_paquetes()
         self.stdout.write(self.style.SUCCESS("seed_data completado."))
 
     def _seed_roles(self):
@@ -514,3 +657,137 @@ class Command(BaseCommand):
             if nuevo:
                 creados += 1
         self.stdout.write(f"  proveedores: {creados} nuevos, {len(PROVEEDORES_INICIALES) - creados} ya existian")
+
+    def _seed_aeropuertos(self):
+        creados = 0
+        for data in AEROPUERTOS_INICIALES:
+            destino = Destino.objects.filter(nombre=data["destino"]).first()
+            if not destino:
+                continue
+            _, nuevo = Aeropuerto.objects.update_or_create(
+                codigo_iata=data["codigo_iata"],
+                defaults={"nombre": data["nombre"], "destino": destino},
+            )
+            if nuevo:
+                creados += 1
+        self.stdout.write(
+            f"  aeropuertos: {creados} nuevos, "
+            f"{len(AEROPUERTOS_INICIALES) - creados} ya existian"
+        )
+
+    def _seed_vuelos(self):
+        creados = 0
+        for data in VUELOS_INICIALES:
+            proveedor = Proveedor.objects.filter(
+                nombre=data["proveedor"], tipo="aerolinea"
+            ).first()
+            if not proveedor:
+                continue
+            _, nuevo = Vuelo.objects.update_or_create(
+                numero_vuelo=data["numero_vuelo"],
+                salida=_aware(data["salida"]),
+                defaults={
+                    "proveedor": proveedor,
+                    "origen_id": data["origen"],
+                    "destino_id": data["destino"],
+                    "llegada": _aware(data["llegada"]),
+                    "precio": data["precio"],
+                    "moneda": "USD",
+                    "cupos_totales": data["cupos"],
+                    "cupos_disponibles": data["cupos"],
+                },
+            )
+            if nuevo:
+                creados += 1
+        self.stdout.write(
+            f"  vuelos: {creados} nuevos, "
+            f"{len(VUELOS_INICIALES) - creados} ya existian"
+        )
+
+    def _seed_hoteles(self):
+        creados = 0
+        for data in HOTELES_INICIALES:
+            destino = Destino.objects.filter(nombre=data["destino"]).first()
+            proveedor = Proveedor.objects.filter(
+                nombre=data["proveedor"], tipo="hotel"
+            ).first()
+            if not destino or not proveedor:
+                continue
+            _, nuevo = Hotel.objects.update_or_create(
+                nombre=data["nombre"],
+                destino=destino,
+                defaults={
+                    "proveedor": proveedor,
+                    "estrellas": data.get("estrellas"),
+                    "direccion": data.get("direccion"),
+                    "latitud": data.get("latitud"),
+                    "longitud": data.get("longitud"),
+                    "descripcion": data.get("descripcion"),
+                    "activo": True,
+                },
+            )
+            if nuevo:
+                creados += 1
+        self.stdout.write(
+            f"  hoteles: {creados} nuevos, "
+            f"{len(HOTELES_INICIALES) - creados} ya existian"
+        )
+
+    def _seed_paquetes(self):
+        creados = salidas_creadas = 0
+        for data in PAQUETES_INICIALES:
+            destino = Destino.objects.filter(nombre=data["destino"]).first()
+            if not destino:
+                continue
+            hotel = None
+            if data.get("hotel"):
+                hotel = Hotel.objects.filter(
+                    nombre=data["hotel"], destino=destino
+                ).first()
+            paquete, nuevo = Paquete.objects.update_or_create(
+                nombre=data["nombre"],
+                destino=destino,
+                defaults={
+                    "hotel": hotel,
+                    "descripcion": data.get("descripcion"),
+                    "duracion_dias": data["duracion_dias"],
+                    "precio_base": data["precio_base"],
+                    "moneda": "USD",
+                    "etiquetas": data.get("etiquetas", []),
+                    "activo": True,
+                },
+            )
+            if nuevo:
+                creados += 1
+            for salida in data.get("salidas", []):
+                vuelo_ida = None
+                vuelo_vuelta = None
+                if salida.get("vuelo_ida"):
+                    vuelo_ida = (
+                        Vuelo.objects.filter(numero_vuelo=salida["vuelo_ida"])
+                        .order_by("salida")
+                        .first()
+                    )
+                if salida.get("vuelo_vuelta"):
+                    vuelo_vuelta = (
+                        Vuelo.objects.filter(numero_vuelo=salida["vuelo_vuelta"])
+                        .order_by("salida")
+                        .first()
+                    )
+                _, salida_nueva = PaqueteSalida.objects.update_or_create(
+                    paquete=paquete,
+                    fecha_salida=date.fromisoformat(salida["fecha"]),
+                    defaults={
+                        "vuelo_ida": vuelo_ida,
+                        "vuelo_vuelta": vuelo_vuelta,
+                        "cupos_totales": salida["cupos"],
+                        "cupos_disponibles": salida["cupos"],
+                    },
+                )
+                if salida_nueva:
+                    salidas_creadas += 1
+        self.stdout.write(
+            f"  paquetes: {creados} nuevos, "
+            f"{len(PAQUETES_INICIALES) - creados} ya existian, "
+            f"{salidas_creadas} salidas nuevas"
+        )

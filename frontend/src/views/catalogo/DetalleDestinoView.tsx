@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react'
 import { Link, useParams } from 'react-router-dom'
 import { motion } from 'framer-motion'
 
-import { catalogoApi, type Destino, type ItinerarioDia } from '@/api/catalogo'
+import { catalogoApi, type Destino, type ItinerarioDia, type Paquete } from '@/api/catalogo'
 import { RosaVientos } from '@/components/brand/RosaVientos'
 import {
   IconoBillete,
@@ -93,6 +93,7 @@ function partirEpoca(texto: string | null): [string | null, string | null] {
 export function DetalleDestinoView() {
   const { id } = useParams<{ id: string }>()
   const [destino, setDestino] = useState<Destino | null>(null)
+  const [paquetes, setPaquetes] = useState<Paquete[]>([])
   const [cargando, setCargando] = useState(true)
   const [error, setError] = useState(false)
 
@@ -105,6 +106,22 @@ export function DetalleDestinoView() {
       .then(setDestino)
       .catch(() => setError(true))
       .finally(() => setCargando(false))
+  }, [id])
+
+  useEffect(() => {
+    if (!id) return
+    let activo = true
+    catalogoApi
+      .listarPaquetes({ destino: Number(id) })
+      .then((data) => {
+        if (activo) setPaquetes(data.results)
+      })
+      .catch(() => {
+        if (activo) setPaquetes([])
+      })
+    return () => {
+      activo = false
+    }
   }, [id])
 
   if (cargando) {
@@ -569,6 +586,72 @@ export function DetalleDestinoView() {
           </aside>
         </div>
       </section>
+
+      {/* ── Viajes desde este destino ─────────────────────────────────────── */}
+      {paquetes.length > 0 && (
+        <section className="w-full border-t border-parchment-border bg-surface-container-low py-16">
+          <div className="mx-auto w-full max-w-7xl px-6 lg:px-12">
+            <div className="flex flex-col gap-2">
+              <span className="coord font-semibold uppercase tracking-widest text-terracotta">
+                Viajes preparados
+              </span>
+              <h2 className="font-display text-3xl font-normal leading-tight tracking-tight text-on-surface sm:text-4xl">
+                Paquetes con salida desde {destino.nombre}
+              </h2>
+              <p className="max-w-2xl font-sans text-base leading-relaxed text-on-surface-variant">
+                Ofertas curadas por el atelier con hospedaje, fechas confirmadas y cupos por salida.
+              </p>
+            </div>
+
+            <div className="mt-10 grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
+              {paquetes.map((paquete) => (
+                <Link
+                  key={paquete.id}
+                  to={`/viajes/${paquete.id}`}
+                  className="group flex flex-col overflow-hidden rounded-xl border border-parchment-border bg-surface-container-lowest shadow-sm transition-shadow hover:shadow-md"
+                >
+                  <div className="relative h-40 overflow-hidden bg-surface-container">
+                    <img
+                      src={imagen}
+                      alt={paquete.nombre}
+                      className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-105"
+                      loading="lazy"
+                    />
+                  </div>
+                  <div className="flex flex-1 flex-col gap-3 p-5">
+                    <div className="flex items-center justify-between gap-2">
+                      <span className="coord text-primary">
+                        {paquete.duracion_dias} días
+                      </span>
+                      {paquete.hotel_nombre && (
+                        <span className="coord text-stamp-sepia">
+                          {paquete.hotel_nombre}
+                        </span>
+                      )}
+                    </div>
+                    <h3 className="font-display text-xl leading-snug text-on-surface transition-colors group-hover:text-primary">
+                      {paquete.nombre}
+                    </h3>
+                    <p className="line-clamp-2 font-sans text-sm leading-relaxed text-on-surface-variant">
+                      {paquete.descripcion ??
+                        'Una travesía preparada por el atelier de viajes.'}
+                    </p>
+                    <div className="mt-auto flex items-center justify-between gap-3 border-t border-parchment-border/60 pt-3">
+                      <span className="font-display text-lg text-primary">
+                        {precioDesde(paquete.precio_base, paquete.moneda)}
+                      </span>
+                      <span className="inline-flex items-center gap-1.5 font-sans text-xs font-semibold uppercase tracking-wider text-primary">
+                        Ver viaje
+                        <IconoFlechaDerecha className="h-3.5 w-3.5 transition-transform group-hover:translate-x-0.5" />
+                      </span>
+                    </div>
+                  </div>
+                </Link>
+              ))}
+            </div>
+          </div>
+        </section>
+      )}
 
       {/* ── 4. Concierge ──────────────────────────────────────────────────── */}
       <section id="concierge" className="w-full scroll-mt-24 bg-surface-container py-16">
