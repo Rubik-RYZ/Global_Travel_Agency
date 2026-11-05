@@ -1,0 +1,381 @@
+# Illimani Global Travel S.R.L.
+
+Sistema de Información Web para Agencia de Viajes Internacional.  
+**Equipo**: Brayan · José · Yeral — UMSA Taller de Proyecto 2026
+
+---
+
+## Descripción del sistema
+
+Tour operador que gestiona su **propio inventario** de vuelos, hoteles y paquetes turísticos internacionales — no conecta a GDS externos (sin Amadeus, sin Sabre). El sistema cubre: autenticación y roles, catálogo de destinos, reservas con itinerarios, pagos en línea, asistente conversacional con NLP y reportes gerenciales.
+
+El equipo trabaja en 4 sprints de desarrollo (S2–S5). La base de datos ya está diseñada y versionada en el repositorio.
+
+---
+
+## Stack tecnológico
+
+**Backend**: Python 3.11 · Django 4.2 LTS · Django REST Framework · PostgreSQL 15  
+**Autenticación**: `djangorestframework-simplejwt` · bcrypt (cost 10) — sin Firebase  
+**Imágenes**: Cloudinary (SDK `cloudinary`, app `apps.almacen`) — la base guarda la URL y el `public_id`  
+**Pagos**: Stripe modo test (PaymentIntent API)  
+**Emails**: Resend (llamadas síncronas — sin Celery, sin Redis)  
+**Moneda**: ExchangeRate-API (BOB/USD, free tier)  
+**Aeropuertos**: OurAirports CSV (carga única con management command)  
+**IA/NLP**: scikit-learn — pipeline TF-IDF + LogisticRegression, 7 intents  
+**Mapas**: Leaflet + OpenStreetMap (sin costo)
+
+**Frontend**: React 18 · TypeScript · Vite  
+**Estilos**: Tailwind CSS  
+**Animaciones**: Framer Motion — no usar GSAP  
+**Estado global**: Zustand (auth + flujo de reserva)  
+**Formularios**: React Hook Form + Zod  
+**HTTP**: Axios con interceptor JWT  
+**Routing**: React Router v6 con rutas protegidas  
+**Iconos**: Heroicons  
+**Infraestructura**: Docker Compose (backend + frontend + PostgreSQL) (quiza luego el modelo de ai)
+
+Lo que NO se usa: Firebase · Redis · Celery · Amadeus · GDS · microservicios · Django templates para UI
+
+---
+
+## Arquitectura Django — Layered Architecture orientada a dominio
+
+El proyecto NO sigue MVC. La arquitectura es **por capas con organización por dominio (apps)**, un patrón estándar en proyectos Django REST de escala media en la industria. Cada app encapsula un dominio completo del negocio con sus propias capas internas.
+
+```
+apps/
+├── usuarios/       → CU1 (acceso/seguridad) + CU2 (clientes/preferencias)
+├── catalogo/       → CU3 (destinos/proveedores) + CU4 (vuelos) + CU5 (hoteles) + CU6 (paquetes/salidas)
+├── reservas/       → CU7 (reservas) + CU8 (itinerarios/notificaciones)
+├── pagos/          → CU9 (pagos/tipos de cambio)
+├── ia/             → CU10 (chatbot) + CU11 (recomendaciones)
+├── reportes/       → CU12 (reportes gerenciales)
+├── almacen/        → almacenamiento externo de archivos
+└── notificaciones/ → correo transaccional
+```
+
+Cada app **encapsula un dominio** y lleva **sus capas dentro**. Es el patrón de **capa de servicios** de Django (services + serializers + views), el que se usa en proyectos Django REST profesionales.
+
+### Forma de cada app
+
+```
+<app>/
+├── models/         # Dominio — una entidad por archivo
+├── serializers/    # Esquema — un módulo por recurso
+├── services/       # Negocio — un módulo por subdominio
+├── views/          # Presentación — un módulo por recurso
+├── permissions.py  # Permisos del dominio (archivo)
+├── constants.py    # Constantes del dominio (archivo, si hacen falta)
+├── managers.py     # QuerySets reutilizables (archivo, si la complejidad lo pide)
+├── urls.py         # Router DRF (archivo)
+└── tests/
+```
+
+- Las cuatro capas son siempre paquetes: `models/`, `serializers/`, `services/` y `views/`.
+- Cada paquete agrupa un archivo por unidad y su `__init__.py` re-exporta la API pública. El import externo no cambia:
+
+```python
+from apps.<app>.models import <Entidad>
+from apps.<app>.services import <funcion>
+from apps.<app>.views import <ViewSet>
+```
+
+- `permissions.py`, `urls.py`, `constants.py` y `managers.py` son archivos.
+- Las capas que un dominio no necesita no existen: `almacen` no tiene `models/` ni `serializers/`; `notificaciones` no tiene `views/` ni `urls.py`.
+
+### Aviso crítico: `models/__init__.py`
+
+Al convertir `models.py` en paquete, el `__init__.py` **debe importar todos los módulos**. Si se olvida uno, Django cree que ese modelo desapareció y **genera una migración que borra la tabla** (`DROP TABLE`). 💀
+
+Antes de dar por buena cualquier división, verificar SIEMPRE:
+
+```bash
+python manage.py makemigrations --check --dry-run   # debe decir "No changes detected"
+python manage.py check
+pytest -q
+```
+
+Mover código dentro de la misma app **no genera migración** (mismo `app_label`, mismo nombre de modelo y `db_table` explícito).
+
+### Reglas de capas (no negociables)
+
+- **`services.py` es el corazón.** Toda lógica de negocio, validaciones de dominio, operaciones atómicas y llamadas a servicios externos van aquí. Los ViewSets llaman a services, no procesan lógica directamente.
+- **ViewSets son delgados.** Solo reciben request, llaman al service correcto y devuelven Response. Si un ViewSet supera 20 líneas por acción, algo de lógica debería estar en services.
+- **FK entre apps: siempre como string.** `ForeignKey('usuarios.Cliente', ...)` — nunca import directo de modelos de otra app dentro de `models.py`.
+- **`managers.py` es opcional.** Solo agregar cuando haya querysets complejos que se repiten en varios services o views.
+- **Usar ViewSets + Routers DRF**, no `APIView` genéricas salvo casos justificados (webhooks, endpoints no-CRUD).
+- **`SELECT FOR UPDATE`** obligatorio en cualquier operación que decremente `cupos_disponibles` en `PaqueteSalida` para prevenir overbooking.
+- **Resend se llama sincrónicamente** dentro del service, justo después de la operación que dispara el email. Sin colas, sin tasks asíncronas.
+- **Los servicios externos degradan con elegancia.** Si faltan las credenciales de Cloudinary o Resend, el sistema sigue operando: se deshabilita la subida (con aviso en pantalla) o se imprime el correo en el log, y se deja constancia en `Auditoria`. Nunca un error 500.
+- **La firma del almacén vive sólo en el servidor.** El navegador sube el archivo al backend (`/api/v1/almacen/subir/`) y éste lo reenvía firmado; las credenciales nunca llegan al cliente.
+- **Los secretos de proveedores NUNCA se almacenan.** El campo en DB es `secreto_ref` (una referencia o alias), no el secreto real.
+
+### Equivalencias con otros stacks (para quien viene de Laravel/Spring/Nest)
+
+No hay una carpeta por capa en la raíz: cada **app es un dominio** y las capas viven dentro. Varias piezas que en otros frameworks son clases propias, aquí las cubre el propio framework:
+
+| Concepto de otros stacks | Aquí equivale a | Dónde |
+|---|---|---|
+| DTO | Serializer (esquema de entrada/salida) | `serializers.py` |
+| Repository | Manager + QuerySet del ORM | `managers.py` / `services.py` |
+| Guard (autorización) | Permission class de DRF | `permissions.py` |
+| Controller | ViewSet (o `APIView` para casos no-CRUD) | `views.py` |
+| Service | Service (misma idea) | `services.py` |
+
+No hay capa "repository" aparte: el ORM de Django **ya es** el repositorio (Manager/QuerySet); poner otra capa encima sería redundante.
+
+**Validación en 3 niveles** (la BD es la última barrera):
+
+1. **Campo/formato** → serializer (`ListField`, `max_length`, ...).
+2. **Dominio** → service (`raise ValidationError({...})`).
+3. **Integridad** → modelo (`UniqueConstraint`, `CheckConstraint`).
+
+En el frontend, Zod cubre la validación de UX y `RutaProtegida.tsx` los guards de ruta.
+
+---
+
+## Arquitectura React — Feature-based por directorios
+
+El frontend es una SPA completamente separada del backend Django. La organización es **por feature/dominio**, donde cada módulo funcional tiene su propio directorio con sus vistas y sus componentes internos.
+
+```
+src/
+├── api/
+│   ├── auth.ts
+│   ├── catalogo.ts
+│   ├── reservas.ts
+│   ├── pagos.ts
+│   ├── ia.ts
+│   └── reportes.ts
+│
+├── components/
+│   ├── ui/
+│   │   ├── Button/
+│   │   ├── Input/
+│   │   ├── Modal/
+│   │   ├── Card/
+│   │   ├── Badge/
+│   │   └── Table/
+│   ├── layout/
+│   │   ├── Navbar/
+│   │   │   ├── Navbar.tsx
+│   │   │   └── components/
+│   │   │       ├── NavLinks.tsx
+│   │   │       └── UserMenu.tsx
+│   │   ├── Footer/
+│   │   ├── AppLayout.tsx
+│   │   ├── AuthLayout.tsx
+│   │   └── AdminLayout.tsx
+│   └── shared/
+│       ├── MapaDestino/
+│       │   ├── MapaDestino.tsx
+│       │   └── components/
+│       │       └── MarkerPopup.tsx
+│       └── ChatbotWidget/
+│           ├── ChatbotWidget.tsx
+│           └── components/
+│               ├── MensajeItem.tsx
+│               └── InputChat.tsx
+│
+├── hooks/
+│   ├── useAuth.ts
+│   ├── useFetch.ts
+│   └── useReservaFlow.ts
+│
+├── layouts/         # Re-exportaciones o wrappers si se necesitan
+│
+├── lib/
+│   ├── axios.ts     # Instancia Axios + interceptor JWT automático
+│   └── motion.ts    # Variantes Framer Motion reutilizables del proyecto
+│
+├── store/
+│   ├── authStore.ts
+│   └── reservaStore.ts
+│
+├── types/
+│   ├── auth.types.ts
+│   ├── catalogo.types.ts
+│   ├── reserva.types.ts
+│   ├── pago.types.ts
+│   └── ia.types.ts
+│
+├── utils/
+│   ├── formatters.ts    # Fechas, monedas BOB/USD, duración vuelo
+│   ├── validators.ts    # Helpers Zod comunes
+│   └── roles.ts         # Constantes ADMIN, AGENTE, CLIENTE
+│
+├── views/
+│   ├── home/
+│   │   ├── HomeView.tsx
+│   │   └── components/
+│   │       ├── HeroSection.tsx
+│   │       ├── DestinosDestacados.tsx
+│   │       └── BuscadorRapido.tsx
+│   │
+│   ├── auth/
+│   │   ├── LoginView.tsx
+│   │   ├── RegisterView.tsx
+│   │   └── components/
+│   │       ├── LoginForm.tsx
+│   │       └── RegisterForm.tsx
+│   │
+│   ├── catalogo/
+│   │   ├── CatalogoView.tsx
+│   │   ├── DetallePaqueteView.tsx
+│   │   └── components/
+│   │       ├── PaqueteCard.tsx
+│   │       ├── FiltrosBusqueda.tsx
+│   │       └── GaleriaDestino.tsx
+│   │
+│   ├── reservas/
+│   │   ├── NuevaReservaView.tsx
+│   │   ├── MisReservasView.tsx
+│   │   ├── ItinerarioView.tsx
+│   │   └── components/
+│   │       ├── PasoSeleccion.tsx
+│   │       ├── PasoPasajeros.tsx
+│   │       ├── PasoPago.tsx
+│   │       └── ResumenReserva.tsx
+│   │
+│   ├── pagos/
+│   │   ├── PagoView.tsx
+│   │   ├── ConfirmacionView.tsx
+│   │   └── components/
+│   │       └── StripeForm.tsx
+│   │
+│   └── admin/
+│       ├── DashboardView.tsx
+│       ├── GestionPaquetesView.tsx
+│       ├── GestionReservasView.tsx
+│       ├── GestionClientesView.tsx
+│       ├── ReportesView.tsx
+│       └── components/
+│           ├── TablaReservas.tsx
+│           ├── GraficoVentas.tsx
+│           ├── FiltroPeriodo.tsx
+│           └── ExportarReporte.tsx
+│
+├── main.tsx
+└── router.tsx
+```
+
+### Reglas del frontend
+
+- Cada view de `views/` corresponde a una ruta del router. No renderizar views directamente desde otra view. Dentro tendra por carpeta agrupadas sus views por modulo o partes q necesite y estara relacionando igual con las carpetas de los modulos de components q usa el mismo modulo en sus views.
+- Los componentes de `components/ui/` son genéricos, sin lógica de negocio. Los de `components/shared/` conocen el dominio del proyecto.
+- Los componentes específicos de una sola view viven en `views/<feature>/components/`, no en `components/`.
+- Todo acceso HTTP pasa por `src/api/`. Las views nunca llaman `axios` directamente.
+- El estado global de sesión (token, usuario) vive en `authStore`. El flujo multi-paso de reserva vive en `reservaStore`. El resto es estado local de componente.
+- Validación de formularios con Zod + React Hook Form. Los schemas Zod van en `types/`.
+- Animaciones de transición de página y cards con Framer Motion. No instalar otras librerías de animación.
+
+---
+
+## Casos de uso y responsables
+
+| CU | Dominio | Responsable | Sprint |
+|---|---|---|---|
+| CU1 | Seguridad y acceso (roles, JWT, auditoría) | Brayan | S2 |
+| CU2 | Clientes y preferencias | Brayan | S2 |
+| CU3 | Destinos y proveedores | Brayan | S2 |
+| CU4 | Gestión de vuelos | Brayan | S3 |
+| CU5 | Hoteles | José | S3 |
+| CU6 | Paquetes turísticos y salidas programadas | José | S3 |
+| CU7 | Reservas | José | S4 |
+| CU8 | Itinerarios y notificaciones | José | S4 |
+| CU9 | Pagos y tipos de cambio | Yeral | S4 |
+| CU10 | Asistente conversacional (NLP) | Yeral | S5 |
+| CU11 | Recomendaciones personalizadas | Yeral | S5 |
+| CU12 | Reportes gerenciales | Yeral | S5 |
+
+**Actores**: Administrador · Agente · Cliente · Sistema
+
+---
+
+## Sprints
+
+| Sprint | Fechas |
+|---|---|
+| S1 — Análisis y base | Oct 19–21 |
+| S2 — CU1, CU2, CU3 (Brayan) | Oct 22–28 |
+| S3 — CU4 (Brayan) · CU5, CU6 (José) | Oct 29–Nov 4 |
+| S4 — CU7, CU8 (José) · CU9 (Yeral) | Nov 5–11 |
+| S5 — CU10, CU11, CU12 (Yeral) | Nov 12–18 |
+
+2da entrega: 9–10 Nov · Entrega final: 24–25 Nov
+
+**Estrategia de integración**: El esqueleto del proyecto (estructura de apps, settings, modelos base) debe estar listo antes del inicio de S2 para que los tres miembros puedan trabajar en paralelo sin conflictos. Las FK entre apps se definen siempre como string para evitar imports circulares.
+
+---
+
+## Servicios externos
+
+| Servicio | Para qué | Notas |
+|---|---|---|
+| Cloudinary | Almacenamiento de imágenes | Free tier, SDK `cloudinary` (app `apps.almacen`) |
+| Stripe | Pagos (modo test) | PaymentIntent, webhook directo en view |
+| Resend | Emails transaccionales | Síncrono, sin cola (app `apps.notificaciones`) |
+| ExchangeRate-API | Conversión BOB/USD | Free tier, cachear en DB recomendado |
+| OurAirports CSV | Datos reales de aeropuertos | Carga única con management command |
+
+---
+
+## Seguridad
+
+- `secreto_ref` en modelos: los secretos de proveedores o integraciones no se persisten, solo una referencia.
+- Intentos de login fallidos se registran en la tabla `auditoria` — sin Redis, sin cache externo.
+- Permisos granulares por dominio en `permissions.py` de cada app.
+- Variables sensibles (Stripe keys, Cloudinary secret, etc.) solo en `.env`, nunca en código ni en commits.
+
+---
+
+## Puertas de decisión
+
+Antes de implementar los siguientes puntos, proponer opciones al equipo:
+
+- **[PUERTA-1] React Query vs hook useFetch**: Si el modelo tiene dificultades generando código correcto con TanStack Query, reemplazar por un hook `useFetch` simple basado en `useEffect`.
+- **[PUERTA-2] Webhook Stripe en desarrollo**: Requiere CLI de Stripe corriendo en local. Evaluar si se simula o se deja para staging.
+- **[PUERTA-3] Modelo IA para recomendaciones (CU11)**: Filtro colaborativo (usuarios similares) vs content-based (preferencias del perfil). Impacta el diseño de `modelos_ia`.
+- **[PUERTA-4] Exportación de reportes (CU12)**: ¿Backend genera PDF/Excel (`reportlab`, `openpyxl`) o el frontend renderiza la tabla y el usuario exporta desde el navegador?
+- **[PUERTA-5] Persistencia del modelo NLP**: ¿Guardar modelo entrenado como archivo `.joblib` y cargarlo al iniciar Django, o reentrenar en cada deploy? La primera opción es más eficiente.
+- **[PUERTA-6] Mapas**: ¿Mostrar solo ubicación del destino o también ruta origen→destino del vuelo?
+
+---
+
+## Estado del Sprint 2 (CU1–CU3, Brayan) — al 28 oct 2026
+
+### Completado ✅
+- **Backend CU1+CU2**: modelos, serializers, services, ViewSets, tests. Commit `8316c8a`.
+- **Auth redesign**: Login, Registro, Recuperar, SesionExpirada, 403, 404 — diseño editorial aprobado. Commit `9adba25`.
+- **Shell cliente** (`AppLayout.tsx`): Navbar + subnav slim + `PerfilMenu` animado (framer-motion).
+- **Shell admin** (`AdminLayout.tsx`): top bar + `SelectorModulos` dropdown framer-motion + breadcrumb + `PerfilMenu`.
+- **CU2 cliente** (#10 `/mi-cuenta`, #11 `/mi-cuenta/preferencias`): diseño cuaderno editorial validado.
+- **CU2 admin** (#12 `/admin/clientes`, #13 `/admin/clientes/:id`): dossier cards + ficha con hero oscuro.
+- **CU1 admin** (#7 `/admin`, #8 `/admin/roles`, #9 `/admin/auditoria`): hero con RosaVientos + métricas, cards custodios, folios bitácora.
+- **CU3 backend**: API de catálogo — destinos (con ficha comercial e itinerario), aeropuertos y proveedores. Commit `0032ce6`.
+- **CU3 frontend**: landing (#14), explorador y ficha de destino (CU3), atlas de destinos y libreta de proveedores (#15–#20). Commits `ca154b3`, `5ccf9d2`.
+- `apps.almacen` (subida/borrado a Cloudinary con degradación limpia) y `apps.notificaciones` (correo transaccional con Resend, plantillas de la casa). Commit `f39025f`.
+- `RutaProtegida.tsx`: fix StrictMode double-effect con `useRef(intentado)`.
+- `Iconos.tsx`: migración completa a heroicons; añadidos `IconoModulos`, `IconoMenu`.
+- `roles.ts`: añadida `etiquetaRol()`.
+- **117 tests** de backend en verde; `tsc --noEmit` y `vite build` limpios.
+
+### Pendiente en Sprint 2 ⏳
+- Nada bloqueante: CU1, CU2 y CU3 quedan cerrados con commit.
+- Verificación manual del correo de Resend por parte del usuario (sin dominio verificado sólo llega a la casilla de la cuenta).
+
+### Decisiones de diseño fijadas
+- Admin: top bar + framer-motion dropdown, **sin sidebar**.
+- Imágenes: Cloudinary con `RosaVientos`/monograma como reemplazo cuando el recurso no tiene lámina.
+- Fuentes: Playfair Display (display) + Work Sans (sans) + Caveat (decorativo/handwritten).
+- Paleta: surface `#faf5eb` · primary `#792609` · terracotta `#b85434` · forest `#141d16` · gold `#c6a15b`.
+
+---
+
+## Convenciones generales
+
+- Nombres de variables y funciones en **español** cuando refieren a dominio del negocio (reserva, paquete, salida, pasajero). Inglés para patrones técnicos (handler, schema, store, hook).
+- Los endpoints de la API siguen convención REST estándar con prefijo `/api/v1/`.
+- Las respuestas de error de la API incluyen siempre `{ "error": "<mensaje>", "code": "<código>" }`.
+- El seed script (`python manage.py seed_data`) debe poblar datos realistas: mínimo 3 destinos internacionales, 5 paquetes con salidas, aeropuertos vinculados, y usuarios de prueba (admin + cliente).

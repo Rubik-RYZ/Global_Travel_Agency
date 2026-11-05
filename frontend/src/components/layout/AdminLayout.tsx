@@ -72,6 +72,36 @@ const MODULOS: Modulo[] = [
     icono: <IconoMaletin className="h-4 w-4" />,
     soloAdmin: true,
   },
+  {
+    a: '/admin/vuelos',
+    titulo: 'Vuelos y Rutas',
+    descripcion: 'Gestión de itinerarios aéreos y cupos',
+    icono: <IconoUbicacion className="h-4 w-4" />,
+  },
+  {
+    a: '/admin/hoteles',
+    titulo: 'Hoteles y Estancias',
+    descripcion: 'Padrón hotelero y tipologías de habitación',
+    icono: <IconoEdificio className="h-4 w-4" />,
+  },
+  {
+    a: '/admin/paquetes',
+    titulo: 'Paquetes Turísticos',
+    descripcion: 'Armador de viajes, itinerarios y precios',
+    icono: <IconoPortapapeles className="h-4 w-4" />,
+  },
+  {
+    a: '/admin/salidas',
+    titulo: 'Salidas Programadas',
+    descripcion: 'Calendario de salidas y control de cupos',
+    icono: <IconoSello className="h-4 w-4" />,
+  },
+  {
+    a: '/admin/reservas',
+    titulo: 'Mesa de Reservas',
+    descripcion: 'Control de ventas, expedientes y manifiestos',
+    icono: <IconoPortapapeles className="h-4 w-4" />,
+  },
 ]
 
 function coincideRuta(pathname: string, m: Modulo): boolean {

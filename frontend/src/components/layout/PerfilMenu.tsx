@@ -53,6 +53,20 @@ export function PerfilMenu() {
       texto: panel ? 'Panel de gestión' : 'Mi viaje',
       icono: <IconoEdificio className="h-4 w-4" />,
     },
+    ...(panel
+      ? []
+      : [
+          {
+            a: '/mi-cuenta/viajes',
+            texto: 'Mis reservas',
+            icono: <IconoEdificio className="h-4 w-4" />,
+          },
+          {
+            a: '/mi-cuenta/notificaciones',
+            texto: 'Notificaciones',
+            icono: <IconoEdificio className="h-4 w-4" />,
+          },
+        ]),
     { a: '/', texto: 'Ver sitio público', icono: <IconoGlobo className="h-4 w-4" /> },
   ]
 
