@@ -9,17 +9,20 @@ from __future__ import annotations
 
 from io import BytesIO
 
-from reportlab.lib import colors
-from reportlab.lib.pagesizes import A4
-from reportlab.lib.units import mm
-from reportlab.pdfgen import canvas
+try:  # dependencia de PDF: si falta, la API sigue funcionando (solo falla la boleta)
+    from reportlab.lib import colors
+    from reportlab.lib.pagesizes import A4
+    from reportlab.lib.units import mm
+    from reportlab.pdfgen import canvas
+except ModuleNotFoundError:  # pragma: no cover
+    colors = A4 = mm = canvas = None
 
-AZUL = colors.HexColor("#792609")
-TINTA = colors.HexColor("#231a13")
-GRIS = colors.HexColor("#6b6259")
-CREMA = colors.HexColor("#faf5eb")
-TERRACOTA = colors.HexColor("#b85434")
-LINEA = colors.HexColor("#d8cfc1")
+AZUL = colors.HexColor("#792609") if colors else None
+TINTA = colors.HexColor("#231a13") if colors else None
+GRIS = colors.HexColor("#6b6259") if colors else None
+CREMA = colors.HexColor("#faf5eb") if colors else None
+TERRACOTA = colors.HexColor("#b85434") if colors else None
+LINEA = colors.HexColor("#d8cfc1") if colors else None
 
 LETRAS_ASIENTO = "ABCDEF"
 
@@ -63,6 +66,12 @@ def _campo(c: canvas.Canvas, x: float, y: float, etiqueta: str, valor: str) -> N
 
 def generar_boleta_pdf(*, reserva, pago) -> bytes:
     """Devuelve el PDF (bytes) de la boleta de una reserva pagada."""
+    if canvas is None:
+        from django.core.exceptions import ImproperlyConfigured
+
+        raise ImproperlyConfigured(
+            "Falta la dependencia 'reportlab'. Ejecute: pip install -r requirements.txt"
+        )
     buffer = BytesIO()
     c = canvas.Canvas(buffer, pagesize=A4)
     ancho, alto = A4
