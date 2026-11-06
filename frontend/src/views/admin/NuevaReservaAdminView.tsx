@@ -167,9 +167,18 @@ export function NuevaReservaAdminView() {
         })),
       }
 
+      const clienteNuevoLimpio: ClienteNuevoPayload = {
+        nombres: clienteNuevo.nombres.trim(),
+        apellidos: clienteNuevo.apellidos.trim(),
+        documento_tipo: clienteNuevo.documento_tipo || undefined,
+        documento_numero: clienteNuevo.documento_numero?.trim() || undefined,
+        telefono: clienteNuevo.telefono?.trim() || undefined,
+        fecha_nacimiento: clienteNuevo.fecha_nacimiento || undefined,
+      }
+
       const res = await pagosApi.ventaVentanilla(
         modoCliente === 'nuevo'
-          ? { ...payload, cliente_nuevo: clienteNuevo }
+          ? { ...payload, cliente_nuevo: clienteNuevoLimpio }
           : { ...payload, cliente_id: Number(clienteId) },
       )
       setVenta(res)

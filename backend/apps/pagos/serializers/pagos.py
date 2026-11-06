@@ -45,6 +45,13 @@ class ClienteNuevoSerializer(serializers.Serializer):
     )
     fecha_nacimiento = serializers.DateField(required=False, allow_null=True)
 
+    def to_internal_value(self, data):
+        # Un formulario puede enviar "" cuando la fecha es opcional.
+        if hasattr(data, "copy") and data.get("fecha_nacimiento") == "":
+            data = data.copy()
+            data["fecha_nacimiento"] = None
+        return super().to_internal_value(data)
+
 
 class VentaVentanillaSerializer(serializers.Serializer):
     cliente_id = serializers.IntegerField(required=False)
