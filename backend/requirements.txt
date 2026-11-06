@@ -20,6 +20,9 @@ bcrypt==4.2.0
 Pillow==10.4.0
 gunicorn==22.0.0
 
+# --- Documentos (boleta de viaje en PDF) ---
+reportlab==4.2.5
+
 # --- Testing ---
 pytest==8.3.3
 pytest-django==4.9.0

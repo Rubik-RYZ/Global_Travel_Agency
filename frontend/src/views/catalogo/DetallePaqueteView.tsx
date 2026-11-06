@@ -9,6 +9,7 @@ import {
   IconoFlechaDerecha,
   IconoUbicacion,
 } from '@/components/ui/Iconos'
+import { useAuthStore } from '@/store/authStore'
 import { useReservaStore } from '@/store/reservaStore'
 import { mensajeDeError } from '@/utils/validators'
 
@@ -22,6 +23,7 @@ export function DetallePaqueteView() {
   const [error, setError] = useState<string | null>(null)
 
   const setPaqueteStore = useReservaStore((s) => s.setPaquete)
+  const usuario = useAuthStore((s) => s.usuario)
 
   useEffect(() => {
     if (!id) return
@@ -182,14 +184,25 @@ export function DetallePaqueteView() {
               )}
             </div>
 
-            <Button
-              onClick={iniciarReserva}
-              disabled={salidas.length === 0 || !salidaSeleccionada}
-              className="w-full flex items-center justify-center gap-2 rounded-full bg-[#792609] py-3 text-sm font-semibold text-white shadow-sm hover:bg-[#983d1f] disabled:opacity-50"
-            >
-              <span>Reservar Mi Viaje</span>
-              <IconoFlechaDerecha className="h-4 w-4" />
-            </Button>
+            {usuario ? (
+              <Button
+                onClick={iniciarReserva}
+                disabled={salidas.length === 0 || !salidaSeleccionada}
+                className="w-full flex items-center justify-center gap-2 rounded-full bg-[#792609] py-3 text-sm font-semibold text-white shadow-sm hover:bg-[#983d1f] disabled:opacity-50"
+              >
+                <span>Reservar Mi Viaje</span>
+                <IconoFlechaDerecha className="h-4 w-4" />
+              </Button>
+            ) : (
+              <Link
+                to="/login"
+                state={{ desde: `/viajes/${paquete.id}` }}
+                className="w-full flex items-center justify-center gap-2 rounded-full border border-[#792609] py-3 text-sm font-semibold text-[#792609] hover:bg-[#792609]/5"
+              >
+                <span>Inicia sesión para comprar</span>
+                <IconoFlechaDerecha className="h-4 w-4" />
+              </Link>
+            )}
           </div>
         </div>
       </div>

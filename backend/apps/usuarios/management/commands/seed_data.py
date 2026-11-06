@@ -21,6 +21,7 @@ from django.db import transaction
 from apps.catalogo.models import Destino, ItinerarioDia, Proveedor
 from apps.usuarios.constants import (
     ROL_ADMINISTRADOR,
+    ROL_AGENTE,
     ROL_CLIENTE,
     ROLES_INICIALES,
 )
@@ -401,6 +402,7 @@ class Command(BaseCommand):
         self._seed_roles()
         self._seed_admin()
         self._seed_cliente()
+        self._seed_ventanilla()
         self._seed_destinos()
         self._seed_proveedores()
         self.stdout.write(self.style.SUCCESS("seed_data completado."))
@@ -449,6 +451,23 @@ class Command(BaseCommand):
             self.stdout.write(f"  cliente creado: {email} / Cliente12345")
         else:
             self.stdout.write(f"  cliente ya existia: {email}")
+
+    def _seed_ventanilla(self):
+        """Crea dos empleados de ventanilla (rol agente) para la venta presencial."""
+        for numero in (1, 2):
+            email = f"ventanilla{numero}@illimanitravel.bo"
+            usuario, creado = Usuario.objects.get_or_create(
+                email=email,
+                defaults={"rol_id": ROL_AGENTE, "activo": True},
+            )
+            if creado:
+                usuario.set_password("Ventanilla12345")
+                usuario.save(update_fields=["password"])
+                self.stdout.write(
+                    f"  ventanilla{numero} creada: {email} / Ventanilla12345"
+                )
+            else:
+                self.stdout.write(f"  ventanilla{numero} ya existia: {email}")
 
     def _seed_destinos(self):
         creados = actualizados = dias = 0

@@ -1,10 +1,12 @@
 import { useEffect, useState } from 'react'
 import { Link, useParams } from 'react-router-dom'
 
+import { descargarBlob, pagosApi } from '@/api/pagos'
 import { reservasApi } from '@/api/reservas'
 import type { Reserva } from '@/types/reserva.types'
 import { Button } from '@/components/ui/Button/Button'
 import {
+  IconoDescarga,
   IconoPersona,
   IconoPortapapeles,
 } from '@/components/ui/Iconos'
@@ -17,6 +19,7 @@ export function DetalleReservaAdminView() {
   const [error, setError] = useState<string | null>(null)
   const [aviso, setAviso] = useState<string | null>(null)
   const [cancelando, setCancelando] = useState(false)
+  const [descargando, setDescargando] = useState(false)
 
   const cargar = async () => {
     if (!id) return
@@ -35,6 +38,20 @@ export function DetalleReservaAdminView() {
   useEffect(() => {
     cargar()
   }, [id])
+
+  const descargarBoleta = async () => {
+    if (!reserva) return
+    setDescargando(true)
+    setError(null)
+    try {
+      const blob = await pagosApi.descargarBoleta(reserva.id)
+      descargarBlob(blob, `boleta-${reserva.codigo}.pdf`)
+    } catch (err) {
+      setError(mensajeDeError(err))
+    } finally {
+      setDescargando(false)
+    }
+  }
 
   const cancelar = async () => {
     if (!reserva) return
@@ -93,6 +110,18 @@ export function DetalleReservaAdminView() {
         </div>
 
         <div className="flex items-center gap-2">
+          {reserva.estado === 'pagada' && (
+            <Button
+              variante="ghost"
+              onClick={descargarBoleta}
+              disabled={descargando}
+              className="flex items-center gap-1.5 text-xs text-[#792609] border-[#792609]/20"
+            >
+              <IconoDescarga className="h-4 w-4" />
+              <span>{descargando ? 'Generando...' : 'Descargar Boleta'}</span>
+            </Button>
+          )}
+
           <Link
             to={`/admin/reservas/${reserva.id}/itinerario`}
             className="flex items-center gap-1.5 rounded-full bg-[#792609] px-4 py-2 text-xs font-semibold text-white shadow-sm hover:bg-[#983d1f]"

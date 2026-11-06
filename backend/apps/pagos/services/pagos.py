@@ -175,3 +175,30 @@ def crear_reserva_pagada(
     pago = registrar_pago(reserva_id=reserva.pk, monto=reserva.total, metodo=metodo)
     reserva.refresh_from_db()
     return reserva, pago
+
+
+@transaction.atomic
+def registrar_pago_cliente(*, usuario, reserva_id: int, metodo: str = "tarjeta") -> Pago:
+    """Pago en linea del propio viajero: solo tarjeta o QR, siempre aprobado (simulado)."""
+    if metodo not in ("tarjeta", "qr"):
+        raise ValidationError({"metodo": "En linea solo se acepta tarjeta o QR."})
+
+    cliente = getattr(usuario, "cliente", None)
+    if not cliente:
+        raise ValidationError({"reserva_id": "Tu usuario no tiene un perfil de viajero asociado."})
+
+    try:
+        reserva = Reserva.objects.get(pk=reserva_id)
+    except Reserva.DoesNotExist:
+        raise ValidationError({"reserva_id": "Reserva no encontrada."})
+
+    if reserva.cliente_id != cliente.id:
+        raise ValidationError({"reserva_id": "No puedes pagar una reserva de otro cliente."})
+
+    # Sin pasarela real: la confirmacion se simula y siempre valida.
+    return registrar_pago(
+        reserva_id=reserva.pk,
+        monto=None,
+        metodo=metodo,
+        estado=Pago.Estado.APROBADO,
+    )

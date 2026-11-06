@@ -1,6 +1,10 @@
-﻿from rest_framework.routers import DefaultRouter
+﻿"""Rutas del dominio de pagos (CU9)."""
+from django.urls import path
 
-router = DefaultRouter()
+from apps.pagos.views import BoletaPDFView, PagoClienteView, VentaVentanillaView
 
-urlpatterns = router.urls
-
+urlpatterns = [
+    path("pagos/ventanilla/", VentaVentanillaView.as_view(), name="pago-ventanilla"),
+    path("pagos/cliente/", PagoClienteView.as_view(), name="pago-cliente"),
+    path("pagos/boleta/<int:reserva_id>/", BoletaPDFView.as_view(), name="pago-boleta"),
+]

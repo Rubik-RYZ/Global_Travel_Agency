@@ -1,1 +1,4 @@
-"""Capa de presentación del dominio 'pagos' (se implementa en su sprint)."""
+"""Capa de presentacion del dominio de pagos (CU9)."""
+from apps.pagos.views.pagos import BoletaPDFView, PagoClienteView, VentaVentanillaView
+
+__all__ = ["BoletaPDFView", "PagoClienteView", "VentaVentanillaView"]
