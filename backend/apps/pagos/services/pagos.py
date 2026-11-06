@@ -127,9 +127,7 @@ def _notificar_comprobante(pago_id: int) -> None:
             return
         reserva = pago.reserva
         usuario = getattr(reserva.cliente, "usuario", None)
-        tipo = getattr(Notificacion, "TIPO_COMPROBANTE", None)
-        if tipo is None or not usuario or not usuario.email:
-            return
+        tipo = Notificacion.TIPO_PAGO
 
         notif = Notificacion.objects.create(
             usuario=usuario, reserva=reserva, tipo=tipo, estado=Notificacion.ESTADO_PENDIENTE
