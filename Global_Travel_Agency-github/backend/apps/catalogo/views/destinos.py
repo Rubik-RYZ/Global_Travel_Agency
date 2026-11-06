@@ -1,0 +1,91 @@
+"""Capa de presentación del catálogo — destinos (CU3)."""
+from django.core.exceptions import ValidationError as DjangoValidationError
+from rest_framework import status, viewsets
+from rest_framework.decorators import action
+from rest_framework.response import Response
+
+from apps.catalogo import services
+from apps.catalogo.permissions import EsAdmin, EsAdminOAgente
+from apps.catalogo.serializers import (
+    DestinoResumenSerializer,
+    DestinoSerializer,
+    ItinerarioDiaSerializer,
+)
+
+
+class DestinoViewSet(viewsets.ModelViewSet):
+    """
+    CRUD de destinos.
+
+    Público (GET): listar y ver detalle, solo activos por defecto.
+    Autenticado Admin/Agente: crear, editar, activar/desactivar.
+    """
+
+    serializer_class = DestinoSerializer
+    permission_classes = [EsAdminOAgente]
+
+    def get_queryset(self):
+        es_staff = (
+            self.request.user
+            and self.request.user.is_authenticated
+            and self.request.user.rol_id in (1, 2)  # administrador, agente
+        )
+        params = self.request.query_params
+        return services.listar_destinos(
+            solo_activos=not es_staff,
+            pais=params.get("pais"),
+            region=params.get("region"),
+            caracter=params.get("caracter"),
+            etiqueta=params.get("etiqueta"),
+            solo_destacados=params.get("destacado") in ("1", "true", "True"),
+            q=params.get("q"),
+        )
+
+    def get_serializer_class(self):
+        if self.action == "list" and not (
+            self.request.user
+            and self.request.user.is_authenticated
+            and self.request.user.rol_id in (1, 2)  # administrador, agente
+        ):
+            return DestinoResumenSerializer
+        return DestinoSerializer
+
+    def create(self, request, *args, **kwargs):
+        ser = self.get_serializer(data=request.data)
+        ser.is_valid(raise_exception=True)
+        try:
+            destino = services.crear_destino(**ser.validated_data)
+        except DjangoValidationError as exc:
+            return Response(exc.message_dict, status=status.HTTP_400_BAD_REQUEST)
+        return Response(DestinoSerializer(destino).data, status=status.HTTP_201_CREATED)
+
+    def update(self, request, *args, **kwargs):
+        parcial = kwargs.pop("partial", False)
+        instance = self.get_object()
+        ser = self.get_serializer(instance, data=request.data, partial=parcial)
+        ser.is_valid(raise_exception=True)
+        try:
+            destino = services.actualizar_destino(instance.pk, **ser.validated_data)
+        except DjangoValidationError as exc:
+            return Response(exc.message_dict, status=status.HTTP_400_BAD_REQUEST)
+        return Response(DestinoSerializer(destino).data)
+
+    @action(detail=True, methods=["post"], permission_classes=[EsAdmin])
+    def toggle_activo(self, request, pk=None):
+        try:
+            destino = services.toggle_activo_destino(int(pk))
+        except DjangoValidationError as exc:
+            return Response(exc.message_dict, status=status.HTTP_404_NOT_FOUND)
+        return Response(DestinoSerializer(destino).data)
+
+    @action(detail=True, methods=["put"], url_path="itinerario")
+    def itinerario(self, request, pk=None):
+        """Reemplaza el diario de ruta (día a día) de un destino."""
+        self.get_object()  # 404 si el destino no existe
+        ser = ItinerarioDiaSerializer(data=request.data, many=True)
+        ser.is_valid(raise_exception=True)
+        try:
+            dias = services.definir_itinerario(int(pk), ser.validated_data)
+        except DjangoValidationError as exc:
+            return Response(exc.message_dict, status=status.HTTP_400_BAD_REQUEST)
+        return Response(ItinerarioDiaSerializer(dias, many=True).data)

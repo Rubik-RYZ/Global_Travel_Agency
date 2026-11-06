@@ -1,706 +1,719 @@
-import { useCallback, useEffect, useMemo, useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import type { FormEvent } from 'react'
 
-import {
-  catalogoApi,
-  type DestinoResumen,
-  type FiltrosHotel,
-  type Hotel,
-  type Proveedor,
-} from '@/api/catalogo'
+import { catalogoApi, type DestinoResumen } from '@/api/catalogo'
+import type {
+  CrearHabitacionPayload,
+  CrearHotelPayload,
+  Habitacion,
+  Hotel,
+  Proveedor,
+} from '@/types/catalogo.types'
 import { Button } from '@/components/ui/Button/Button'
 import { Modal } from '@/components/ui/Modal/Modal'
 import {
-  IconoBasura,
+  IconoCerrar,
   IconoEdificio,
   IconoLapiz,
   IconoLupa,
-  IconoSello,
+  IconoMaletin,
+  IconoMas,
+  IconoUbicacion,
 } from '@/components/ui/Iconos'
 import { mensajeDeError } from '@/utils/validators'
 
-const OPCIONES_ESTRELLAS = [5, 4, 3, 2, 1]
-
-function estrellasTexto(n: number | null): string {
-  if (!n) return 'Sin clasificar'
-  return `${'★'.repeat(n)}${'☆'.repeat(5 - n)}`
-}
-
-/**
- * 22. Panel · Hospedajes → /admin/hoteles
- *
- * Libreta de hospedajes: hoteles asociados a un destino y a un proveedor,
- * con categoría, ubicación y ficha editorial.
- */
 export function HotelesAdminView() {
   const [hoteles, setHoteles] = useState<Hotel[]>([])
-  const [proveedores, setProveedores] = useState<Proveedor[]>([])
   const [destinos, setDestinos] = useState<DestinoResumen[]>([])
+  const [proveedoresHotel, setProveedoresHotel] = useState<Proveedor[]>([])
   const [cargando, setCargando] = useState(true)
   const [error, setError] = useState<string | null>(null)
   const [aviso, setAviso] = useState<string | null>(null)
 
+  // Filtros
+  const [filtroDestino, setFiltroDestino] = useState('')
+  const [filtroProveedor, setFiltroProveedor] = useState('')
   const [busqueda, setBusqueda] = useState('')
-  const [destinoFiltro, setDestinoFiltro] = useState('')
-  const [estrellasFiltro, setEstrellasFiltro] = useState('')
-  const [filtros, setFiltros] = useState<FiltrosHotel>({})
 
-  const [modalAbierto, setModalAbierto] = useState(false)
-  const [editando, setEditando] = useState<Hotel | null>(null)
+  // Hotel seleccionado para ver/administrar habitaciones
+  const [hotelSeleccionado, setHotelSeleccionado] = useState<Hotel | null>(null)
+  const [habitaciones, setHabitaciones] = useState<Habitacion[]>([])
+  const [cargandoHabitaciones, setCargandoHabitaciones] = useState(false)
 
-  useEffect(() => {
-    let activo = true
-    async function cargarCatalogos() {
-      try {
-        const [provs, dests] = await Promise.all([
-          (async () => {
-            const acc: Proveedor[] = []
-            let pagina = 1
-            for (;;) {
-              const data = await catalogoApi.listarProveedores({
-                tipo: 'hotel',
-                page: pagina,
-              })
-              acc.push(...data.results)
-              if (!data.next) break
-              pagina += 1
-            }
-            return acc
-          })(),
-          (async () => {
-            const acc: DestinoResumen[] = []
-            let pagina = 1
-            for (;;) {
-              const data = await catalogoApi.listarDestinos({ page: pagina })
-              acc.push(...data.results)
-              if (!data.next) break
-              pagina += 1
-            }
-            return acc
-          })(),
-        ])
-        if (activo) {
-          setProveedores(provs)
-          setDestinos(dests)
-        }
-      } catch (e) {
-        if (activo) setError(mensajeDeError(e))
-      }
-    }
-    void cargarCatalogos()
-    return () => {
-      activo = false
-    }
-  }, [])
+  // Modal Hotel
+  const [modalHotelAbierto, setModalHotelAbierto] = useState(false)
+  const [editandoHotel, setEditandoHotel] = useState<Hotel | null>(null)
+  const [errorHotel, setErrorHotel] = useState<string | null>(null)
+  const [formHotelProveedor, setFormHotelProveedor] = useState<number | ''>('')
+  const [formHotelDestino, setFormHotelDestino] = useState<number | ''>('')
+  const [formHotelNombre, setFormHotelNombre] = useState('')
+  const [formHotelEstrellas, setFormHotelEstrellas] = useState<number | ''>(4)
+  const [formHotelDireccion, setFormHotelDireccion] = useState('')
+  const [formHotelDescripcion, setFormHotelDescripcion] = useState('')
+  const [formHotelActivo, setFormHotelActivo] = useState(true)
 
-  const cargar = useCallback(async () => {
+  // Modal Habitación
+  const [modalHabAbierto, setModalHabAbierto] = useState(false)
+  const [editandoHab, setEditandoHab] = useState<Habitacion | null>(null)
+  const [errorHab, setErrorHab] = useState<string | null>(null)
+  const [formHabTipo, setFormHabTipo] = useState('')
+  const [formHabCapacidad, setFormHabCapacidad] = useState<number | ''>(2)
+  const [formHabPrecio, setFormHabPrecio] = useState<number | ''>(120)
+  const [formHabMoneda, setFormHabMoneda] = useState<'USD' | 'BOB' | 'EUR'>('USD')
+
+  const [ocupado, setOcupado] = useState(false)
+
+  const cargarDatos = useCallback(async () => {
     setCargando(true)
     setError(null)
     try {
-      const acc: Hotel[] = []
-      let pagina = 1
-      for (;;) {
-        const data = await catalogoApi.listarHoteles({ ...filtros, page: pagina })
-        acc.push(...data.results)
-        if (!data.next) break
-        pagina += 1
-      }
-      setHoteles(acc)
-    } catch (e) {
-      setError(mensajeDeError(e))
+      const [resHoteles, resDest, resProv] = await Promise.all([
+        catalogoApi.listarHoteles({
+          destino_id: filtroDestino ? Number(filtroDestino) : undefined,
+          proveedor_id: filtroProveedor ? Number(filtroProveedor) : undefined,
+          q: busqueda || undefined,
+        }),
+        catalogoApi.listarDestinos(),
+        catalogoApi.listarProveedores({ tipo: 'hotel' }),
+      ])
+      setHoteles(resHoteles.results || [])
+      setDestinos(resDest.results || [])
+      setProveedoresHotel((resProv.results || []) as unknown as Proveedor[])
+    } catch (err) {
+      setError(mensajeDeError(err))
     } finally {
       setCargando(false)
     }
-  }, [filtros])
+  }, [filtroDestino, filtroProveedor, busqueda])
 
   useEffect(() => {
-    void cargar()
-  }, [cargar])
+    cargarDatos()
+  }, [cargarDatos])
 
-  const resumen = useMemo(
-    () => ({
-      total: hoteles.length,
-      activos: hoteles.filter((h) => h.activo).length,
-      destinos: new Set(hoteles.map((h) => h.destino)).size,
-    }),
-    [hoteles],
-  )
-
-  const logoPorProveedor = useMemo(() => {
-    const mapa = new Map<number, string | null>()
-    for (const p of proveedores) mapa.set(p.id, p.logo_url)
-    return mapa
-  }, [proveedores])
-
-  function aplicarFiltros(evento?: FormEvent) {
-    evento?.preventDefault()
-    setFiltros({
-      q: busqueda.trim() || undefined,
-      destino: destinoFiltro ? Number(destinoFiltro) : undefined,
-      estrellas: estrellasFiltro ? Number(estrellasFiltro) : undefined,
-    })
-  }
-
-  function abrirNuevo() {
-    setEditando(null)
-    setModalAbierto(true)
-  }
-
-  function abrirEditar(hotel: Hotel) {
-    setEditando(hotel)
-    setModalAbierto(true)
-  }
-
-  async function alternarActivo(hotel: Hotel) {
+  const cargarHabitaciones = useCallback(async (hotelId: number) => {
+    setCargandoHabitaciones(true)
     try {
-      const actualizado = await catalogoApi.toggleActivoHotel(hotel.id)
-      setHoteles((lista) =>
-        lista.map((h) => (h.id === actualizado.id ? actualizado : h)),
-      )
-      setAviso(
-        actualizado.activo
-          ? 'Hospedaje habilitado en el catálogo.'
-          : 'Hospedaje retirado del catálogo.',
-      )
-    } catch (e) {
-      setError(mensajeDeError(e))
+      const res = await catalogoApi.listarHabitaciones(hotelId)
+      setHabitaciones(res.results || [])
+    } catch (err) {
+      setError(mensajeDeError(err))
+    } finally {
+      setCargandoHabitaciones(false)
+    }
+  }, [])
+
+  const seleccionarHotel = (hotel: Hotel) => {
+    setHotelSeleccionado(hotel)
+    cargarHabitaciones(hotel.id)
+  }
+
+  // Manejo Hotel
+  const abrirModalNuevoHotel = () => {
+    setEditandoHotel(null)
+    setFormHotelProveedor(proveedoresHotel[0]?.id || '')
+    setFormHotelDestino(destinos[0]?.id || '')
+    setFormHotelNombre('')
+    setFormHotelEstrellas(4)
+    setFormHotelDireccion('')
+    setFormHotelDescripcion('')
+    setFormHotelActivo(true)
+    setErrorHotel(null)
+    setModalHotelAbierto(true)
+  }
+
+  const abrirModalEditarHotel = (h: Hotel) => {
+    setEditandoHotel(h)
+    setFormHotelProveedor(h.proveedor)
+    setFormHotelDestino(h.destino)
+    setFormHotelNombre(h.nombre)
+    setFormHotelEstrellas(h.estrellas || 3)
+    setFormHotelDireccion(h.direccion || '')
+    setFormHotelDescripcion(h.descripcion || '')
+    setFormHotelActivo(h.activo)
+    setErrorHotel(null)
+    setModalHotelAbierto(true)
+  }
+
+  const guardarHotel = async (e: FormEvent) => {
+    e.preventDefault()
+    if (!formHotelProveedor || !formHotelDestino || !formHotelNombre) {
+      setErrorHotel('Completa los campos obligatorios.')
+      return
+    }
+    setOcupado(true)
+    setErrorHotel(null)
+    try {
+      const payload: CrearHotelPayload = {
+        proveedor_id: Number(formHotelProveedor),
+        destino_id: Number(formHotelDestino),
+        nombre: formHotelNombre.trim(),
+        estrellas: formHotelEstrellas ? Number(formHotelEstrellas) : null,
+        direccion: formHotelDireccion.trim() || undefined,
+        descripcion: formHotelDescripcion.trim() || undefined,
+        activo: formHotelActivo,
+      }
+      if (editandoHotel) {
+        await catalogoApi.actualizarHotel(editandoHotel.id, payload)
+        setAviso(`Hotel ${payload.nombre} actualizado.`)
+      } else {
+        await catalogoApi.crearHotel(payload)
+        setAviso(`Hotel ${payload.nombre} registrado.`)
+      }
+      setModalHotelAbierto(false)
+      cargarDatos()
+    } catch (err) {
+      setErrorHotel(mensajeDeError(err))
+    } finally {
+      setOcupado(false)
     }
   }
 
-  async function eliminar(hotel: Hotel) {
-    if (!window.confirm(`¿Eliminar definitivamente el hotel ${hotel.nombre}?`)) return
+  const eliminarHotel = async (id: number, nombre: string) => {
+    if (!confirm(`¿Eliminar hotel "${nombre}" y sus tipologías de habitación?`)) return
     try {
-      await catalogoApi.eliminarHotel(hotel.id)
-      setAviso('Hospedaje eliminado de la libreta.')
-      void cargar()
-    } catch (e) {
-      setError(mensajeDeError(e))
+      await catalogoApi.eliminarHotel(id)
+      setAviso(`Hotel "${nombre}" eliminado.`)
+      if (hotelSeleccionado?.id === id) {
+        setHotelSeleccionado(null)
+        setHabitaciones([])
+      }
+      cargarDatos()
+    } catch (err) {
+      setError(mensajeDeError(err))
     }
   }
 
-  const claseCampo =
-    'w-full rounded-md border border-outline-variant/60 bg-surface px-3.5 py-2.5 font-sans text-sm text-on-surface outline-none transition-colors placeholder:text-stamp-sepia/60 focus:border-primary'
+  // Manejo Habitación
+  const abrirModalNuevaHab = () => {
+    if (!hotelSeleccionado) return
+    setEditandoHab(null)
+    setFormHabTipo('Doble Estándar')
+    setFormHabCapacidad(2)
+    setFormHabPrecio(130)
+    setFormHabMoneda('USD')
+    setErrorHab(null)
+    setModalHabAbierto(true)
+  }
+
+  const abrirModalEditarHab = (hab: Habitacion) => {
+    setEditandoHab(hab)
+    setFormHabTipo(hab.tipo)
+    setFormHabCapacidad(hab.capacidad)
+    setFormHabPrecio(Number(hab.precio_noche))
+    setFormHabMoneda(hab.moneda)
+    setErrorHab(null)
+    setModalHabAbierto(true)
+  }
+
+  const guardarHabitacion = async (e: FormEvent) => {
+    e.preventDefault()
+    if (!hotelSeleccionado || !formHabTipo) return
+    setOcupado(true)
+    setErrorHab(null)
+    try {
+      const payload: CrearHabitacionPayload = {
+        hotel_id: hotelSeleccionado.id,
+        tipo: formHabTipo.trim(),
+        capacidad: Number(formHabCapacidad),
+        precio_noche: Number(formHabPrecio),
+        moneda: formHabMoneda,
+      }
+      if (editandoHab) {
+        await catalogoApi.actualizarHabitacion(editandoHab.id, payload)
+        setAviso(`Habitación "${payload.tipo}" actualizada.`)
+      } else {
+        await catalogoApi.crearHabitacion(payload)
+        setAviso(`Habitación "${payload.tipo}" añadida a ${hotelSeleccionado.nombre}.`)
+      }
+      setModalHabAbierto(false)
+      cargarHabitaciones(hotelSeleccionado.id)
+      cargarDatos()
+    } catch (err) {
+      setErrorHab(mensajeDeError(err))
+    } finally {
+      setOcupado(false)
+    }
+  }
+
+  const eliminarHabitacion = async (id: number, tipo: string) => {
+    if (!confirm(`¿Eliminar habitación "${tipo}"?`)) return
+    try {
+      await catalogoApi.eliminarHabitacion(id)
+      setAviso(`Habitación eliminada.`)
+      if (hotelSeleccionado) {
+        cargarHabitaciones(hotelSeleccionado.id)
+      }
+      cargarDatos()
+    } catch (err) {
+      setError(mensajeDeError(err))
+    }
+  }
 
   return (
-    <div className="mx-auto max-w-6xl">
-      <header className="flex flex-col gap-6">
-        <div className="flex flex-wrap items-center justify-between gap-4">
-          <div className="inline-flex items-center gap-3 rounded-full bg-surface-container-high px-4 py-1.5">
-            <span className="h-2 w-2 rounded-full bg-terracotta" />
-            <span className="coord">
-              Libro de registro · Hospedajes · CU5 · RF-10
-            </span>
-          </div>
-          <div className="flex items-center gap-2 text-stamp-sepia">
-            <IconoSello className="h-4 w-4" />
-            <span className="coord">Casas verificadas por la agencia</span>
-          </div>
-        </div>
-
-        <div className="flex flex-col justify-between gap-8 lg:flex-row lg:items-end">
-          <div className="flex max-w-3xl flex-col gap-3">
-            <span className="coord flex items-center gap-2 text-terracotta">
-              <span className="regla-terracotta" />
-              Libreta de hospedajes
-            </span>
-            <h1 className="font-display text-4xl leading-tight tracking-tight text-primary sm:text-5xl">
-              Casas &amp; posadas del catálogo
+    <div className="space-y-8">
+      {/* Encabezado */}
+      <header className="border-b border-[#231a13]/10 pb-6">
+        <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
+          <div>
+            <div className="flex items-center gap-2 text-xs font-semibold uppercase tracking-wider text-[#792609]">
+              <IconoEdificio className="h-4 w-4" />
+              <span>CU5 · Hoteles y Hospedajes</span>
+            </div>
+            <h1 className="mt-1 font-serif text-3xl font-bold tracking-tight text-[#231a13]">
+              Gestión de Hoteles y Habitaciones
             </h1>
-            <p className="font-display text-lg font-normal italic text-on-surface-variant">
-              Tomo V — Hospedajes asociados a cada destino, con su categoría,
-              ubicación y ficha de presentación.
+            <p className="mt-1 text-sm text-[#231a13]/70">
+              Padrón de alojamientos asociados a destinos y configuración de habitaciones por estancia.
             </p>
           </div>
 
-          <Button className="group shrink-0" onClick={abrirNuevo}>
-            <IconoEdificio className="h-4 w-4" />
-            Registrar hospedaje
-            <span className="transition-transform duration-300 group-hover:translate-x-1">
-              →
-            </span>
+          <Button
+            onClick={abrirModalNuevoHotel}
+            className="flex items-center gap-2 rounded-full bg-[#792609] px-5 py-2.5 text-sm font-medium text-white shadow-sm hover:bg-[#983d1f]"
+          >
+            <IconoMas className="h-4 w-4" />
+            <span>Registrar Hotel</span>
           </Button>
-        </div>
-
-        <div className="flex flex-wrap items-center gap-x-8 gap-y-3 border-y border-parchment-border py-3">
-          <span className="coord">
-            Hospedajes <strong className="ml-1 text-primary">{resumen.total}</strong>
-          </span>
-          <span className="coord">
-            Activos <strong className="ml-1 text-primary">{resumen.activos}</strong>
-          </span>
-          <span className="coord">
-            Destinos <strong className="ml-1 text-primary">{resumen.destinos}</strong>
-          </span>
         </div>
       </header>
 
-      <section className="mt-8 flex flex-col gap-4 rounded-lg bg-surface-container-low p-6 shadow-paper sm:p-8">
-        <form
-          onSubmit={aplicarFiltros}
-          className="flex flex-col gap-3 rounded-lg bg-surface-container-lowest p-4 shadow-sm lg:flex-row lg:items-end"
-        >
-          <label className="flex w-full flex-col gap-1.5 lg:w-2/5">
-            <span className="coord">Búsqueda de hospedaje</span>
-            <div className="flex items-center gap-3 rounded-full bg-surface px-4 py-2.5">
-              <IconoLupa className="h-4 w-4 shrink-0 text-terracotta" />
-              <input
-                type="text"
-                value={busqueda}
-                onChange={(e) => setBusqueda(e.target.value)}
-                placeholder="Nombre, proveedor o dirección..."
-                className="w-full bg-transparent font-sans text-sm text-ink-warm outline-none placeholder:text-stamp-sepia/60"
-              />
-            </div>
-          </label>
-
-          <label className="flex flex-col gap-1.5">
-            <span className="coord">Destino</span>
-            <select
-              value={destinoFiltro}
-              onChange={(e) => setDestinoFiltro(e.target.value)}
-              className="min-w-44 cursor-pointer rounded-md border border-outline-variant/60 bg-surface px-3 py-2 font-sans text-sm text-on-surface outline-none focus:border-primary"
-            >
-              <option value="">Todos</option>
-              {destinos.map((d) => (
-                <option key={d.id} value={d.id}>
-                  {d.nombre}
-                </option>
-              ))}
-            </select>
-          </label>
-
-          <label className="flex flex-col gap-1.5">
-            <span className="coord">Categoría</span>
-            <select
-              value={estrellasFiltro}
-              onChange={(e) => setEstrellasFiltro(e.target.value)}
-              className="min-w-36 cursor-pointer rounded-md border border-outline-variant/60 bg-surface px-3 py-2 font-sans text-sm text-on-surface outline-none focus:border-primary"
-            >
-              <option value="">Todas</option>
-              {OPCIONES_ESTRELLAS.map((n) => (
-                <option key={n} value={n}>
-                  {n} estrellas
-                </option>
-              ))}
-            </select>
-          </label>
-
-          <button
-            type="submit"
-            className="flex items-center justify-center gap-2 rounded-full bg-forest-night px-6 py-2.5 font-sans text-xs font-semibold uppercase tracking-wider text-surface transition-colors hover:bg-ink-warm"
-          >
-            <IconoLupa className="h-4 w-4" />
-            Filtrar
+      {/* Avisos */}
+      {aviso && (
+        <div className="flex items-center justify-between rounded-lg border border-[#1b261d]/20 bg-[#1b261d]/5 px-4 py-3 text-sm text-[#141d16]">
+          <span>{aviso}</span>
+          <button onClick={() => setAviso(null)} className="text-[#141d16]/70 hover:text-[#141d16]">
+            <IconoCerrar className="h-4 w-4" />
           </button>
-        </form>
-
-        <div className="flex flex-wrap items-center justify-between gap-3">
-          <span className="coord">
-            Mostrando <strong className="text-primary">{hoteles.length}</strong>{' '}
-            hospedajes
-          </span>
         </div>
-      </section>
+      )}
 
       {error && (
-        <p className="mt-6 rounded-md border border-error/40 bg-error-container/50 px-4 py-2.5 font-sans text-xs text-on-error-container">
+        <div className="rounded-lg border border-red-200 bg-red-50 p-4 text-sm text-red-700">
           {error}
-        </p>
-      )}
-      {aviso && (
-        <p className="mt-6 rounded-md border border-secondary/30 bg-secondary/5 px-4 py-2.5 font-sans text-xs text-secondary">
-          {aviso}
-        </p>
+        </div>
       )}
 
-      <section className="mt-8">
-        {cargando ? (
-          <p className="nota-manuscrita">Abriendo la libreta de hospedajes...</p>
-        ) : hoteles.length === 0 ? (
-          <div className="rounded-lg border border-dashed border-parchment-border bg-surface-container-lowest px-6 py-16 text-center">
-            <p className="font-display text-xl text-on-surface">
-              Sin hospedajes que mostrar
-            </p>
-            <p className="mt-2 font-sans text-sm text-on-surface-variant">
-              Registre una casa o ajuste la búsqueda para ver hospedajes.
-            </p>
+      {/* Filtros */}
+      <div className="grid grid-cols-1 gap-3 rounded-xl border border-[#231a13]/10 bg-[#faf5eb] p-4 sm:grid-cols-3">
+        <div>
+          <label className="text-xs font-semibold uppercase text-[#231a13]/70">Destino</label>
+          <select
+            value={filtroDestino}
+            onChange={(e) => setFiltroDestino(e.target.value)}
+            className="mt-1 w-full rounded-md border border-[#231a13]/20 bg-white px-3 py-1.5 text-sm"
+          >
+            <option value="">Todos los destinos</option>
+            {destinos.map((d) => (
+              <option key={d.id} value={d.id}>
+                {d.nombre} ({d.pais})
+              </option>
+            ))}
+          </select>
+        </div>
+
+        <div>
+          <label className="text-xs font-semibold uppercase text-[#231a13]/70">Cadena / Proveedor</label>
+          <select
+            value={filtroProveedor}
+            onChange={(e) => setFiltroProveedor(e.target.value)}
+            className="mt-1 w-full rounded-md border border-[#231a13]/20 bg-white px-3 py-1.5 text-sm"
+          >
+            <option value="">Todos los proveedores</option>
+            {proveedoresHotel.map((p) => (
+              <option key={p.id} value={p.id}>
+                {p.nombre}
+              </option>
+            ))}
+          </select>
+        </div>
+
+        <div>
+          <label className="text-xs font-semibold uppercase text-[#231a13]/70">Búsqueda rápida</label>
+          <div className="relative mt-1">
+            <input
+              type="text"
+              placeholder="Buscar por hotel, ciudad o calle..."
+              value={busqueda}
+              onChange={(e) => setBusqueda(e.target.value)}
+              className="w-full rounded-md border border-[#231a13]/20 bg-white pl-8 pr-3 py-1.5 text-sm"
+            />
+            <IconoLupa className="absolute left-2.5 top-2.5 h-3.5 w-3.5 text-[#231a13]/40" />
           </div>
-        ) : (
-          <div className="overflow-x-auto rounded-lg border border-parchment-border bg-surface-container-lowest shadow-paper">
-            <table className="w-full min-w-4xl border-collapse text-left">
-              <thead className="bg-surface-container-low">
-                <tr>
-                  <th className="coord px-5 py-3 font-normal">Hospedaje</th>
-                  <th className="coord hidden px-5 py-3 font-normal sm:table-cell">
-                    Destino
-                  </th>
-                  <th className="coord px-5 py-3 font-normal">Categoría</th>
-                  <th className="coord hidden px-5 py-3 font-normal lg:table-cell">
-                    Dirección
-                  </th>
-                  <th className="coord px-5 py-3 font-normal">Estado</th>
-                  <th className="coord px-5 py-3 text-right font-normal">Acciones</th>
-                </tr>
-              </thead>
-              <tbody>
-                {hoteles.map((hotel) => (
-                  <tr
-                    key={hotel.id}
-                    className="border-b border-parchment-border/60 last:border-0 hover:bg-surface-container-low"
+        </div>
+      </div>
+
+      {/* Grilla: Hoteles y Panel de Habitaciones */}
+      <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
+        {/* Lista de Hoteles */}
+        <div className="lg:col-span-2 overflow-hidden rounded-xl border border-[#231a13]/10 bg-white shadow-sm">
+          <div className="border-b border-[#231a13]/10 bg-[#faf5eb] px-4 py-3 font-serif font-semibold text-[#231a13]">
+            Catálogo de Alojamientos ({hoteles.length})
+          </div>
+          <div className="divide-y divide-[#231a13]/10 max-h-[600px] overflow-y-auto">
+            {cargando ? (
+              <div className="p-8 text-center text-[#231a13]/50">Cargando hoteles...</div>
+            ) : hoteles.length === 0 ? (
+              <div className="p-8 text-center text-[#231a13]/50">No se encontraron hoteles registrados.</div>
+            ) : (
+              hoteles.map((h) => {
+                const esActivo = hotelSeleccionado?.id === h.id
+                return (
+                  <div
+                    key={h.id}
+                    onClick={() => seleccionarHotel(h)}
+                    className={`cursor-pointer p-4 transition-colors ${
+                      esActivo ? 'bg-[#792609]/5 border-l-4 border-[#792609]' : 'hover:bg-[#faf5eb]/50'
+                    }`}
                   >
-                    <td className="px-5 py-3.5">
-                      <div className="flex items-center gap-3">
-                        <span className="flex h-10 w-10 shrink-0 items-center justify-center overflow-hidden rounded bg-surface-container-high">
-                          {logoPorProveedor.get(hotel.proveedor) ? (
-                            <img
-                              src={logoPorProveedor.get(hotel.proveedor) as string}
-                              alt=""
-                              className="h-full w-full object-cover"
-                            />
-                          ) : (
-                            <IconoEdificio className="h-5 w-5 text-primary/40" />
+                    <div className="flex items-start justify-between">
+                      <div>
+                        <div className="flex items-center gap-2">
+                          <h3 className="font-serif text-base font-bold text-[#231a13]">{h.nombre}</h3>
+                          {h.estrellas && (
+                            <span className="text-xs text-amber-600">
+                              {'★'.repeat(h.estrellas)}
+                            </span>
                           )}
-                        </span>
-                        <div className="min-w-0">
-                          <span className="font-display text-lg text-on-surface">
-                            {hotel.nombre}
+                          {!h.activo && (
+                            <span className="rounded bg-rose-100 px-1.5 py-0.5 text-[10px] font-semibold text-rose-700">
+                              Inactivo
+                            </span>
+                          )}
+                        </div>
+                        <div className="mt-1 flex items-center gap-3 text-xs text-[#231a13]/70">
+                          <span className="flex items-center gap-1">
+                            <IconoUbicacion className="h-3 w-3 text-[#792609]" />
+                            {h.destino_nombre}
                           </span>
-                          <span className="coord mt-0.5 block">
-                            {hotel.proveedor_nombre}
+                          <span>•</span>
+                          <span className="flex items-center gap-1">
+                            <IconoMaletin className="h-3 w-3 text-[#231a13]/50" />
+                            {h.proveedor_nombre}
                           </span>
                         </div>
+                        {h.direccion && (
+                          <div className="mt-1 text-xs text-[#231a13]/60 italic">{h.direccion}</div>
+                        )}
                       </div>
-                    </td>
-                    <td className="hidden px-5 py-3.5 font-sans text-sm text-on-surface-variant sm:table-cell">
-                      {hotel.destino_nombre}
-                    </td>
-                    <td className="px-5 py-3.5">
-                      <span className="font-sans text-sm text-terracotta">
-                        {estrellasTexto(hotel.estrellas)}
-                      </span>
-                    </td>
-                    <td className="hidden px-5 py-3.5 font-sans text-sm text-on-surface-variant lg:table-cell">
-                      {hotel.direccion || '—'}
-                    </td>
-                    <td className="px-5 py-3.5">
-                      {hotel.activo ? (
-                        <span className="inline-flex items-center gap-1.5 rounded-full bg-secondary/10 px-2.5 py-0.5 coord text-secondary">
-                          <span className="h-1.5 w-1.5 rounded-full bg-secondary" />
-                          Activo
-                        </span>
-                      ) : (
-                        <span className="inline-flex items-center gap-1.5 rounded-full bg-surface-container-highest px-2.5 py-0.5 coord text-on-surface-variant">
-                          <span className="h-1.5 w-1.5 rounded-full bg-stamp-sepia" />
-                          Retirado
-                        </span>
-                      )}
-                    </td>
-                    <td className="px-5 py-3.5 text-right">
-                      <div className="flex flex-wrap items-center justify-end gap-4">
+
+                      <div className="flex items-center gap-1" onClick={(e) => e.stopPropagation()}>
                         <button
-                          type="button"
-                          onClick={() => abrirEditar(hotel)}
-                          className="inline-flex items-center gap-1.5 font-sans text-[11px] font-semibold uppercase tracking-wider text-primary hover:text-terracotta"
+                          onClick={() => abrirModalEditarHotel(h)}
+                          title="Editar hotel"
+                          className="rounded-lg p-1.5 text-[#231a13]/70 hover:bg-[#231a13]/10 hover:text-[#792609]"
+                        >
+                          <IconoLapiz className="h-4 w-4" />
+                        </button>
+                        <button
+                          onClick={() => eliminarHotel(h.id, h.nombre)}
+                          title="Eliminar hotel"
+                          className="rounded-lg p-1.5 text-[#231a13]/70 hover:bg-rose-50 hover:text-rose-600"
+                        >
+                          <IconoCerrar className="h-4 w-4" />
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                )
+              })
+            )}
+          </div>
+        </div>
+
+        {/* Panel lateral de Habitaciones del Hotel Seleccionado */}
+        <div className="rounded-xl border border-[#231a13]/10 bg-white p-5 shadow-sm">
+          {hotelSeleccionado ? (
+            <div>
+              <div className="flex items-center justify-between border-b border-[#231a13]/10 pb-3">
+                <div>
+                  <h3 className="font-serif text-lg font-bold text-[#231a13]">
+                    {hotelSeleccionado.nombre}
+                  </h3>
+                  <p className="text-xs text-[#231a13]/60">Tipologías de habitación</p>
+                </div>
+                <Button
+                  tamano="sm"
+                  onClick={abrirModalNuevaHab}
+                  className="rounded-full bg-[#792609] text-white hover:bg-[#983d1f]"
+                >
+                  <IconoMas className="h-3.5 w-3.5" />
+                  <span>Habitación</span>
+                </Button>
+              </div>
+
+              <div className="mt-4 space-y-3">
+                {cargandoHabitaciones ? (
+                  <div className="py-6 text-center text-xs text-[#231a13]/50">Cargando habitaciones...</div>
+                ) : habitaciones.length === 0 ? (
+                  <div className="py-6 text-center text-xs text-[#231a13]/50">
+                    Este hotel aún no tiene tipologías de habitación registradas.
+                  </div>
+                ) : (
+                  habitaciones.map((hab) => (
+                    <div
+                      key={hab.id}
+                      className="flex items-center justify-between rounded-lg border border-[#231a13]/10 bg-[#faf5eb]/50 p-3"
+                    >
+                      <div>
+                        <div className="font-medium text-sm text-[#231a13]">{hab.tipo}</div>
+                        <div className="text-xs text-[#231a13]/60">
+                          Capacidad: {hab.capacidad} {hab.capacidad === 1 ? 'persona' : 'personas'}
+                        </div>
+                        <div className="text-xs font-semibold text-[#792609]">
+                          {hab.moneda} {Number(hab.precio_noche).toFixed(2)} / noche
+                        </div>
+                      </div>
+
+                      <div className="flex items-center gap-1">
+                        <button
+                          onClick={() => abrirModalEditarHab(hab)}
+                          className="rounded p-1 text-[#231a13]/60 hover:text-[#792609]"
                         >
                           <IconoLapiz className="h-3.5 w-3.5" />
-                          Editar
                         </button>
                         <button
-                          type="button"
-                          onClick={() => void alternarActivo(hotel)}
-                          className="inline-flex items-center gap-1.5 font-sans text-[11px] font-semibold uppercase tracking-wider text-secondary hover:text-primary"
+                          onClick={() => eliminarHabitacion(hab.id, hab.tipo)}
+                          className="rounded p-1 text-[#231a13]/60 hover:text-rose-600"
                         >
-                          {hotel.activo ? 'Retirar' : 'Activar'}
-                        </button>
-                        <button
-                          type="button"
-                          onClick={() => void eliminar(hotel)}
-                          className="inline-flex items-center gap-1.5 font-sans text-[11px] font-semibold uppercase tracking-wider text-stamp-sepia hover:text-error"
-                        >
-                          <IconoBasura className="h-3.5 w-3.5" />
-                          Eliminar
+                          <IconoCerrar className="h-3.5 w-3.5" />
                         </button>
                       </div>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        )}
-      </section>
+                    </div>
+                  ))
+                )}
+              </div>
+            </div>
+          ) : (
+            <div className="py-12 text-center text-sm text-[#231a13]/50">
+              Selecciona un hotel de la lista para gestionar sus habitaciones y tarifas por noche.
+            </div>
+          )}
+        </div>
+      </div>
 
-      <FormularioHotel
-        abierto={modalAbierto}
-        hotel={editando}
-        proveedores={proveedores}
-        destinos={destinos}
-        onCerrar={() => setModalAbierto(false)}
-        onGuardado={(mensaje) => {
-          setAviso(mensaje)
-          void cargar()
-        }}
-        claseCampo={claseCampo}
-      />
+      {/* Modal Hotel */}
+      {modalHotelAbierto && (
+        <Modal
+          abierto={modalHotelAbierto}
+          onCerrar={() => setModalHotelAbierto(false)}
+          titulo={editandoHotel ? `Editar Hotel ${editandoHotel.nombre}` : 'Registrar Nuevo Hotel'}
+        >
+          <form onSubmit={guardarHotel} className="space-y-4">
+            {errorHotel && (
+              <div className="rounded-lg border border-red-200 bg-red-50 p-3 text-xs text-red-700">
+                {errorHotel}
+              </div>
+            )}
+
+            <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+              <div>
+                <label className="text-xs font-semibold uppercase text-[#231a13]/80">Cadena / Proveedor *</label>
+                <select
+                  required
+                  value={formHotelProveedor}
+                  onChange={(e) => setFormHotelProveedor(Number(e.target.value))}
+                  className="mt-1 w-full rounded-md border border-[#231a13]/20 p-2 text-sm"
+                >
+                  <option value="">Selecciona proveedor...</option>
+                  {proveedoresHotel.map((p) => (
+                    <option key={p.id} value={p.id}>
+                      {p.nombre}
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              <div>
+                <label className="text-xs font-semibold uppercase text-[#231a13]/80">Destino Turístico *</label>
+                <select
+                  required
+                  value={formHotelDestino}
+                  onChange={(e) => setFormHotelDestino(Number(e.target.value))}
+                  className="mt-1 w-full rounded-md border border-[#231a13]/20 p-2 text-sm"
+                >
+                  <option value="">Selecciona destino...</option>
+                  {destinos.map((d) => (
+                    <option key={d.id} value={d.id}>
+                      {d.nombre} ({d.pais})
+                    </option>
+                  ))}
+                </select>
+              </div>
+            </div>
+
+            <div>
+              <label className="text-xs font-semibold uppercase text-[#231a13]/80">Nombre del Hotel *</label>
+              <input
+                type="text"
+                required
+                placeholder="Ej. Palacio Manco Cápac Luxury Lodge"
+                value={formHotelNombre}
+                onChange={(e) => setFormHotelNombre(e.target.value)}
+                className="mt-1 w-full rounded-md border border-[#231a13]/20 p-2 text-sm"
+              />
+            </div>
+
+            <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+              <div>
+                <label className="text-xs font-semibold uppercase text-[#231a13]/80">Categoría (Estrellas)</label>
+                <select
+                  value={formHotelEstrellas}
+                  onChange={(e) => setFormHotelEstrellas(e.target.value === '' ? '' : Number(e.target.value))}
+                  className="mt-1 w-full rounded-md border border-[#231a13]/20 p-2 text-sm"
+                >
+                  <option value="">Sin categoría asignada</option>
+                  <option value="1">1 Estrella ★</option>
+                  <option value="2">2 Estrellas ★★</option>
+                  <option value="3">3 Estrellas ★★★</option>
+                  <option value="4">4 Estrellas ★★★★</option>
+                  <option value="5">5 Estrellas ★★★★★</option>
+                </select>
+              </div>
+
+              <div>
+                <label className="text-xs font-semibold uppercase text-[#231a13]/80">Dirección</label>
+                <input
+                  type="text"
+                  placeholder="Calle, número, zona o barrio"
+                  value={formHotelDireccion}
+                  onChange={(e) => setFormHotelDireccion(e.target.value)}
+                  className="mt-1 w-full rounded-md border border-[#231a13]/20 p-2 text-sm"
+                />
+              </div>
+            </div>
+
+            <div>
+              <label className="text-xs font-semibold uppercase text-[#231a13]/80">Descripción / Servicios</label>
+              <textarea
+                rows={3}
+                placeholder="Detalle sobre amenidades, encanto patrimonial, vistas panorámicas..."
+                value={formHotelDescripcion}
+                onChange={(e) => setFormHotelDescripcion(e.target.value)}
+                className="mt-1 w-full rounded-md border border-[#231a13]/20 p-2 text-sm"
+              />
+            </div>
+
+            <div className="flex items-center gap-2">
+              <input
+                type="checkbox"
+                id="hotelActivo"
+                checked={formHotelActivo}
+                onChange={(e) => setFormHotelActivo(e.target.checked)}
+                className="rounded border-[#231a13]/20 text-[#792609]"
+              />
+              <label htmlFor="hotelActivo" className="text-sm text-[#231a13]">
+                Hotel activo y habilitado para paquetes turísticos
+              </label>
+            </div>
+
+            <div className="mt-6 flex justify-end gap-3 border-t border-[#231a13]/10 pt-4">
+              <Button
+                type="button"
+                variante="ghost"
+                onClick={() => setModalHotelAbierto(false)}
+                disabled={ocupado}
+              >
+                Cancelar
+              </Button>
+              <Button
+                type="submit"
+                disabled={ocupado}
+                className="bg-[#792609] text-white hover:bg-[#983d1f]"
+              >
+                {ocupado ? 'Guardando...' : editandoHotel ? 'Actualizar Hotel' : 'Registrar Hotel'}
+              </Button>
+            </div>
+          </form>
+        </Modal>
+      )}
+
+      {/* Modal Habitación */}
+      {modalHabAbierto && (
+        <Modal
+          abierto={modalHabAbierto}
+          onCerrar={() => setModalHabAbierto(false)}
+          titulo={editandoHab ? `Editar Habitación` : `Nueva Habitación en ${hotelSeleccionado?.nombre}`}
+        >
+          <form onSubmit={guardarHabitacion} className="space-y-4">
+            {errorHab && (
+              <div className="rounded-lg border border-red-200 bg-red-50 p-3 text-xs text-red-700">
+                {errorHab}
+              </div>
+            )}
+
+            <div>
+              <label className="text-xs font-semibold uppercase text-[#231a13]/80">Tipo de Habitación *</label>
+              <input
+                type="text"
+                required
+                placeholder="Ej. Simple, Doble King, Suite Colonial, Familiar"
+                value={formHabTipo}
+                onChange={(e) => setFormHabTipo(e.target.value)}
+                className="mt-1 w-full rounded-md border border-[#231a13]/20 p-2 text-sm"
+              />
+            </div>
+
+            <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
+              <div>
+                <label className="text-xs font-semibold uppercase text-[#231a13]/80">Capacidad (Pax) *</label>
+                <input
+                  type="number"
+                  min="1"
+                  max="20"
+                  required
+                  value={formHabCapacidad}
+                  onChange={(e) => setFormHabCapacidad(e.target.value === '' ? '' : Number(e.target.value))}
+                  className="mt-1 w-full rounded-md border border-[#231a13]/20 p-2 text-sm"
+                />
+              </div>
+
+              <div>
+                <label className="text-xs font-semibold uppercase text-[#231a13]/80">Precio Noche *</label>
+                <input
+                  type="number"
+                  min="0"
+                  step="0.01"
+                  required
+                  value={formHabPrecio}
+                  onChange={(e) => setFormHabPrecio(e.target.value === '' ? '' : Number(e.target.value))}
+                  className="mt-1 w-full rounded-md border border-[#231a13]/20 p-2 text-sm"
+                />
+              </div>
+
+              <div>
+                <label className="text-xs font-semibold uppercase text-[#231a13]/80">Moneda *</label>
+                <select
+                  value={formHabMoneda}
+                  onChange={(e) => setFormHabMoneda(e.target.value as 'USD' | 'BOB' | 'EUR')}
+                  className="mt-1 w-full rounded-md border border-[#231a13]/20 p-2 text-sm"
+                >
+                  <option value="USD">USD ($)</option>
+                  <option value="BOB">BOB (Bs.)</option>
+                  <option value="EUR">EUR (€)</option>
+                </select>
+              </div>
+            </div>
+
+            <div className="mt-6 flex justify-end gap-3 border-t border-[#231a13]/10 pt-4">
+              <Button
+                type="button"
+                variante="ghost"
+                onClick={() => setModalHabAbierto(false)}
+                disabled={ocupado}
+              >
+                Cancelar
+              </Button>
+              <Button
+                type="submit"
+                disabled={ocupado}
+                className="bg-[#792609] text-white hover:bg-[#983d1f]"
+              >
+                {ocupado ? 'Guardando...' : editandoHab ? 'Guardar Cambios' : 'Crear Habitación'}
+              </Button>
+            </div>
+          </form>
+        </Modal>
+      )}
     </div>
-  )
-}
-
-/* -------------------------------------------------------------------------- */
-/* Formulario de alta / edición                                               */
-/* -------------------------------------------------------------------------- */
-
-interface FormHotel {
-  proveedor: string
-  destino: string
-  nombre: string
-  estrellas: string
-  direccion: string
-  latitud: string
-  longitud: string
-  descripcion: string
-  activo: boolean
-}
-
-const FORM_VACIO: FormHotel = {
-  proveedor: '',
-  destino: '',
-  nombre: '',
-  estrellas: '',
-  direccion: '',
-  latitud: '',
-  longitud: '',
-  descripcion: '',
-  activo: true,
-}
-
-function FormularioHotel({
-  abierto,
-  hotel,
-  proveedores,
-  destinos,
-  onCerrar,
-  onGuardado,
-  claseCampo,
-}: {
-  abierto: boolean
-  hotel: Hotel | null
-  proveedores: Proveedor[]
-  destinos: DestinoResumen[]
-  onCerrar: () => void
-  onGuardado: (mensaje: string) => void
-  claseCampo: string
-}) {
-  const [form, setForm] = useState<FormHotel>(FORM_VACIO)
-  const [error, setError] = useState<string | null>(null)
-  const [enviando, setEnviando] = useState(false)
-
-  useEffect(() => {
-    if (!abierto) return
-    setError(null)
-    setForm(
-      hotel
-        ? {
-            proveedor: String(hotel.proveedor),
-            destino: String(hotel.destino),
-            nombre: hotel.nombre,
-            estrellas: hotel.estrellas ? String(hotel.estrellas) : '',
-            direccion: hotel.direccion ?? '',
-            latitud: hotel.latitud ?? '',
-            longitud: hotel.longitud ?? '',
-            descripcion: hotel.descripcion ?? '',
-            activo: hotel.activo,
-          }
-        : FORM_VACIO,
-    )
-  }, [abierto, hotel])
-
-  function campo<K extends keyof FormHotel>(clave: K, valor: FormHotel[K]) {
-    setForm((f) => ({ ...f, [clave]: valor }))
-  }
-
-  async function enviar(evento: FormEvent<HTMLFormElement>) {
-    evento.preventDefault()
-    if (!form.proveedor || !form.destino || !form.nombre.trim()) {
-      setError('Complete proveedor, destino y nombre del hospedaje.')
-      return
-    }
-    setEnviando(true)
-    setError(null)
-    try {
-      const payload = {
-        proveedor: Number(form.proveedor),
-        destino: Number(form.destino),
-        nombre: form.nombre.trim(),
-        estrellas: form.estrellas ? Number(form.estrellas) : null,
-        direccion: form.direccion.trim() || null,
-        latitud: form.latitud.trim() || null,
-        longitud: form.longitud.trim() || null,
-        descripcion: form.descripcion.trim() || null,
-        activo: form.activo,
-      }
-      if (hotel) {
-        await catalogoApi.actualizarHotel(hotel.id, payload)
-        onGuardado('Hospedaje actualizado en la libreta.')
-      } else {
-        await catalogoApi.crearHotel(payload)
-        onGuardado('Hospedaje registrado en la libreta.')
-      }
-      onCerrar()
-    } catch (e) {
-      setError(mensajeDeError(e))
-    } finally {
-      setEnviando(false)
-    }
-  }
-
-  return (
-    <Modal
-      abierto={abierto}
-      onCerrar={onCerrar}
-      ancho="lg"
-      titulo={hotel ? 'Editar hospedaje' : 'Registrar hospedaje'}
-    >
-      <p className="coord mb-4 text-primary">
-        {hotel
-          ? `${hotel.nombre} · ${hotel.destino_nombre}`
-          : 'Nueva casa · Archivo de hospedajes'}
-      </p>
-      <form onSubmit={enviar} className="flex flex-col gap-4" noValidate>
-        <div className="grid gap-4 sm:grid-cols-2">
-          <label className="flex flex-col gap-1.5">
-            <span className="coord">Proveedor hotelero *</span>
-            <select
-              value={form.proveedor}
-              onChange={(e) => campo('proveedor', e.target.value)}
-              className={claseCampo}
-            >
-              <option value="">Seleccione un proveedor</option>
-              {proveedores.map((p) => (
-                <option key={p.id} value={p.id}>
-                  {p.nombre}
-                </option>
-              ))}
-            </select>
-          </label>
-
-          <label className="flex flex-col gap-1.5">
-            <span className="coord">Destino *</span>
-            <select
-              value={form.destino}
-              onChange={(e) => campo('destino', e.target.value)}
-              className={claseCampo}
-            >
-              <option value="">Seleccione un destino</option>
-              {destinos.map((d) => (
-                <option key={d.id} value={d.id}>
-                  {d.nombre}
-                </option>
-              ))}
-            </select>
-          </label>
-
-          <label className="flex flex-col gap-1.5 sm:col-span-2">
-            <span className="coord">Nombre del hospedaje *</span>
-            <input
-              type="text"
-              value={form.nombre}
-              onChange={(e) => campo('nombre', e.target.value)}
-              placeholder="Ej. Posada del Inca"
-              className={claseCampo}
-            />
-          </label>
-
-          <label className="flex flex-col gap-1.5">
-            <span className="coord">Categoría</span>
-            <select
-              value={form.estrellas}
-              onChange={(e) => campo('estrellas', e.target.value)}
-              className={claseCampo}
-            >
-              <option value="">Sin clasificar</option>
-              {OPCIONES_ESTRELLAS.map((n) => (
-                <option key={n} value={n}>
-                  {n} estrellas
-                </option>
-              ))}
-            </select>
-          </label>
-
-          <label className="flex flex-col gap-1.5">
-            <span className="coord">Dirección</span>
-            <input
-              type="text"
-              value={form.direccion}
-              onChange={(e) => campo('direccion', e.target.value)}
-              placeholder="Calle, número, barrio"
-              className={claseCampo}
-            />
-          </label>
-
-          <label className="flex flex-col gap-1.5">
-            <span className="coord">Latitud</span>
-            <input
-              type="number"
-              step="0.000001"
-              value={form.latitud}
-              onChange={(e) => campo('latitud', e.target.value)}
-              placeholder="-13.518000"
-              className={claseCampo}
-            />
-          </label>
-
-          <label className="flex flex-col gap-1.5">
-            <span className="coord">Longitud</span>
-            <input
-              type="number"
-              step="0.000001"
-              value={form.longitud}
-              onChange={(e) => campo('longitud', e.target.value)}
-              placeholder="-71.978000"
-              className={claseCampo}
-            />
-          </label>
-
-          <label className="flex flex-col gap-1.5 sm:col-span-2">
-            <span className="coord">Ficha del hospedaje</span>
-            <textarea
-              rows={3}
-              value={form.descripcion}
-              onChange={(e) => campo('descripcion', e.target.value)}
-              placeholder="Ambientes, servicios y carácter de la casa..."
-              className={claseCampo}
-            />
-          </label>
-
-          <label className="flex items-center gap-3 sm:col-span-2">
-            <input
-              type="checkbox"
-              checked={form.activo}
-              onChange={(e) => campo('activo', e.target.checked)}
-              className="h-4 w-4 rounded border-outline-variant text-primary"
-            />
-            <span className="font-sans text-sm text-on-surface">
-              Visible en el catálogo público
-            </span>
-          </label>
-        </div>
-
-        {error && (
-          <p className="rounded-md border border-error/40 bg-error-container/50 px-3.5 py-2.5 font-sans text-xs text-on-error-container">
-            {error}
-          </p>
-        )}
-
-        <div className="flex items-center justify-end gap-3 pt-2">
-          <Button type="button" variante="ghost" onClick={onCerrar} disabled={enviando}>
-            Cancelar
-          </Button>
-          <Button type="submit" disabled={enviando}>
-            {enviando ? 'Guardando...' : hotel ? 'Guardar cambios' : 'Registrar hospedaje'}
-          </Button>
-        </div>
-      </form>
-    </Modal>
   )
 }

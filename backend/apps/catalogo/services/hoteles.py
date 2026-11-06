@@ -1,85 +1,88 @@
-"""Capa de negocio del catálogo — hoteles (CU5)."""
+"""Capa de negocio del catálogo — hoteles y habitaciones (CU5)."""
 from __future__ import annotations
 
+from decimal import Decimal
 from django.core.exceptions import ValidationError
 from django.db import transaction
-from django.db.models import Q
+from django.db.models import Q, QuerySet
 
-from apps.catalogo.models import Hotel
+from apps.catalogo.models import Destino, Habitacion, Hotel, Proveedor
 
-# Campos editables de un hotel (los del serializer de escritura).
-CAMPOS_HOTEL = {
-    "proveedor", "destino", "nombre", "estrellas", "direccion",
-    "latitud", "longitud", "descripcion", "activo",
-}
 
+# ─────────────────────────────────────────────────────────────────────────────
+# HOTELES
+# ─────────────────────────────────────────────────────────────────────────────
 
 def listar_hoteles(
     *,
+    destino_id: int | None = None,
+    proveedor_id: int | None = None,
     solo_activos: bool = False,
-    proveedor_id=None,
-    destino_id=None,
     estrellas: int | None = None,
     q: str | None = None,
-) -> "QuerySet[Hotel]":
-    """Devuelve hoteles filtrados por proveedor, destino, categoría o texto."""
-    qs = Hotel.objects.select_related("proveedor", "destino")
-    if solo_activos:
-        qs = qs.filter(activo=True)
-    if proveedor_id:
-        qs = qs.filter(proveedor_id=proveedor_id)
+) -> QuerySet[Hotel]:
+    qs = Hotel.objects.select_related("proveedor", "destino").prefetch_related("habitaciones").all()
     if destino_id:
         qs = qs.filter(destino_id=destino_id)
+    if proveedor_id:
+        qs = qs.filter(proveedor_id=proveedor_id)
+    if solo_activos:
+        qs = qs.filter(activo=True)
     if estrellas:
         qs = qs.filter(estrellas=estrellas)
     if q:
         qs = qs.filter(
             Q(nombre__icontains=q)
             | Q(direccion__icontains=q)
-            | Q(proveedor__nombre__icontains=q)
+            | Q(descripcion__icontains=q)
             | Q(destino__nombre__icontains=q)
+            | Q(proveedor__nombre__icontains=q)
         )
     return qs.order_by("nombre")
 
 
 def obtener_hotel(hotel_id: int) -> Hotel:
     try:
-        return Hotel.objects.select_related("proveedor", "destino").get(pk=hotel_id)
+        return Hotel.objects.select_related("proveedor", "destino").prefetch_related("habitaciones").get(pk=hotel_id)
     except Hotel.DoesNotExist:
         raise ValidationError({"hotel_id": "Hotel no encontrado."})
 
 
-def _validar(datos: dict, *, instance: Hotel | None = None) -> None:
-    """Reglas de negocio del hotel (mismas que los CHECK del esquema)."""
-    proveedor = datos.get("proveedor", getattr(instance, "proveedor", None))
-    nombre = datos.get("nombre", getattr(instance, "nombre", None))
-    estrellas = datos.get("estrellas", getattr(instance, "estrellas", None))
-    latitud = datos.get("latitud", getattr(instance, "latitud", None))
-    longitud = datos.get("longitud", getattr(instance, "longitud", None))
-
-    if proveedor is not None and proveedor.tipo != "hotel":
-        raise ValidationError(
-            {"proveedor": "El proveedor del hotel debe ser de tipo hotel."}
-        )
-    if nombre is not None and not str(nombre).strip():
-        raise ValidationError({"nombre": "El nombre del hotel es obligatorio."})
-    if estrellas is not None and not 1 <= estrellas <= 5:
-        raise ValidationError(
-            {"estrellas": "La categoría debe estar entre 1 y 5 estrellas."}
-        )
-    if latitud is not None and not -90 <= float(latitud) <= 90:
-        raise ValidationError({"latitud": "La latitud debe estar entre -90 y 90."})
-    if longitud is not None and not -180 <= float(longitud) <= 180:
-        raise ValidationError(
-            {"longitud": "La longitud debe estar entre -180 y 180."}
-        )
-
-
 @transaction.atomic
-def crear_hotel(**datos) -> Hotel:
-    datos = {k: v for k, v in datos.items() if k in CAMPOS_HOTEL}
-    _validar(datos)
-    hotel = Hotel(**datos)
+def crear_hotel(
+    *,
+    proveedor_id: int,
+    destino_id: int,
+    nombre: str,
+    estrellas: int | None = None,
+    direccion: str | None = None,
+    latitud: Decimal | float | None = None,
+    longitud: Decimal | float | None = None,
+    descripcion: str | None = None,
+    activo: bool = True,
+) -> Hotel:
+    try:
+        proveedor = Proveedor.objects.get(pk=proveedor_id, tipo="hotel")
+    except Proveedor.DoesNotExist:
+        raise ValidationError({"proveedor_id": "El proveedor indicado no existe o no es de tipo hotel."})
+
+    try:
+        destino = Destino.objects.get(pk=destino_id)
+    except Destino.DoesNotExist:
+        raise ValidationError({"destino_id": "El destino indicado no existe."})
+
+    hotel = Hotel(
+        proveedor=proveedor,
+        destino=destino,
+        nombre=nombre.strip(),
+        estrellas=estrellas,
+        direccion=direccion.strip() if direccion else None,
+        latitud=Decimal(str(latitud)) if latitud is not None else None,
+        longitud=Decimal(str(longitud)) if longitud is not None else None,
+        descripcion=descripcion.strip() if descripcion else None,
+        activo=activo,
+    )
+    hotel.full_clean()
     hotel.save()
     return hotel
 
@@ -87,17 +90,117 @@ def crear_hotel(**datos) -> Hotel:
 @transaction.atomic
 def actualizar_hotel(hotel_id: int, **kwargs) -> Hotel:
     hotel = obtener_hotel(hotel_id)
-    cambios = {k: v for k, v in kwargs.items() if k in CAMPOS_HOTEL}
-    _validar(cambios, instance=hotel)
-    for campo, valor in cambios.items():
-        setattr(hotel, campo, valor)
+
+    if "proveedor_id" in kwargs:
+        try:
+            hotel.proveedor = Proveedor.objects.get(pk=kwargs["proveedor_id"], tipo="hotel")
+        except Proveedor.DoesNotExist:
+            raise ValidationError({"proveedor_id": "Proveedor no existe o no es de tipo hotel."})
+
+    if "destino_id" in kwargs:
+        try:
+            hotel.destino = Destino.objects.get(pk=kwargs["destino_id"])
+        except Destino.DoesNotExist:
+            raise ValidationError({"destino_id": "Destino no existe."})
+
+    if "nombre" in kwargs:
+        hotel.nombre = kwargs["nombre"].strip()
+    if "estrellas" in kwargs:
+        hotel.estrellas = kwargs["estrellas"]
+    if "direccion" in kwargs:
+        hotel.direccion = kwargs["direccion"]
+    if "latitud" in kwargs:
+        hotel.latitud = Decimal(str(kwargs["latitud"])) if kwargs["latitud"] is not None else None
+    if "longitud" in kwargs:
+        hotel.longitud = Decimal(str(kwargs["longitud"])) if kwargs["longitud"] is not None else None
+    if "descripcion" in kwargs:
+        hotel.descripcion = kwargs["descripcion"]
+    if "activo" in kwargs:
+        hotel.activo = kwargs["activo"]
+
+    hotel.full_clean()
     hotel.save()
     return hotel
 
 
 @transaction.atomic
-def toggle_activo_hotel(hotel_id: int) -> Hotel:
+def eliminar_hotel(hotel_id: int) -> None:
     hotel = obtener_hotel(hotel_id)
-    hotel.activo = not hotel.activo
-    hotel.save(update_fields=["activo"])
-    return hotel
+    if hotel.paquetes.exists():
+        raise ValidationError({"hotel": "No se puede eliminar un hotel asignado a paquetes turísticos."})
+    hotel.delete()
+
+
+# ─────────────────────────────────────────────────────────────────────────────
+# HABITACIONES
+# ─────────────────────────────────────────────────────────────────────────────
+
+def listar_habitaciones(*, hotel_id: int | None = None) -> QuerySet[Habitacion]:
+    qs = Habitacion.objects.select_related("hotel").all()
+    if hotel_id:
+        qs = qs.filter(hotel_id=hotel_id)
+    return qs.order_by("hotel", "precio_noche")
+
+
+def obtener_habitacion(habitacion_id: int) -> Habitacion:
+    try:
+        return Habitacion.objects.select_related("hotel").get(pk=habitacion_id)
+    except Habitacion.DoesNotExist:
+        raise ValidationError({"habitacion_id": "Habitación no encontrada."})
+
+
+@transaction.atomic
+def crear_habitacion(
+    *,
+    hotel_id: int,
+    tipo: str,
+    capacidad: int,
+    precio_noche: Decimal | float,
+    moneda: str = "USD",
+) -> Habitacion:
+    try:
+        hotel = Hotel.objects.get(pk=hotel_id)
+    except Hotel.DoesNotExist:
+        raise ValidationError({"hotel_id": "El hotel especificado no existe."})
+
+    habitacion = Habitacion(
+        hotel=hotel,
+        tipo=tipo.strip(),
+        capacidad=capacidad,
+        precio_noche=Decimal(str(precio_noche)),
+        moneda=moneda,
+    )
+    habitacion.full_clean()
+    habitacion.save()
+    return habitacion
+
+
+@transaction.atomic
+def actualizar_habitacion(habitacion_id: int, **kwargs) -> Habitacion:
+    habitacion = obtener_habitacion(habitacion_id)
+
+    if "hotel_id" in kwargs:
+        try:
+            habitacion.hotel = Hotel.objects.get(pk=kwargs["hotel_id"])
+        except Hotel.DoesNotExist:
+            raise ValidationError({"hotel_id": "Hotel no existe."})
+
+    if "tipo" in kwargs:
+        habitacion.tipo = kwargs["tipo"].strip()
+    if "capacidad" in kwargs:
+        habitacion.capacidad = kwargs["capacidad"]
+    if "precio_noche" in kwargs:
+        habitacion.precio_noche = Decimal(str(kwargs["precio_noche"]))
+    if "moneda" in kwargs:
+        habitacion.moneda = kwargs["moneda"]
+
+    habitacion.full_clean()
+    habitacion.save()
+    return habitacion
+
+
+@transaction.atomic
+def eliminar_habitacion(habitacion_id: int) -> None:
+    habitacion = obtener_habitacion(habitacion_id)
+    habitacion.delete()
+

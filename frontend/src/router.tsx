@@ -13,20 +13,31 @@ import { ClientesAdminView } from '@/views/admin/ClientesAdminView'
 import { DashboardView } from '@/views/admin/DashboardView'
 import { EditorDestinoView } from '@/views/admin/EditorDestinoView'
 import { FichaClienteAdminView } from '@/views/admin/FichaClienteAdminView'
-import { HotelesAdminView } from '@/views/admin/HotelesAdminView'
-import { PaquetesAdminView } from '@/views/admin/PaquetesAdminView'
-import { SalidasAdminView } from '@/views/admin/SalidasAdminView'
 import { ProveedoresAdminView } from '@/views/admin/ProveedoresAdminView'
 import { RolesView } from '@/views/admin/RolesView'
 import { VuelosAdminView } from '@/views/admin/VuelosAdminView'
+import { HotelesAdminView } from '@/views/admin/HotelesAdminView'
+import { PaquetesAdminView } from '@/views/admin/PaquetesAdminView'
+import { SalidasAdminView } from '@/views/admin/SalidasAdminView'
+import { ReservasAdminView } from '@/views/admin/ReservasAdminView'
+import { DetalleReservaAdminView } from '@/views/admin/DetalleReservaAdminView'
+import { NuevaReservaAdminView } from '@/views/admin/NuevaReservaAdminView'
+import { EditorItinerarioAdminView } from '@/views/admin/EditorItinerarioAdminView'
+import { CatalogoPaquetesView } from '@/views/catalogo/CatalogoPaquetesView'
+import { DetallePaqueteView } from '@/views/catalogo/DetallePaqueteView'
+import { ReservaSeleccionView } from '@/views/reserva/ReservaSeleccionView'
+import { ReservaPasajerosView } from '@/views/reserva/ReservaPasajerosView'
+import { ReservaConfirmacionView } from '@/views/reserva/ReservaConfirmacionView'
+import { MisViajesView } from '@/views/cliente/MisViajesView'
+import { DetalleViajeView } from '@/views/cliente/DetalleViajeView'
+import { ItinerarioView } from '@/views/cliente/ItinerarioView'
+import { NotificacionesView } from '@/views/cliente/NotificacionesView'
 import { LoginView } from '@/views/auth/LoginView'
 import { RecuperarPasswordView } from '@/views/auth/RecuperarPasswordView'
 import { RegisterView } from '@/views/auth/RegisterView'
 import { RestablecerPasswordView } from '@/views/auth/RestablecerPasswordView'
 import { SesionExpiradaView } from '@/views/auth/SesionExpiradaView'
 import { DetalleDestinoView } from '@/views/catalogo/DetalleDestinoView'
-import { DetallePaqueteView } from '@/views/catalogo/DetallePaqueteView'
-import { CatalogoPaquetesView } from '@/views/catalogo/CatalogoPaquetesView'
 import { ExplorarDestinosView } from '@/views/catalogo/ExplorarDestinosView'
 import { PanelViajeroView } from '@/views/cliente/PanelViajeroView'
 import { PreferenciasView } from '@/views/cliente/PreferenciasView'
@@ -48,6 +59,9 @@ export const router = createBrowserRouter([
       { path: '/destinos/:id', element: <DetalleDestinoView /> },
       { path: '/viajes', element: <CatalogoPaquetesView /> },
       { path: '/viajes/:id', element: <DetallePaqueteView /> },
+      { path: '/reservar/:paqueteId', element: <ReservaSeleccionView /> },
+      { path: '/reservar/pasajeros', element: <ReservaPasajerosView /> },
+      { path: '/reservar/confirmacion', element: <ReservaConfirmacionView /> },
     ],
   },
   {
@@ -69,6 +83,10 @@ export const router = createBrowserRouter([
         children: [
           { path: '/mi-cuenta', element: <PanelViajeroView /> },
           { path: '/mi-cuenta/preferencias', element: <PreferenciasView /> },
+          { path: '/mi-cuenta/viajes', element: <MisViajesView /> },
+          { path: '/mi-cuenta/viajes/:id', element: <DetalleViajeView /> },
+          { path: '/mi-cuenta/viajes/:id/itinerario', element: <ItinerarioView /> },
+          { path: '/mi-cuenta/notificaciones', element: <NotificacionesView /> },
         ],
       },
     ],
@@ -95,15 +113,19 @@ export const router = createBrowserRouter([
           { path: '/admin/destinos', element: <AtlasDestinosView /> },
           { path: '/admin/destinos/nuevo', element: <EditorDestinoView /> },
           { path: '/admin/destinos/:id/editar', element: <EditorDestinoView /> },
-          { path: '/admin/vuelos', element: <VuelosAdminView /> },
-          { path: '/admin/hoteles', element: <HotelesAdminView /> },
-          { path: '/admin/paquetes', element: <PaquetesAdminView /> },
-          { path: '/admin/salidas', element: <SalidasAdminView /> },
           {
             path: '/admin/proveedores',
             element: <RutaAdmin />,
             children: [{ index: true, element: <ProveedoresAdminView /> }],
           },
+          { path: '/admin/vuelos', element: <VuelosAdminView /> },
+          { path: '/admin/hoteles', element: <HotelesAdminView /> },
+          { path: '/admin/paquetes', element: <PaquetesAdminView /> },
+          { path: '/admin/salidas', element: <SalidasAdminView /> },
+          { path: '/admin/reservas', element: <ReservasAdminView /> },
+          { path: '/admin/reservas/nueva', element: <NuevaReservaAdminView /> },
+          { path: '/admin/reservas/:id', element: <DetalleReservaAdminView /> },
+          { path: '/admin/reservas/:id/itinerario', element: <EditorItinerarioAdminView /> },
         ],
       },
     ],

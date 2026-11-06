@@ -1,52 +1,41 @@
-"""Capa de presentación del catálogo — vuelos (CU4)."""
-from django.core.exceptions import ValidationError as DjangoValidationError
+"""Controlador de vuelos (CU4)."""
 from rest_framework import status, viewsets
-from rest_framework.exceptions import ValidationError as DRFValidationError
 from rest_framework.response import Response
 
-from apps.catalogo import services
-from apps.catalogo.permissions import EsPersonal
-from apps.catalogo.serializers import VueloSerializer
+from apps.catalogo.permissions import EsAdminOAgente
+from apps.catalogo.serializers.vuelo import (
+    VueloDetailSerializer,
+    VueloListSerializer,
+    VueloWriteSerializer,
+)
+from apps.catalogo.services.vuelos import eliminar_vuelo, listar_vuelos, obtener_vuelo
 
 
 class VueloViewSet(viewsets.ModelViewSet):
-    """
-    CRUD de vuelos del panel.
+    """ViewSet CRUD para la gestión de vuelos e inventario de asientos."""
 
-    Solo personal autenticado (administrador/agente) puede leer y escribir.
-    """
-
-    serializer_class = VueloSerializer
-    permission_classes = [EsPersonal]
+    permission_classes = [EsAdminOAgente]
 
     def get_queryset(self):
         params = self.request.query_params
-        return services.listar_vuelos(
-            proveedor_id=params.get("proveedor"),
+        return listar_vuelos(
             origen=params.get("origen"),
             destino=params.get("destino"),
-            desde=params.get("desde"),
-            hasta=params.get("hasta"),
-            solo_disponibles=params.get("disponibles") in ("1", "true", "True"),
+            fecha_salida=params.get("fecha_salida"),
+            proveedor_id=int(params["proveedor_id"]) if params.get("proveedor_id") else None,
+            solo_disponibles=params.get("solo_disponibles") in ("true", "1"),
             q=params.get("q"),
         )
 
-    def create(self, request, *args, **kwargs):
-        ser = self.get_serializer(data=request.data)
-        ser.is_valid(raise_exception=True)
-        try:
-            vuelo = services.crear_vuelo(**ser.validated_data)
-        except DjangoValidationError as exc:
-            raise DRFValidationError(exc.message_dict)
-        return Response(VueloSerializer(vuelo).data, status=status.HTTP_201_CREATED)
+    def get_serializer_class(self):
+        if self.action == "list":
+            return VueloListSerializer
+        if self.action == "retrieve":
+            return VueloDetailSerializer
+        return VueloWriteSerializer
 
-    def update(self, request, *args, **kwargs):
-        parcial = kwargs.pop("partial", False)
-        instance = self.get_object()
-        ser = self.get_serializer(instance, data=request.data, partial=parcial)
-        ser.is_valid(raise_exception=True)
-        try:
-            vuelo = services.actualizar_vuelo(instance.pk, **ser.validated_data)
-        except DjangoValidationError as exc:
-            raise DRFValidationError(exc.message_dict)
-        return Response(VueloSerializer(vuelo).data)
+    def destroy(self, request, *args, **kwargs):
+        vuelo_id = int(kwargs["pk"])
+        eliminar_vuelo(vuelo_id)
+        return Response(status=status.HTTP_204_NO_CONTENT)
+

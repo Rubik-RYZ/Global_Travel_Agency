@@ -1,49 +1,23 @@
-import { useCallback, useEffect, useMemo, useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import type { FormEvent } from 'react'
 
-import {
-  catalogoApi,
-  type FiltrosSalida,
-  type Paquete,
-  type PaqueteSalida,
-  type Vuelo,
-} from '@/api/catalogo'
+import { catalogoApi } from '@/api/catalogo'
+import type {
+  CrearSalidaPayload,
+  Paquete,
+  PaqueteSalida,
+  Vuelo,
+} from '@/types/catalogo.types'
 import { Button } from '@/components/ui/Button/Button'
 import { Modal } from '@/components/ui/Modal/Modal'
 import {
-  IconoBasura,
-  IconoBillete,
-  IconoCalendario,
+  IconoCerrar,
   IconoLapiz,
-  IconoLupa,
-  IconoSello,
+  IconoMas,
+  IconoPortapapeles,
 } from '@/components/ui/Iconos'
 import { mensajeDeError } from '@/utils/validators'
 
-function fechaLarga(iso: string): string {
-  const d = new Date(`${iso}T12:00:00`)
-  if (Number.isNaN(d.getTime())) return iso
-  return d.toLocaleDateString('es-BO', {
-    weekday: 'short',
-    day: '2-digit',
-    month: 'short',
-    year: 'numeric',
-  })
-}
-
-function fechaVuelo(iso: string): string {
-  const d = new Date(iso)
-  if (Number.isNaN(d.getTime())) return iso
-  return d.toLocaleString('es-BO', {
-    day: '2-digit',
-    month: 'short',
-    year: 'numeric',
-    hour: '2-digit',
-    minute: '2-digit',
-  })
-}
-
-/** 26. Panel · Calendario de salidas → /admin/salidas */
 export function SalidasAdminView() {
   const [salidas, setSalidas] = useState<PaqueteSalida[]>([])
   const [paquetes, setPaquetes] = useState<Paquete[]>([])
@@ -52,562 +26,415 @@ export function SalidasAdminView() {
   const [error, setError] = useState<string | null>(null)
   const [aviso, setAviso] = useState<string | null>(null)
 
-  const [paqueteFiltro, setPaqueteFiltro] = useState('')
-  const [soloDisponibles, setSoloDisponibles] = useState(false)
-  const [filtros, setFiltros] = useState<FiltrosSalida>({})
+  const [filtroPaquete, setFiltroPaquete] = useState('')
 
+  // Modal
   const [modalAbierto, setModalAbierto] = useState(false)
   const [editando, setEditando] = useState<PaqueteSalida | null>(null)
+  const [errorForm, setErrorForm] = useState<string | null>(null)
+  const [ocupado, setOcupado] = useState(false)
 
-  useEffect(() => {
-    let activo = true
-    async function cargarCatalogos() {
-      try {
-        const [paqs, vlos] = await Promise.all([
-          (async () => {
-            const acc: Paquete[] = []
-            let pagina = 1
-            for (;;) {
-              const data = await catalogoApi.listarPaquetes({ page: pagina })
-              acc.push(...data.results)
-              if (!data.next) break
-              pagina += 1
-            }
-            return acc
-          })(),
-          (async () => {
-            const acc: Vuelo[] = []
-            let pagina = 1
-            for (;;) {
-              const data = await catalogoApi.listarVuelos({ page: pagina })
-              acc.push(...data.results)
-              if (!data.next) break
-              pagina += 1
-            }
-            return acc
-          })(),
-        ])
-        if (activo) {
-          setPaquetes(paqs)
-          setVuelos(vlos)
-        }
-      } catch (e) {
-        if (activo) setError(mensajeDeError(e))
-      }
-    }
-    void cargarCatalogos()
-    return () => {
-      activo = false
-    }
-  }, [])
+  // Formulario
+  const [formPaquete, setFormPaquete] = useState<number | ''>('')
+  const [formFecha, setFormFecha] = useState('')
+  const [formVueloIda, setFormVueloIda] = useState<number | ''>('')
+  const [formVueloVuelta, setFormVueloVuelta] = useState<number | ''>('')
+  const [formCuposTotales, setFormCuposTotales] = useState<number | ''>(20)
+  const [formCuposDisponibles, setFormCuposDisponibles] = useState<number | ''>(20)
 
-  const cargar = useCallback(async () => {
+  const cargarDatos = useCallback(async () => {
     setCargando(true)
     setError(null)
     try {
-      const acc: PaqueteSalida[] = []
-      let pagina = 1
-      for (;;) {
-        const data = await catalogoApi.listarSalidas({ ...filtros, page: pagina })
-        acc.push(...data.results)
-        if (!data.next) break
-        pagina += 1
-      }
-      setSalidas(acc)
-    } catch (e) {
-      setError(mensajeDeError(e))
+      const [resSal, resPaq, resVue] = await Promise.all([
+        catalogoApi.listarSalidas({
+          paquete_id: filtroPaquete ? Number(filtroPaquete) : undefined,
+        }),
+        catalogoApi.listarPaquetes({ solo_activos: true }),
+        catalogoApi.listarVuelos(),
+      ])
+      setSalidas(resSal.results || [])
+      setPaquetes(resPaq.results || [])
+      setVuelos(resVue.results || [])
+    } catch (err) {
+      setError(mensajeDeError(err))
     } finally {
       setCargando(false)
     }
-  }, [filtros])
+  }, [filtroPaquete])
 
   useEffect(() => {
-    void cargar()
-  }, [cargar])
+    cargarDatos()
+  }, [cargarDatos])
 
-  const resumen = useMemo(
-    () => ({
-      total: salidas.length,
-      conCupos: salidas.filter((s) => s.cupos_disponibles > 0).length,
-      cupos: salidas.reduce((suma, s) => suma + s.cupos_disponibles, 0),
-    }),
-    [salidas],
-  )
-
-  function aplicarFiltros(evento?: FormEvent) {
-    evento?.preventDefault()
-    setFiltros({
-      paquete: paqueteFiltro ? Number(paqueteFiltro) : undefined,
-      disponibles: soloDisponibles || undefined,
-    })
+  const abrirModalNuevo = () => {
+    setEditando(null)
+    setFormPaquete(paquetes[0]?.id || '')
+    const d = new Date()
+    d.setDate(d.getDate() + 30)
+    setFormFecha(d.toISOString().slice(0, 10))
+    setFormVueloIda('')
+    setFormVueloVuelta('')
+    setFormCuposTotales(20)
+    setFormCuposDisponibles(20)
+    setErrorForm(null)
+    setModalAbierto(true)
   }
 
-  async function eliminar(salida: PaqueteSalida) {
-    if (
-      !window.confirm(
-        `¿Eliminar la salida del ${fechaLarga(salida.fecha_salida)}?`,
-      )
-    )
+  const abrirModalEditar = (s: PaqueteSalida) => {
+    setEditando(s)
+    setFormPaquete(s.paquete)
+    setFormFecha(s.fecha_salida)
+    setFormVueloIda(s.vuelo_ida || '')
+    setFormVueloVuelta(s.vuelo_vuelta || '')
+    setFormCuposTotales(s.cupos_totales)
+    setFormCuposDisponibles(s.cupos_disponibles)
+    setErrorForm(null)
+    setModalAbierto(true)
+  }
+
+  const guardarSalida = async (e: FormEvent) => {
+    e.preventDefault()
+    if (!formPaquete || !formFecha || !formCuposTotales) {
+      setErrorForm('Completa los campos obligatorios.')
       return
+    }
+    if (Number(formCuposDisponibles) > Number(formCuposTotales)) {
+      setErrorForm('Los cupos disponibles no pueden superar los totales.')
+      return
+    }
+    if (formVueloIda && formVueloVuelta && formVueloIda === formVueloVuelta) {
+      setErrorForm('El vuelo de vuelta debe ser diferente al de ida.')
+      return
+    }
+
+    setOcupado(true)
+    setErrorForm(null)
     try {
-      await catalogoApi.eliminarSalida(salida.id)
-      setAviso('Salida eliminada del calendario.')
-      void cargar()
-    } catch (e) {
-      setError(mensajeDeError(e))
+      const payload: CrearSalidaPayload = {
+        paquete_id: Number(formPaquete),
+        fecha_salida: formFecha,
+        vuelo_ida_id: formVueloIda ? Number(formVueloIda) : null,
+        vuelo_vuelta_id: formVueloVuelta ? Number(formVueloVuelta) : null,
+        cupos_totales: Number(formCuposTotales),
+        cupos_disponibles: Number(formCuposDisponibles),
+      }
+
+      if (editando) {
+        await catalogoApi.actualizarSalida(editando.id, payload)
+        setAviso(`Salida del ${formFecha} actualizada.`)
+      } else {
+        await catalogoApi.crearSalida(payload)
+        setAviso(`Salida programada para el ${formFecha}.`)
+      }
+      setModalAbierto(false)
+      cargarDatos()
+    } catch (err) {
+      setErrorForm(mensajeDeError(err))
+    } finally {
+      setOcupado(false)
+    }
+  }
+
+  const eliminarSalida = async (id: number, fecha: string) => {
+    if (!confirm(`¿Eliminar la salida programada del ${fecha}?`)) return
+    try {
+      await catalogoApi.eliminarSalida(id)
+      setAviso(`Salida del ${fecha} eliminada.`)
+      cargarDatos()
+    } catch (err) {
+      setError(mensajeDeError(err))
     }
   }
 
   return (
-    <div className="mx-auto max-w-6xl">
-      <header className="flex flex-col gap-6">
-        <div className="flex flex-wrap items-center justify-between gap-4">
-          <div className="inline-flex items-center gap-3 rounded-full bg-surface-container-high px-4 py-1.5">
-            <span className="h-2 w-2 rounded-full bg-terracotta" />
-            <span className="coord">Calendario de salidas · CU6 · RF-11</span>
-          </div>
-          <div className="flex items-center gap-2 text-stamp-sepia">
-            <IconoSello className="h-4 w-4" />
-            <span className="coord">Fechas y cupos de la casa</span>
-          </div>
-        </div>
-
-        <div className="flex flex-col justify-between gap-8 lg:flex-row lg:items-end">
-          <div className="flex max-w-3xl flex-col gap-3">
-            <span className="coord flex items-center gap-2 text-terracotta">
-              <span className="regla-terracotta" />
-              Calendario operativo
-            </span>
-            <h1 className="font-display text-4xl leading-tight tracking-tight text-primary sm:text-5xl">
-              Salidas &amp; cupos del catálogo
+    <div className="space-y-8">
+      {/* Encabezado */}
+      <header className="border-b border-[#231a13]/10 pb-6">
+        <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
+          <div>
+            <div className="flex items-center gap-2 text-xs font-semibold uppercase tracking-wider text-[#792609]">
+              <IconoPortapapeles className="h-4 w-4" />
+              <span>CU6 · Calendario y Disponibilidad</span>
+            </div>
+            <h1 className="mt-1 font-serif text-3xl font-bold tracking-tight text-[#231a13]">
+              Salidas Programadas y Control de Cupos
             </h1>
-            <p className="font-display text-lg font-normal italic text-on-surface-variant">
-              Fechas confirmadas de cada paquete, con sus vuelos de ida y vuelta
-              y la disponibilidad vigente.
+            <p className="mt-1 text-sm text-[#231a13]/70">
+              Fechas de partida para paquetes turísticos, conexión con vuelos asociados e inventario de plazas.
             </p>
           </div>
 
           <Button
-            className="group shrink-0"
-            onClick={() => {
-              setEditando(null)
-              setModalAbierto(true)
-            }}
+            onClick={abrirModalNuevo}
+            className="flex items-center gap-2 rounded-full bg-[#792609] px-5 py-2.5 text-sm font-medium text-white shadow-sm hover:bg-[#983d1f]"
           >
-            <IconoCalendario className="h-4 w-4" />
-            Programar salida
-            <span className="transition-transform duration-300 group-hover:translate-x-1">
-              →
-            </span>
+            <IconoMas className="h-4 w-4" />
+            <span>Programar Salida</span>
           </Button>
-        </div>
-
-        <div className="flex flex-wrap items-center gap-x-8 gap-y-3 border-y border-parchment-border py-3">
-          <span className="coord">
-            Salidas <strong className="ml-1 text-primary">{resumen.total}</strong>
-          </span>
-          <span className="coord">
-            Con cupos <strong className="ml-1 text-primary">{resumen.conCupos}</strong>
-          </span>
-          <span className="coord">
-            Cupos libres <strong className="ml-1 text-primary">{resumen.cupos}</strong>
-          </span>
         </div>
       </header>
 
-      <section className="mt-8 flex flex-col gap-4 rounded-lg bg-surface-container-low p-6 shadow-paper sm:p-8">
-        <form
-          onSubmit={aplicarFiltros}
-          className="flex flex-col gap-3 rounded-lg bg-surface-container-lowest p-4 shadow-sm lg:flex-row lg:items-end"
-        >
-          <label className="flex flex-col gap-1.5">
-            <span className="coord">Paquete</span>
-            <select
-              value={paqueteFiltro}
-              onChange={(e) => setPaqueteFiltro(e.target.value)}
-              className="min-w-56 cursor-pointer rounded-md border border-outline-variant/60 bg-surface px-3 py-2 font-sans text-sm text-on-surface outline-none focus:border-primary"
-            >
-              <option value="">Todos los paquetes</option>
-              {paquetes.map((p) => (
-                <option key={p.id} value={p.id}>
-                  {p.nombre}
-                </option>
-              ))}
-            </select>
-          </label>
-
-          <button
-            type="submit"
-            className="flex items-center justify-center gap-2 rounded-full bg-forest-night px-6 py-2.5 font-sans text-xs font-semibold uppercase tracking-wider text-surface transition-colors hover:bg-ink-warm"
-          >
-            <IconoLupa className="h-4 w-4" />
-            Filtrar
+      {/* Avisos */}
+      {aviso && (
+        <div className="flex items-center justify-between rounded-lg border border-[#1b261d]/20 bg-[#1b261d]/5 px-4 py-3 text-sm text-[#141d16]">
+          <span>{aviso}</span>
+          <button onClick={() => setAviso(null)} className="text-[#141d16]/70 hover:text-[#141d16]">
+            <IconoCerrar className="h-4 w-4" />
           </button>
-        </form>
-
-        <div className="flex flex-wrap items-center justify-between gap-3">
-          <button
-            type="button"
-            aria-pressed={soloDisponibles}
-            onClick={() => {
-              const siguiente = !soloDisponibles
-              setSoloDisponibles(siguiente)
-              setFiltros((f) => ({ ...f, disponibles: siguiente || undefined }))
-            }}
-            className={`rounded-full px-3.5 py-1.5 font-sans text-xs transition-colors ${
-              soloDisponibles
-                ? 'bg-surface-container-high font-medium text-primary'
-                : 'bg-surface-container text-on-surface-variant hover:bg-surface-container-high'
-            }`}
-          >
-            Solo con cupos disponibles
-          </button>
-          <span className="coord">
-            Mostrando <strong className="text-primary">{salidas.length}</strong> salidas
-          </span>
         </div>
-      </section>
+      )}
 
       {error && (
-        <p className="mt-6 rounded-md border border-error/40 bg-error-container/50 px-4 py-2.5 font-sans text-xs text-on-error-container">
+        <div className="rounded-lg border border-red-200 bg-red-50 p-4 text-sm text-red-700">
           {error}
-        </p>
-      )}
-      {aviso && (
-        <p className="mt-6 rounded-md border border-secondary/30 bg-secondary/5 px-4 py-2.5 font-sans text-xs text-secondary">
-          {aviso}
-        </p>
+        </div>
       )}
 
-      <section className="mt-8">
-        {cargando ? (
-          <p className="nota-manuscrita">Abriendo el calendario de salidas...</p>
-        ) : salidas.length === 0 ? (
-          <div className="rounded-lg border border-dashed border-parchment-border bg-surface-container-lowest px-6 py-16 text-center">
-            <p className="font-display text-xl text-on-surface">
-              Sin salidas programadas
-            </p>
-            <p className="mt-2 font-sans text-sm text-on-surface-variant">
-              Programe una fecha o ajuste los filtros del calendario.
-            </p>
-          </div>
-        ) : (
-          <div className="overflow-x-auto rounded-lg border border-parchment-border bg-surface-container-lowest shadow-paper">
-            <table className="w-full min-w-4xl border-collapse text-left">
-              <thead className="bg-surface-container-low">
-                <tr>
-                  <th className="coord px-5 py-3 font-normal">Fecha</th>
-                  <th className="coord px-5 py-3 font-normal">Paquete</th>
-                  <th className="coord hidden px-5 py-3 font-normal lg:table-cell">
-                    Vuelos
-                  </th>
-                  <th className="coord px-5 py-3 font-normal">Cupos</th>
-                  <th className="coord px-5 py-3 font-normal">Estado</th>
-                  <th className="coord px-5 py-3 text-right font-normal">Acciones</th>
-                </tr>
-              </thead>
-              <tbody>
-                {salidas.map((salida) => (
-                  <tr
-                    key={salida.id}
-                    className="border-b border-parchment-border/60 last:border-0 hover:bg-surface-container-low"
-                  >
-                    <td className="px-5 py-3.5">
-                      <span className="font-display text-lg capitalize text-on-surface">
-                        {fechaLarga(salida.fecha_salida)}
-                      </span>
+      {/* Filtro por paquete */}
+      <div className="rounded-xl border border-[#231a13]/10 bg-[#faf5eb] p-4 max-w-md">
+        <label className="text-xs font-semibold uppercase text-[#231a13]/70">Filtrar por Paquete</label>
+        <select
+          value={filtroPaquete}
+          onChange={(e) => setFiltroPaquete(e.target.value)}
+          className="mt-1 w-full rounded-md border border-[#231a13]/20 bg-white px-3 py-1.5 text-sm"
+        >
+          <option value="">Todas las expediciones</option>
+          {paquetes.map((p) => (
+            <option key={p.id} value={p.id}>
+              {p.nombre}
+            </option>
+          ))}
+        </select>
+      </div>
+
+      {/* Tabla de salidas */}
+      <div className="overflow-hidden rounded-xl border border-[#231a13]/10 bg-white shadow-sm">
+        <table className="min-w-full divide-y divide-[#231a13]/10 text-left text-sm">
+          <thead className="bg-[#faf5eb] font-serif text-xs uppercase tracking-wider text-[#231a13]/70">
+            <tr>
+              <th className="px-4 py-3">Fecha de Salida</th>
+              <th className="px-4 py-3">Paquete Turístico</th>
+              <th className="px-4 py-3">Vuelo Ida</th>
+              <th className="px-4 py-3">Vuelo Vuelta</th>
+              <th className="px-4 py-3">Cupos (Disp / Tot)</th>
+              <th className="px-4 py-3 text-right">Acciones</th>
+            </tr>
+          </thead>
+          <tbody className="divide-y divide-[#231a13]/10">
+            {cargando ? (
+              <tr>
+                <td colSpan={6} className="px-4 py-10 text-center text-[#231a13]/50">
+                  Cargando calendario de salidas...
+                </td>
+              </tr>
+            ) : salidas.length === 0 ? (
+              <tr>
+                <td colSpan={6} className="px-4 py-10 text-center text-[#231a13]/50">
+                  No se encontraron salidas programadas registradas.
+                </td>
+              </tr>
+            ) : (
+              salidas.map((s) => {
+                const fechaFmt = new Date(s.fecha_salida + 'T00:00:00').toLocaleDateString('es-BO', {
+                  weekday: 'short',
+                  day: 'numeric',
+                  month: 'short',
+                  year: 'numeric',
+                })
+                const pct = s.cupos_totales > 0 ? (s.cupos_disponibles / s.cupos_totales) * 100 : 0
+
+                return (
+                  <tr key={s.id} className="hover:bg-[#faf5eb]/50 transition-colors">
+                    <td className="px-4 py-3.5 font-bold font-serif text-[#792609] capitalize">
+                      {fechaFmt}
                     </td>
-                    <td className="px-5 py-3.5 font-sans text-sm text-on-surface-variant">
-                      {salida.paquete_nombre}
+                    <td className="px-4 py-3.5 font-medium text-[#231a13]">
+                      {s.paquete_nombre || `Paquete #${s.paquete}`}
                     </td>
-                    <td className="hidden px-5 py-3.5 font-sans text-sm text-on-surface-variant lg:table-cell">
-                      {salida.vuelo_ida_numero ? (
-                        <span className="inline-flex items-center gap-1.5">
-                          <IconoBillete className="h-3.5 w-3.5 text-terracotta" />
-                          {salida.vuelo_ida_numero}
-                          {salida.vuelo_vuelta_numero
-                            ? ` · ${salida.vuelo_vuelta_numero}`
-                            : ''}
+                    <td className="px-4 py-3.5 text-xs text-[#231a13]/70">
+                      {s.vuelo_ida_detalle ? (
+                        <span>
+                          {s.vuelo_ida_detalle.numero_vuelo} ({s.vuelo_ida_detalle.origen_codigo} → {s.vuelo_ida_detalle.destino_codigo})
                         </span>
                       ) : (
-                        'Vuelos por asignar'
+                        <span className="italic text-[#231a13]/40">Sin vuelo ida</span>
                       )}
                     </td>
-                    <td className="px-5 py-3.5 font-sans text-sm text-on-surface">
-                      {salida.cupos_disponibles} / {salida.cupos_totales}
-                    </td>
-                    <td className="px-5 py-3.5">
-                      {salida.cupos_disponibles > 0 ? (
-                        <span className="inline-flex items-center gap-1.5 rounded-full bg-secondary/10 px-2.5 py-0.5 coord text-secondary">
-                          <span className="h-1.5 w-1.5 rounded-full bg-secondary" />
-                          Disponible
+                    <td className="px-4 py-3.5 text-xs text-[#231a13]/70">
+                      {s.vuelo_vuelta_detalle ? (
+                        <span>
+                          {s.vuelo_vuelta_detalle.numero_vuelo} ({s.vuelo_vuelta_detalle.origen_codigo} → {s.vuelo_vuelta_detalle.destino_codigo})
                         </span>
                       ) : (
-                        <span className="inline-flex items-center gap-1.5 rounded-full bg-surface-container-highest px-2.5 py-0.5 coord text-on-surface-variant">
-                          <span className="h-1.5 w-1.5 rounded-full bg-stamp-sepia" />
-                          Agotada
-                        </span>
+                        <span className="italic text-[#231a13]/40">Sin vuelo vuelta</span>
                       )}
                     </td>
-                    <td className="px-5 py-3.5 text-right">
-                      <div className="flex flex-wrap items-center justify-end gap-4">
+                    <td className="px-4 py-3.5">
+                      <div className="flex items-center gap-2">
+                        <span className="font-semibold text-[#231a13]">
+                          {s.cupos_disponibles} / {s.cupos_totales}
+                        </span>
+                        <span
+                          className={`inline-block h-2 w-2 rounded-full ${
+                            pct > 30 ? 'bg-emerald-500' : pct > 0 ? 'bg-amber-500' : 'bg-rose-500'
+                          }`}
+                        />
+                      </div>
+                    </td>
+                    <td className="px-4 py-3.5 text-right">
+                      <div className="flex justify-end gap-1">
                         <button
-                          type="button"
-                          onClick={() => {
-                            setEditando(salida)
-                            setModalAbierto(true)
-                          }}
-                          className="inline-flex items-center gap-1.5 font-sans text-[11px] font-semibold uppercase tracking-wider text-primary hover:text-terracotta"
+                          onClick={() => abrirModalEditar(s)}
+                          className="rounded-lg p-1.5 text-[#231a13]/70 hover:bg-[#231a13]/10 hover:text-[#792609]"
+                          title="Editar salida"
                         >
-                          <IconoLapiz className="h-3.5 w-3.5" />
-                          Editar
+                          <IconoLapiz className="h-4 w-4" />
                         </button>
                         <button
-                          type="button"
-                          onClick={() => void eliminar(salida)}
-                          className="inline-flex items-center gap-1.5 font-sans text-[11px] font-semibold uppercase tracking-wider text-stamp-sepia hover:text-error"
+                          onClick={() => eliminarSalida(s.id, s.fecha_salida)}
+                          className="rounded-lg p-1.5 text-[#231a13]/70 hover:bg-rose-50 hover:text-rose-600"
+                          title="Eliminar salida"
                         >
-                          <IconoBasura className="h-3.5 w-3.5" />
-                          Eliminar
+                          <IconoCerrar className="h-4 w-4" />
                         </button>
                       </div>
                     </td>
                   </tr>
+                )
+              })
+            )}
+          </tbody>
+        </table>
+      </div>
+
+      {/* Modal */}
+      {modalAbierto && (
+        <Modal
+          abierto={modalAbierto}
+          onCerrar={() => setModalAbierto(false)}
+          titulo={editando ? `Editar Salida` : 'Programar Nueva Salida'}
+        >
+          <form onSubmit={guardarSalida} className="space-y-4">
+            {errorForm && (
+              <div className="rounded-lg border border-red-200 bg-red-50 p-3 text-xs text-red-700">
+                {errorForm}
+              </div>
+            )}
+
+            <div>
+              <label className="text-xs font-semibold uppercase text-[#231a13]/80">Paquete Turístico *</label>
+              <select
+                required
+                value={formPaquete}
+                onChange={(e) => setFormPaquete(Number(e.target.value))}
+                className="mt-1 w-full rounded-md border border-[#231a13]/20 p-2 text-sm"
+              >
+                <option value="">Selecciona paquete...</option>
+                {paquetes.map((p) => (
+                  <option key={p.id} value={p.id}>
+                    {p.nombre} ({p.destino_nombre})
+                  </option>
                 ))}
-              </tbody>
-            </table>
-          </div>
-        )}
-      </section>
+              </select>
+            </div>
 
-      <SalidaFormModal
-        abierto={modalAbierto}
-        salida={editando}
-        paquetes={paquetes}
-        vuelos={vuelos}
-        onCerrar={() => setModalAbierto(false)}
-        onGuardado={(mensaje) => {
-          setAviso(mensaje)
-          void cargar()
-        }}
-      />
+            <div>
+              <label className="text-xs font-semibold uppercase text-[#231a13]/80">Fecha de Partida *</label>
+              <input
+                type="date"
+                required
+                value={formFecha}
+                onChange={(e) => setFormFecha(e.target.value)}
+                className="mt-1 w-full rounded-md border border-[#231a13]/20 p-2 text-sm"
+              />
+            </div>
+
+            <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+              <div>
+                <label className="text-xs font-semibold uppercase text-[#231a13]/80">Vuelo de Ida</label>
+                <select
+                  value={formVueloIda}
+                  onChange={(e) => setFormVueloIda(e.target.value === '' ? '' : Number(e.target.value))}
+                  className="mt-1 w-full rounded-md border border-[#231a13]/20 p-2 text-sm"
+                >
+                  <option value="">Sin vuelo asignado</option>
+                  {vuelos.map((v) => (
+                    <option key={v.id} value={v.id}>
+                      {v.numero_vuelo} ({v.origen_codigo} → {v.destino_codigo})
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              <div>
+                <label className="text-xs font-semibold uppercase text-[#231a13]/80">Vuelo de Vuelta</label>
+                <select
+                  value={formVueloVuelta}
+                  onChange={(e) => setFormVueloVuelta(e.target.value === '' ? '' : Number(e.target.value))}
+                  className="mt-1 w-full rounded-md border border-[#231a13]/20 p-2 text-sm"
+                >
+                  <option value="">Sin vuelo asignado</option>
+                  {vuelos.map((v) => (
+                    <option key={v.id} value={v.id}>
+                      {v.numero_vuelo} ({v.origen_codigo} → {v.destino_codigo})
+                    </option>
+                  ))}
+                </select>
+              </div>
+            </div>
+
+            <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+              <div>
+                <label className="text-xs font-semibold uppercase text-[#231a13]/80">Cupos Totales *</label>
+                <input
+                  type="number"
+                  min="1"
+                  required
+                  value={formCuposTotales}
+                  onChange={(e) => {
+                    const val = e.target.value === '' ? '' : Number(e.target.value)
+                    setFormCuposTotales(val)
+                    if (!editando) setFormCuposDisponibles(val)
+                  }}
+                  className="mt-1 w-full rounded-md border border-[#231a13]/20 p-2 text-sm"
+                />
+              </div>
+
+              <div>
+                <label className="text-xs font-semibold uppercase text-[#231a13]/80">Cupos Disponibles *</label>
+                <input
+                  type="number"
+                  min="0"
+                  max={formCuposTotales || undefined}
+                  required
+                  value={formCuposDisponibles}
+                  onChange={(e) => setFormCuposDisponibles(e.target.value === '' ? '' : Number(e.target.value))}
+                  className="mt-1 w-full rounded-md border border-[#231a13]/20 p-2 text-sm"
+                />
+              </div>
+            </div>
+
+            <div className="mt-6 flex justify-end gap-3 border-t border-[#231a13]/10 pt-4">
+              <Button
+                type="button"
+                variante="ghost"
+                onClick={() => setModalAbierto(false)}
+                disabled={ocupado}
+              >
+                Cancelar
+              </Button>
+              <Button
+                type="submit"
+                disabled={ocupado}
+                className="bg-[#792609] text-white hover:bg-[#983d1f]"
+              >
+                {ocupado ? 'Guardando...' : editando ? 'Actualizar Salida' : 'Crear Salida'}
+              </Button>
+            </div>
+          </form>
+        </Modal>
+      )}
     </div>
-  )
-}
-
-/* -------------------------------------------------------------------------- */
-/* Formulario de alta / edición                                               */
-/* -------------------------------------------------------------------------- */
-
-interface FormSalida {
-  paquete: string
-  fecha_salida: string
-  vuelo_ida: string
-  vuelo_vuelta: string
-  cupos_totales: string
-  cupos_disponibles: string
-}
-
-const FORM_VACIO: FormSalida = {
-  paquete: '',
-  fecha_salida: '',
-  vuelo_ida: '',
-  vuelo_vuelta: '',
-  cupos_totales: '',
-  cupos_disponibles: '',
-}
-
-function SalidaFormModal({
-  abierto,
-  salida,
-  paquetes,
-  vuelos,
-  onCerrar,
-  onGuardado,
-}: {
-  abierto: boolean
-  salida: PaqueteSalida | null
-  paquetes: Paquete[]
-  vuelos: Vuelo[]
-  onCerrar: () => void
-  onGuardado: (mensaje: string) => void
-}) {
-  const [form, setForm] = useState<FormSalida>(FORM_VACIO)
-  const [error, setError] = useState<string | null>(null)
-  const [enviando, setEnviando] = useState(false)
-
-  useEffect(() => {
-    if (!abierto) return
-    setError(null)
-    setForm(
-      salida
-        ? {
-            paquete: String(salida.paquete),
-            fecha_salida: salida.fecha_salida,
-            vuelo_ida: salida.vuelo_ida ? String(salida.vuelo_ida) : '',
-            vuelo_vuelta: salida.vuelo_vuelta ? String(salida.vuelo_vuelta) : '',
-            cupos_totales: String(salida.cupos_totales),
-            cupos_disponibles: String(salida.cupos_disponibles),
-          }
-        : FORM_VACIO,
-    )
-  }, [abierto, salida])
-
-  function campo<K extends keyof FormSalida>(clave: K, valor: FormSalida[K]) {
-    setForm((f) => ({ ...f, [clave]: valor }))
-  }
-
-  async function enviar(evento: FormEvent<HTMLFormElement>) {
-    evento.preventDefault()
-    if (!form.paquete || !form.fecha_salida || !form.cupos_totales) {
-      setError('Complete paquete, fecha de salida y cupos totales.')
-      return
-    }
-    setEnviando(true)
-    setError(null)
-    try {
-      const payload = {
-        paquete: Number(form.paquete),
-        fecha_salida: form.fecha_salida,
-        vuelo_ida: form.vuelo_ida ? Number(form.vuelo_ida) : null,
-        vuelo_vuelta: form.vuelo_vuelta ? Number(form.vuelo_vuelta) : null,
-        cupos_totales: Number(form.cupos_totales),
-        cupos_disponibles: form.cupos_disponibles
-          ? Number(form.cupos_disponibles)
-          : undefined,
-      }
-      if (salida) {
-        await catalogoApi.actualizarSalida(salida.id, payload)
-        onGuardado('Salida actualizada en el calendario.')
-      } else {
-        await catalogoApi.crearSalida(payload)
-        onGuardado('Salida programada en el calendario.')
-      }
-      onCerrar()
-    } catch (e) {
-      setError(mensajeDeError(e))
-    } finally {
-      setEnviando(false)
-    }
-  }
-
-  const claseCampo =
-    'w-full rounded-md border border-outline-variant/60 bg-surface px-3.5 py-2.5 font-sans text-sm text-on-surface outline-none transition-colors placeholder:text-stamp-sepia/60 focus:border-primary'
-
-  return (
-    <Modal
-      abierto={abierto}
-      onCerrar={onCerrar}
-      ancho="lg"
-      titulo={salida ? 'Editar salida' : 'Programar nueva salida'}
-    >
-      <p className="coord mb-4 text-primary">
-        {salida
-          ? `${salida.paquete_nombre} · ${fechaLarga(salida.fecha_salida)}`
-          : 'Nueva fecha · Calendario de salidas'}
-      </p>
-      <form onSubmit={enviar} className="flex flex-col gap-4" noValidate>
-        <div className="grid gap-4 sm:grid-cols-2">
-          <label className="flex flex-col gap-1.5 sm:col-span-2">
-            <span className="coord">Paquete *</span>
-            <select
-              value={form.paquete}
-              onChange={(e) => campo('paquete', e.target.value)}
-              className={claseCampo}
-            >
-              <option value="">Seleccione un paquete</option>
-              {paquetes.map((p) => (
-                <option key={p.id} value={p.id}>
-                  {p.nombre} · {p.destino_nombre}
-                </option>
-              ))}
-            </select>
-          </label>
-
-          <label className="flex flex-col gap-1.5">
-            <span className="coord">Fecha de salida *</span>
-            <input
-              type="date"
-              value={form.fecha_salida}
-              onChange={(e) => campo('fecha_salida', e.target.value)}
-              className={claseCampo}
-            />
-          </label>
-
-          <label className="flex flex-col gap-1.5">
-            <span className="coord">Cupos totales *</span>
-            <input
-              type="number"
-              min="0"
-              value={form.cupos_totales}
-              onChange={(e) => campo('cupos_totales', e.target.value)}
-              placeholder="20"
-              className={claseCampo}
-            />
-          </label>
-
-          <label className="flex flex-col gap-1.5">
-            <span className="coord">Vuelo de ida</span>
-            <select
-              value={form.vuelo_ida}
-              onChange={(e) => campo('vuelo_ida', e.target.value)}
-              className={claseCampo}
-            >
-              <option value="">Sin asignar</option>
-              {vuelos.map((v) => (
-                <option key={v.id} value={v.id}>
-                  {v.numero_vuelo} · {v.origen}→{v.destino} ·{' '}
-                  {fechaVuelo(v.salida)}
-                </option>
-              ))}
-            </select>
-          </label>
-
-          <label className="flex flex-col gap-1.5">
-            <span className="coord">Vuelo de vuelta</span>
-            <select
-              value={form.vuelo_vuelta}
-              onChange={(e) => campo('vuelo_vuelta', e.target.value)}
-              className={claseCampo}
-            >
-              <option value="">Sin asignar</option>
-              {vuelos.map((v) => (
-                <option key={v.id} value={v.id}>
-                  {v.numero_vuelo} · {v.origen}→{v.destino} ·{' '}
-                  {fechaVuelo(v.salida)}
-                </option>
-              ))}
-            </select>
-          </label>
-
-          <label className="flex flex-col gap-1.5 sm:col-span-2">
-            <span className="coord">Cupos disponibles</span>
-            <input
-              type="number"
-              min="0"
-              value={form.cupos_disponibles}
-              onChange={(e) => campo('cupos_disponibles', e.target.value)}
-              placeholder="Igual al total si se deja vacío"
-              className={claseCampo}
-            />
-          </label>
-        </div>
-
-        {error && (
-          <p className="rounded-md border border-error/40 bg-error-container/50 px-3.5 py-2.5 font-sans text-xs text-on-error-container">
-            {error}
-          </p>
-        )}
-
-        <div className="flex items-center justify-end gap-3 pt-2">
-          <Button type="button" variante="ghost" onClick={onCerrar} disabled={enviando}>
-            Cancelar
-          </Button>
-          <Button type="submit" disabled={enviando}>
-            {enviando ? 'Guardando...' : salida ? 'Guardar cambios' : 'Programar salida'}
-          </Button>
-        </div>
-      </form>
-    </Modal>
   )
 }

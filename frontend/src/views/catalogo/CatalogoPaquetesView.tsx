@@ -1,291 +1,202 @@
-import { useEffect, useMemo, useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 
-import { catalogoApi, type DestinoResumen, type Paquete } from '@/api/catalogo'
+import { catalogoApi, type DestinoResumen } from '@/api/catalogo'
+import type { Paquete } from '@/types/catalogo.types'
 import {
-  IconoCalendario,
+  IconoEdificio,
   IconoFlechaDerecha,
   IconoLupa,
-  IconoMapa,
-  IconoReloj,
-  IconoSello,
+  IconoUbicacion,
 } from '@/components/ui/Iconos'
 import { mensajeDeError } from '@/utils/validators'
 
-function dinero(valor: string, moneda: string): string {
-  const n = Number(valor)
-  if (Number.isNaN(n)) return `${moneda} —`
-  return `${moneda} ${n.toLocaleString('es-BO', {
-    minimumFractionDigits: 0,
-    maximumFractionDigits: 0,
-  })}`
-}
-
-function fechaCorta(iso: string): string {
-  const d = new Date(`${iso}T12:00:00`)
-  if (Number.isNaN(d.getTime())) return iso
-  return d.toLocaleDateString('es-BO', {
-    day: '2-digit',
-    month: 'short',
-    year: 'numeric',
-  })
-}
-
-function proximaSalida(paquete: Paquete): string | null {
-  const fechas = paquete.salidas
-    .filter((s) => s.cupos_disponibles > 0)
-    .map((s) => s.fecha_salida)
-    .sort()
-  return fechas[0] ?? null
-}
-
-/** 23. Viajes · Catálogo público de paquetes → /viajes */
 export function CatalogoPaquetesView() {
   const [paquetes, setPaquetes] = useState<Paquete[]>([])
   const [destinos, setDestinos] = useState<DestinoResumen[]>([])
   const [cargando, setCargando] = useState(true)
   const [error, setError] = useState<string | null>(null)
 
+  const [filtroDestino, setFiltroDestino] = useState('')
   const [busqueda, setBusqueda] = useState('')
-  const [destinoFiltro, setDestinoFiltro] = useState('')
+
+  const cargarDatos = useCallback(async () => {
+    setCargando(true)
+    setError(null)
+    try {
+      const [resPaq, resDest] = await Promise.all([
+        catalogoApi.listarPaquetes({
+          destino_id: filtroDestino ? Number(filtroDestino) : undefined,
+          solo_activos: true,
+          q: busqueda || undefined,
+        }),
+        catalogoApi.listarDestinos(),
+      ])
+      setPaquetes(resPaq.results || [])
+      setDestinos(resDest.results || [])
+    } catch (err) {
+      setError(mensajeDeError(err))
+    } finally {
+      setCargando(false)
+    }
+  }, [filtroDestino, busqueda])
 
   useEffect(() => {
-    let activo = true
-    async function cargarDestinos() {
-      try {
-        const data = await catalogoApi.listarDestinos()
-        if (activo) setDestinos(data.results)
-      } catch {
-        // El filtro por destino es opcional; la lista de viajes manda.
-      }
-    }
-    void cargarDestinos()
-    return () => {
-      activo = false
-    }
-  }, [])
-
-  useEffect(() => {
-    let activo = true
-    async function cargar() {
-      setCargando(true)
-      setError(null)
-      try {
-        const acc: Paquete[] = []
-        let pagina = 1
-        for (;;) {
-          const data = await catalogoApi.listarPaquetes({ page: pagina })
-          acc.push(...data.results)
-          if (!data.next) break
-          pagina += 1
-        }
-        if (activo) setPaquetes(acc)
-      } catch (e) {
-        if (activo) setError(mensajeDeError(e))
-      } finally {
-        if (activo) setCargando(false)
-      }
-    }
-    void cargar()
-    return () => {
-      activo = false
-    }
-  }, [])
-
-  const visibles = useMemo(() => {
-    const texto = busqueda.trim().toLowerCase()
-    return paquetes.filter((p) => {
-      if (destinoFiltro && p.destino !== Number(destinoFiltro)) return false
-      if (!texto) return true
-      return (
-        p.nombre.toLowerCase().includes(texto) ||
-        p.destino_nombre.toLowerCase().includes(texto) ||
-        (p.descripcion ?? '').toLowerCase().includes(texto) ||
-        p.etiquetas.some((e) => e.toLowerCase().includes(texto))
-      )
-    })
-  }, [paquetes, busqueda, destinoFiltro])
-
-  const imagenPorDestino = useMemo(() => {
-    const mapa = new Map<number, string | null>()
-    for (const d of destinos) mapa.set(d.id, d.imagen_principal)
-    return mapa
-  }, [destinos])
+    cargarDatos()
+  }, [cargarDatos])
 
   return (
-    <div className="mx-auto max-w-6xl px-4 py-12 sm:px-6">
-      <header className="flex flex-col gap-6">
-        <div className="flex flex-wrap items-center justify-between gap-4">
-          <span className="coord flex items-center gap-2 text-terracotta">
-            <span className="regla-terracotta" />
-            Cuaderno de viajes · CU6
-          </span>
-          <span className="coord flex items-center gap-2 text-stamp-sepia">
-            <IconoSello className="h-4 w-4" />
-            Itinerarios curados por el atelier
-          </span>
-        </div>
-
-        <div className="flex flex-col gap-3">
-          <h1 className="font-display text-4xl leading-tight tracking-tight text-primary sm:text-5xl">
-            Viajes preparados para partir
+    <div className="min-h-screen bg-[#faf5eb] py-12 px-4 sm:px-6 lg:px-8">
+      <div className="mx-auto max-w-7xl">
+        {/* Cabecera Editorial Terranova */}
+        <div className="text-center max-w-3xl mx-auto">
+          <div className="text-xs font-semibold uppercase tracking-widest text-[#792609]">
+            Expediciones y Travesías Diseñadas
+          </div>
+          <h1 className="mt-3 font-serif text-4xl sm:text-5xl font-bold tracking-tight text-[#231a13]">
+            Catálogo de Paquetes Turísticos
           </h1>
-          <p className="max-w-2xl font-display text-lg font-normal italic text-on-surface-variant">
-            Paquetes con destino, hospedaje y fechas de salida confirmadas por la
-            agencia. Elija su próxima travesía.
+          <p className="mt-4 text-base text-[#231a13]/70 font-sans leading-relaxed">
+            Cada viaje es una narración viva: rutas preparadas con hoteles de encanto patrimonial,
+            asientos aéreos reservados y salidas grupales con cupos exclusivos.
           </p>
         </div>
 
-        <form
-          onSubmit={(e) => e.preventDefault()}
-          className="flex flex-col gap-3 rounded-lg bg-surface-container-low p-4 shadow-paper sm:flex-row sm:items-end"
-        >
-          <label className="flex w-full flex-col gap-1.5 sm:w-2/5">
-            <span className="coord">Buscar viaje</span>
-            <div className="flex items-center gap-3 rounded-full bg-surface px-4 py-2.5">
-              <IconoLupa className="h-4 w-4 shrink-0 text-terracotta" />
-              <input
-                type="text"
-                value={busqueda}
-                onChange={(e) => setBusqueda(e.target.value)}
-                placeholder="Nombre, destino o etiqueta..."
-                className="w-full bg-transparent font-sans text-sm text-ink-warm outline-none placeholder:text-stamp-sepia/60"
-              />
-            </div>
-          </label>
+        {/* Barra de Filtros */}
+        <div className="mt-10 grid grid-cols-1 gap-4 sm:grid-cols-3 rounded-2xl border border-[#231a13]/10 bg-white p-4 shadow-sm">
+          <div className="sm:col-span-2 relative">
+            <input
+              type="text"
+              placeholder="Buscar por experiencia, enclave o palabra clave (ej. inca, salar, safari)..."
+              value={busqueda}
+              onChange={(e) => setBusqueda(e.target.value)}
+              className="w-full rounded-xl border border-[#231a13]/20 bg-[#faf5eb]/50 pl-10 pr-4 py-3 text-sm focus:bg-white focus:outline-none focus:ring-2 focus:ring-[#792609]/20"
+            />
+            <IconoLupa className="absolute left-3.5 top-3.5 h-4 w-4 text-[#231a13]/40" />
+          </div>
 
-          <label className="flex flex-col gap-1.5">
-            <span className="coord">Destino</span>
+          <div>
             <select
-              value={destinoFiltro}
-              onChange={(e) => setDestinoFiltro(e.target.value)}
-              className="min-w-48 cursor-pointer rounded-md border border-outline-variant/60 bg-surface px-3 py-2.5 font-sans text-sm text-on-surface outline-none focus:border-primary"
+              value={filtroDestino}
+              onChange={(e) => setFiltroDestino(e.target.value)}
+              className="w-full rounded-xl border border-[#231a13]/20 bg-[#faf5eb]/50 px-4 py-3 text-sm focus:bg-white focus:outline-none focus:ring-2 focus:ring-[#792609]/20"
             >
               <option value="">Todos los destinos</option>
               {destinos.map((d) => (
                 <option key={d.id} value={d.id}>
-                  {d.nombre}
+                  {d.nombre} ({d.pais})
                 </option>
               ))}
             </select>
-          </label>
-        </form>
-      </header>
-
-      {error && (
-        <p className="mt-8 rounded-md border border-error/40 bg-error-container/50 px-4 py-2.5 font-sans text-xs text-on-error-container">
-          {error}
-        </p>
-      )}
-
-      <section className="mt-10">
-        {cargando ? (
-          <p className="nota-manuscrita">Preparando el cuaderno de viajes...</p>
-        ) : visibles.length === 0 ? (
-          <div className="rounded-lg border border-dashed border-parchment-border bg-surface-container-lowest px-6 py-16 text-center">
-            <p className="font-display text-xl text-on-surface">
-              No hay viajes para esa búsqueda
-            </p>
-            <p className="mt-2 font-sans text-sm text-on-surface-variant">
-              Pruebe con otro destino o limpie los filtros.
-            </p>
           </div>
-        ) : (
-          <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-            {visibles.map((paquete) => {
-              const salida = proximaSalida(paquete)
-              const imagen = imagenPorDestino.get(paquete.destino) ?? null
-              return (
-                <article
-                  key={paquete.id}
-                  className="group flex flex-col overflow-hidden rounded-lg border border-parchment-border bg-surface-container-lowest shadow-paper transition-shadow hover:shadow-paper-lg"
-                >
-                  <div className="relative h-44 overflow-hidden bg-surface-container">
-                    {imagen ? (
-                      <img
-                        src={imagen}
-                        alt={paquete.destino_nombre}
-                        className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-105"
-                        loading="lazy"
-                      />
-                    ) : (
-                      <div className="textura-carta absolute inset-0 opacity-70" />
-                    )}
-                    <div className="absolute inset-x-0 bottom-0 flex items-center justify-between gap-3 bg-gradient-to-t from-forest-night/85 to-transparent px-5 pb-3 pt-10">
-                      <span className="coord flex items-center gap-1.5 text-surface">
-                        <IconoMapa className="h-3.5 w-3.5" />
-                        {paquete.destino_nombre}
-                      </span>
-                      <span className="coord text-surface/80">
-                        {paquete.duracion_dias} días
-                      </span>
-                    </div>
-                  </div>
+        </div>
 
-                  <div className="flex flex-1 flex-col gap-4 p-5">
-                    <div className="flex flex-col gap-1.5">
-                      <h2 className="font-display text-2xl leading-snug text-on-surface">
-                        {paquete.nombre}
-                      </h2>
-                      <p className="font-sans text-sm leading-relaxed text-on-surface-variant">
-                        {paquete.descripcion ||
-                          'Una travesía preparada por el atelier de viajes.'}
-                      </p>
-                    </div>
-
-                    <div className="flex flex-wrap gap-1.5">
-                      {paquete.etiquetas.map((etiqueta) => (
-                        <span
-                          key={etiqueta}
-                          className="rounded-full bg-secondary/10 px-2.5 py-0.5 coord text-secondary"
-                        >
-                          {etiqueta}
-                        </span>
-                      ))}
-                    </div>
-
-                    <div className="mt-auto flex flex-col gap-2 border-t border-parchment-border/60 pt-4">
-                      {paquete.hotel_nombre && (
-                        <span className="font-sans text-xs text-on-surface-variant">
-                          Hospedaje · {paquete.hotel_nombre}
-                        </span>
-                      )}
-                      <span className="coord flex items-center gap-1.5">
-                        <IconoCalendario className="h-3.5 w-3.5 text-terracotta" />
-                        {salida
-                          ? `Próxima salida · ${fechaCorta(salida)}`
-                          : 'Fechas por confirmar'}
-                      </span>
-                      <div className="flex items-center justify-between gap-3 pt-1">
-                        <span className="font-display text-xl text-primary">
-                          {dinero(paquete.precio_base, paquete.moneda)}
-                          <span className="ml-1 font-sans text-[11px] uppercase tracking-wider text-on-surface-variant">
-                            por persona
-                          </span>
-                        </span>
-                        <Link
-                          to={`/viajes/${paquete.id}`}
-                          className="inline-flex items-center gap-1.5 font-sans text-xs font-semibold uppercase tracking-wider text-primary transition-colors hover:text-terracotta"
-                        >
-                          Ver viaje
-                          <IconoFlechaDerecha className="h-3.5 w-3.5 transition-transform group-hover:translate-x-0.5" />
-                        </Link>
-                      </div>
-                    </div>
-                  </div>
-                </article>
-              )
-            })}
+        {/* Mensaje de error */}
+        {error && (
+          <div className="mt-6 rounded-xl border border-red-200 bg-red-50 p-4 text-sm text-red-700">
+            {error}
           </div>
         )}
-      </section>
 
-      {!cargando && visibles.length > 0 && (
-        <p className="mt-8 flex items-center justify-center gap-2 coord text-stamp-sepia">
-          <IconoReloj className="h-3.5 w-3.5" />
-          {visibles.length} viajes disponibles en el cuaderno
-        </p>
-      )}
+        {/* Listado de Paquetes */}
+        <div className="mt-10">
+          {cargando ? (
+            <div className="py-20 text-center text-[#231a13]/50 font-serif">
+              Cargando catálogo de expediciones...
+            </div>
+          ) : paquetes.length === 0 ? (
+            <div className="py-20 text-center text-[#231a13]/50">
+              No se encontraron paquetes disponibles con esos filtros.
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 gap-8 md:grid-cols-2 lg:grid-cols-3">
+              {paquetes.map((p) => (
+                <article
+                  key={p.id}
+                  className="flex flex-col justify-between overflow-hidden rounded-2xl border border-[#231a13]/10 bg-white shadow-sm transition-all hover:shadow-md hover:-translate-y-1"
+                >
+                  <div>
+                    {/* Imagen de destino si existe */}
+                    {p.destino_imagen_principal ? (
+                      <div className="h-48 w-full overflow-hidden bg-[#231a13]/5">
+                        <img
+                          src={p.destino_imagen_principal}
+                          alt={p.nombre}
+                          className="h-full w-full object-cover transition-transform duration-500 hover:scale-105"
+                        />
+                      </div>
+                    ) : (
+                      <div className="flex h-36 w-full items-center justify-center bg-[#792609]/10 text-[#792609]">
+                        <IconoUbicacion className="h-8 w-8" />
+                      </div>
+                    )}
+
+                    <div className="p-6">
+                      <div className="flex items-center justify-between text-xs font-semibold uppercase text-[#792609]">
+                        <span>{p.destino_nombre}</span>
+                        <span>{p.duracion_dias} DÍAS</span>
+                      </div>
+
+                      <h2 className="mt-2 font-serif text-xl font-bold text-[#231a13] line-clamp-1">
+                        {p.nombre}
+                      </h2>
+
+                      {p.hotel_nombre && (
+                        <div className="mt-2 flex items-center gap-1.5 text-xs text-[#231a13]/60">
+                          <IconoEdificio className="h-3.5 w-3.5 text-[#231a13]/40" />
+                          <span>Hospedaje: {p.hotel_nombre}</span>
+                          {p.hotel_estrellas && (
+                            <span className="text-amber-600">
+                              {'★'.repeat(p.hotel_estrellas)}
+                            </span>
+                          )}
+                        </div>
+                      )}
+
+                      <p className="mt-3 text-xs text-[#231a13]/70 line-clamp-3 leading-relaxed">
+                        {p.descripcion || 'Una travesía inolvidable con guías especializados y logística integral.'}
+                      </p>
+
+                      {p.etiquetas && p.etiquetas.length > 0 && (
+                        <div className="mt-4 flex flex-wrap gap-1">
+                          {p.etiquetas.slice(0, 3).map((tag, idx) => (
+                            <span
+                              key={idx}
+                              className="rounded-full bg-[#faf5eb] px-2.5 py-0.5 text-[10px] uppercase font-medium text-[#231a13]/70 border border-[#231a13]/10"
+                            >
+                              #{tag}
+                            </span>
+                          ))}
+                        </div>
+                      )}
+                    </div>
+                  </div>
+
+                  <div className="border-t border-[#231a13]/10 bg-[#faf5eb]/50 p-6 flex items-center justify-between">
+                    <div>
+                      <div className="text-[11px] uppercase tracking-wider text-[#231a13]/60">
+                        Desde por persona
+                      </div>
+                      <div className="font-serif text-2xl font-bold text-[#792609]">
+                        {p.moneda} {Number(p.precio_base).toFixed(0)}
+                      </div>
+                    </div>
+
+                    <Link
+                      to={`/viajes/${p.id}`}
+                      className="inline-flex items-center gap-2 rounded-full bg-[#792609] px-4 py-2 text-xs font-semibold text-white shadow-sm transition hover:bg-[#983d1f]"
+                    >
+                      <span>Ver Salidas</span>
+                      <IconoFlechaDerecha className="h-3.5 w-3.5" />
+                    </Link>
+                  </div>
+                </article>
+              ))}
+            </div>
+          )}
+        </div>
+      </div>
     </div>
   )
 }
+

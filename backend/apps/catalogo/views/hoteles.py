@@ -1,73 +1,69 @@
-"""Capa de presentación del catálogo — hoteles (CU5)."""
-from django.core.exceptions import ValidationError as DjangoValidationError
-from django.db.models import ProtectedError
+"""Controladores de hoteles y habitaciones (CU5)."""
 from rest_framework import status, viewsets
-from rest_framework.decorators import action
-from rest_framework.exceptions import ValidationError as DRFValidationError
 from rest_framework.response import Response
 
-from apps.catalogo import services
 from apps.catalogo.permissions import EsAdminOAgente
-from apps.catalogo.serializers import HotelSerializer
+from apps.catalogo.serializers.hotel import (
+    HabitacionSerializer,
+    HabitacionWriteSerializer,
+    HotelDetailSerializer,
+    HotelListSerializer,
+    HotelWriteSerializer,
+)
+from apps.catalogo.services.hoteles import (
+    eliminar_habitacion,
+    eliminar_hotel,
+    listar_habitaciones,
+    listar_hoteles,
+    obtener_hotel,
+)
 
 
 class HotelViewSet(viewsets.ModelViewSet):
-    """
-    CRUD de hoteles.
+    """ViewSet CRUD para la administración de hoteles asociados a destinos."""
 
-    Público (GET): listar y ver detalle, solo activos por defecto.
-    Autenticado Admin/Agente: crear, editar, activar/desactivar.
-    """
-
-    serializer_class = HotelSerializer
     permission_classes = [EsAdminOAgente]
 
     def get_queryset(self):
-        es_staff = (
-            self.request.user
-            and self.request.user.is_authenticated
-            and self.request.user.rol_id in (1, 2)  # administrador, agente
-        )
         params = self.request.query_params
-        return services.listar_hoteles(
-            solo_activos=False if es_staff else True,
-            proveedor_id=params.get("proveedor"),
-            destino_id=params.get("destino"),
+        return listar_hoteles(
+            destino_id=int(params["destino_id"]) if params.get("destino_id") else None,
+            proveedor_id=int(params["proveedor_id"]) if params.get("proveedor_id") else None,
+            solo_activos=params.get("solo_activos") in ("true", "1"),
             estrellas=int(params["estrellas"]) if params.get("estrellas") else None,
             q=params.get("q"),
         )
 
-    def create(self, request, *args, **kwargs):
-        ser = self.get_serializer(data=request.data)
-        ser.is_valid(raise_exception=True)
-        try:
-            hotel = services.crear_hotel(**ser.validated_data)
-        except DjangoValidationError as exc:
-            raise DRFValidationError(exc.message_dict)
-        return Response(HotelSerializer(hotel).data, status=status.HTTP_201_CREATED)
-
-    def update(self, request, *args, **kwargs):
-        parcial = kwargs.pop("partial", False)
-        instance = self.get_object()
-        ser = self.get_serializer(instance, data=request.data, partial=parcial)
-        ser.is_valid(raise_exception=True)
-        try:
-            hotel = services.actualizar_hotel(instance.pk, **ser.validated_data)
-        except DjangoValidationError as exc:
-            raise DRFValidationError(exc.message_dict)
-        return Response(HotelSerializer(hotel).data)
+    def get_serializer_class(self):
+        if self.action == "list":
+            return HotelListSerializer
+        if self.action == "retrieve":
+            return HotelDetailSerializer
+        return HotelWriteSerializer
 
     def destroy(self, request, *args, **kwargs):
-        instance = self.get_object()
-        try:
-            instance.delete()
-        except ProtectedError:
-            raise DRFValidationError(
-                {"hotel": "El hotel está en uso por un paquete y no puede retirarse."}
-            )
+        hotel_id = int(kwargs["pk"])
+        eliminar_hotel(hotel_id)
         return Response(status=status.HTTP_204_NO_CONTENT)
 
-    @action(detail=True, methods=["post"], url_path="toggle_activo")
-    def toggle_activo(self, request, pk=None):
-        hotel = services.toggle_activo_hotel(int(pk))
-        return Response(HotelSerializer(hotel).data)
+
+class HabitacionViewSet(viewsets.ModelViewSet):
+    """ViewSet CRUD para las habitaciones de un hotel."""
+
+    permission_classes = [EsAdminOAgente]
+
+    def get_queryset(self):
+        params = self.request.query_params
+        hotel_id = int(params["hotel_id"]) if params.get("hotel_id") else None
+        return listar_habitaciones(hotel_id=hotel_id)
+
+    def get_serializer_class(self):
+        if self.action in ("list", "retrieve"):
+            return HabitacionSerializer
+        return HabitacionWriteSerializer
+
+    def destroy(self, request, *args, **kwargs):
+        habitacion_id = int(kwargs["pk"])
+        eliminar_habitacion(habitacion_id)
+        return Response(status=status.HTTP_204_NO_CONTENT)
+

@@ -1,7 +1,20 @@
 /**
- * API de catálogo — destinos, aeropuertos, proveedores (CU3).
+ * API de catálogo — destinos, aeropuertos, proveedores, vuelos, hoteles, paquetes (CU3, CU4, CU5, CU6).
  */
 import { api } from '@/lib/axios'
+import type {
+  Aeropuerto,
+  CrearHabitacionPayload,
+  CrearHotelPayload,
+  CrearPaquetePayload,
+  CrearSalidaPayload,
+  CrearVueloPayload,
+  Habitacion,
+  Hotel,
+  Paquete,
+  PaqueteSalida,
+  Vuelo,
+} from '@/types/catalogo.types'
 
 export interface ItinerarioDia {
   id: number
@@ -80,7 +93,7 @@ export interface Proveedor {
   activo: boolean
 }
 
-interface Paginado<T> {
+export interface Paginado<T> {
   count: number
   next: string | null
   previous: string | null
@@ -104,106 +117,36 @@ export interface FiltrosProveedor {
   page?: number
 }
 
-export interface Aeropuerto {
-  codigo_iata: string
-  nombre: string
-  destino: number
-}
-
-export interface Vuelo {
-  id: number
-  proveedor: number
-  proveedor_nombre: string
-  numero_vuelo: string
-  origen: string
-  origen_nombre: string
-  destino: string
-  destino_nombre: string
-  salida: string
-  llegada: string
-  precio: string
-  moneda: string
-  cupos_totales: number
-  cupos_disponibles: number
-  referencia_externa: string | null
-}
-
 export interface FiltrosVuelo {
-  q?: string
-  proveedor?: number
   origen?: string
   destino?: string
-  desde?: string
-  hasta?: string
-  disponibles?: boolean
+  fecha_salida?: string
+  proveedor_id?: number
+  solo_disponibles?: boolean
+  q?: string
   page?: number
-}
-
-export interface Hotel {
-  id: number
-  proveedor: number
-  proveedor_nombre: string
-  destino: number
-  destino_nombre: string
-  nombre: string
-  estrellas: number | null
-  direccion: string | null
-  latitud: string | null
-  longitud: string | null
-  descripcion: string | null
-  activo: boolean
 }
 
 export interface FiltrosHotel {
-  q?: string
-  proveedor?: number
-  destino?: number
+  destino_id?: number
+  proveedor_id?: number
+  solo_activos?: boolean
   estrellas?: number
+  q?: string
   page?: number
 }
 
-export interface PaqueteSalida {
-  id: number
-  paquete: number
-  paquete_nombre: string
-  fecha_salida: string
-  vuelo_ida: number | null
-  vuelo_ida_numero: string | null
-  vuelo_vuelta: number | null
-  vuelo_vuelta_numero: string | null
-  cupos_totales: number
-  cupos_disponibles: number
-}
-
-export interface Paquete {
-  id: number
-  destino: number
-  destino_nombre: string
-  hotel: number | null
-  hotel_nombre: string | null
-  nombre: string
-  descripcion: string | null
-  duracion_dias: number
-  precio_base: string
-  moneda: string
-  etiquetas: string[]
-  activo: boolean
-  salidas: PaqueteSalida[]
-}
-
 export interface FiltrosPaquete {
+  destino_id?: number
+  solo_activos?: boolean
   q?: string
-  destino?: number
-  hotel?: number
-  etiqueta?: string
   page?: number
 }
 
 export interface FiltrosSalida {
-  paquete?: number
+  paquete_id?: number
   desde?: string
-  hasta?: string
-  disponibles?: boolean
+  solo_con_cupo?: boolean
   page?: number
 }
 
@@ -212,10 +155,6 @@ export const catalogoApi = {
   listarDestinos: (filtros: FiltrosDestino = {}) =>
     api.get<Paginado<DestinoResumen>>('/destinos/', { params: filtros }).then((r) => r.data),
 
-  /**
-   * Listado para el panel: el personal recibe el destino completo (con
-   * `activo`, `incluye`, `itinerario`…), a diferencia del resumen público.
-   */
   listarDestinosAdmin: (filtros: FiltrosDestino = {}) =>
     api.get<Paginado<Destino>>('/destinos/', { params: filtros }).then((r) => r.data),
 
@@ -236,9 +175,12 @@ export const catalogoApi = {
   toggleActivoDestino: (id: number) =>
     api.post<Destino>(`/destinos/${id}/toggle_activo/`).then((r) => r.data),
 
-  /** Reemplaza el diario de ruta (día a día) del destino. */
   definirItinerario: (id: number, dias: Omit<ItinerarioDia, 'id'>[]) =>
     api.put<ItinerarioDia[]>(`/destinos/${id}/itinerario/`, dias).then((r) => r.data),
+
+  // ── Aeropuertos ─────────────────────────────────────────────────────────
+  listarAeropuertos: (params: { q?: string; destino_id?: number } = {}) =>
+    api.get<Paginado<Aeropuerto>>('/aeropuertos/', { params }).then((r) => r.data),
 
   // ── Proveedores ──────────────────────────────────────────────────────────
   listarProveedores: (filtros: FiltrosProveedor = {}) =>
@@ -256,72 +198,75 @@ export const catalogoApi = {
   toggleActivoProveedor: (id: number) =>
     api.post<Proveedor>(`/proveedores/${id}/toggle_activo/`).then((r) => r.data),
 
-  // ── Aeropuertos ──────────────────────────────────────────────────────────
-  listarAeropuertos: (destino?: number, page?: number) =>
-    api
-      .get<Paginado<Aeropuerto>>('/aeropuertos/', {
-        params: { ...(destino ? { destino } : {}), ...(page ? { page } : {}) },
-      })
-      .then((r) => r.data),
-
-  // ── Vuelos ───────────────────────────────────────────────────────────────
+  // ── CU4: Vuelos ──────────────────────────────────────────────────────────
   listarVuelos: (filtros: FiltrosVuelo = {}) =>
     api.get<Paginado<Vuelo>>('/vuelos/', { params: filtros }).then((r) => r.data),
 
-  crearVuelo: (data: Partial<Vuelo>) =>
+  obtenerVuelo: (id: number) =>
+    api.get<Vuelo>(`/vuelos/${id}/`).then((r) => r.data),
+
+  crearVuelo: (data: CrearVueloPayload) =>
     api.post<Vuelo>('/vuelos/', data).then((r) => r.data),
 
-  actualizarVuelo: (id: number, data: Partial<Vuelo>) =>
+  actualizarVuelo: (id: number, data: Partial<CrearVueloPayload>) =>
     api.patch<Vuelo>(`/vuelos/${id}/`, data).then((r) => r.data),
 
-  eliminarVuelo: (id: number) => api.delete(`/vuelos/${id}/`),
+  eliminarVuelo: (id: number) =>
+    api.delete(`/vuelos/${id}/`).then((r) => r.data),
 
-  // ── Hoteles ──────────────────────────────────────────────────────────────
+  // ── CU5: Hoteles y Habitaciones ──────────────────────────────────────────
   listarHoteles: (filtros: FiltrosHotel = {}) =>
     api.get<Paginado<Hotel>>('/hoteles/', { params: filtros }).then((r) => r.data),
 
-  crearHotel: (data: Partial<Hotel>) =>
+  obtenerHotel: (id: number) =>
+    api.get<Hotel>(`/hoteles/${id}/`).then((r) => r.data),
+
+  crearHotel: (data: CrearHotelPayload) =>
     api.post<Hotel>('/hoteles/', data).then((r) => r.data),
 
-  actualizarHotel: (id: number, data: Partial<Hotel>) =>
+  actualizarHotel: (id: number, data: Partial<CrearHotelPayload>) =>
     api.patch<Hotel>(`/hoteles/${id}/`, data).then((r) => r.data),
 
-  toggleActivoHotel: (id: number) =>
-    api.post<Hotel>(`/hoteles/${id}/toggle_activo/`).then((r) => r.data),
+  eliminarHotel: (id: number) =>
+    api.delete(`/hoteles/${id}/`).then((r) => r.data),
 
-  eliminarHotel: (id: number) => api.delete(`/hoteles/${id}/`),
+  listarHabitaciones: (hotel_id?: number) =>
+    api.get<Paginado<Habitacion>>('/habitaciones/', { params: { hotel_id } }).then((r) => r.data),
 
-  // ── Paquetes ─────────────────────────────────────────────────────────────
+  crearHabitacion: (data: CrearHabitacionPayload) =>
+    api.post<Habitacion>('/habitaciones/', data).then((r) => r.data),
+
+  actualizarHabitacion: (id: number, data: Partial<CrearHabitacionPayload>) =>
+    api.patch<Habitacion>(`/habitaciones/${id}/`, data).then((r) => r.data),
+
+  eliminarHabitacion: (id: number) =>
+    api.delete(`/habitaciones/${id}/`).then((r) => r.data),
+
+  // ── CU6: Paquetes y Salidas ──────────────────────────────────────────────
   listarPaquetes: (filtros: FiltrosPaquete = {}) =>
-    api
-      .get<Paginado<Paquete>>('/paquetes/', { params: filtros })
-      .then((r) => r.data),
+    api.get<Paginado<Paquete>>('/paquetes/', { params: filtros }).then((r) => r.data),
 
   obtenerPaquete: (id: number) =>
     api.get<Paquete>(`/paquetes/${id}/`).then((r) => r.data),
 
-  crearPaquete: (data: Partial<Paquete>) =>
+  crearPaquete: (data: CrearPaquetePayload) =>
     api.post<Paquete>('/paquetes/', data).then((r) => r.data),
 
-  actualizarPaquete: (id: number, data: Partial<Paquete>) =>
+  actualizarPaquete: (id: number, data: Partial<CrearPaquetePayload>) =>
     api.patch<Paquete>(`/paquetes/${id}/`, data).then((r) => r.data),
 
-  toggleActivoPaquete: (id: number) =>
-    api.post<Paquete>(`/paquetes/${id}/toggle_activo/`).then((r) => r.data),
+  eliminarPaquete: (id: number) =>
+    api.delete(`/paquetes/${id}/`).then((r) => r.data),
 
-  eliminarPaquete: (id: number) => api.delete(`/paquetes/${id}/`),
-
-  // ── Salidas ──────────────────────────────────────────────────────────────
   listarSalidas: (filtros: FiltrosSalida = {}) =>
-    api
-      .get<Paginado<PaqueteSalida>>('/salidas/', { params: filtros })
-      .then((r) => r.data),
+    api.get<Paginado<PaqueteSalida>>('/salidas/', { params: filtros }).then((r) => r.data),
 
-  crearSalida: (data: Partial<PaqueteSalida>) =>
+  crearSalida: (data: CrearSalidaPayload) =>
     api.post<PaqueteSalida>('/salidas/', data).then((r) => r.data),
 
-  actualizarSalida: (id: number, data: Partial<PaqueteSalida>) =>
+  actualizarSalida: (id: number, data: Partial<CrearSalidaPayload>) =>
     api.patch<PaqueteSalida>(`/salidas/${id}/`, data).then((r) => r.data),
 
-  eliminarSalida: (id: number) => api.delete(`/salidas/${id}/`),
+  eliminarSalida: (id: number) =>
+    api.delete(`/salidas/${id}/`).then((r) => r.data),
 }
