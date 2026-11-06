@@ -152,3 +152,26 @@ def _notificar_comprobante(pago_id: int) -> None:
         notif.save(update_fields=["estado"])
     except Exception:
         logger.exception("No se pudo enviar el comprobante del pago %s", pago_id)
+
+@transaction.atomic
+def crear_reserva_pagada(
+    *,
+    cliente_id: int,
+    salida_id: int,
+    num_personas: int,
+    pasajeros_datos: list[dict],
+    metodo: str = "efectivo",
+):
+    """Reserva de mostrador: crea la reserva y registra el pago total en una sola transaccion."""
+    from apps.reservas.services.reservas import crear_reserva
+
+    reserva = crear_reserva(
+        cliente_id=cliente_id,
+        salida_id=salida_id,
+        num_personas=num_personas,
+        pasajeros_datos=pasajeros_datos,
+        canal=Reserva.CANAL_PERSONAL,
+    )
+    pago = registrar_pago(reserva_id=reserva.pk, monto=reserva.total, metodo=metodo)
+    reserva.refresh_from_db()
+    return reserva, pago
