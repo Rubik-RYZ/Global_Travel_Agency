@@ -39,7 +39,6 @@ CLIENTES = [
     {
         "clave": "lucia",
         "email": "lucia.quispe@gmail.com",
-        "email_anterior": "lucia.quispe@viajero.test",
         "nombres": "Lucía",
         "apellidos": "Quispe",
         "documento": "8123456",
@@ -49,7 +48,6 @@ CLIENTES = [
     {
         "clave": "mateo",
         "email": "mateo.fernandez@hotmail.com",
-        "email_anterior": "mateo.fernandez@viajero.test",
         "nombres": "Mateo",
         "apellidos": "Fernández",
         "documento": "7456123",
@@ -59,7 +57,6 @@ CLIENTES = [
     {
         "clave": "valentina",
         "email": "valentina.rojas@gmail.com",
-        "email_anterior": "valentina.rojas@viajero.test",
         "nombres": "Valentina",
         "apellidos": "Rojas",
         "documento": "9234567",
@@ -69,7 +66,6 @@ CLIENTES = [
     {
         "clave": "diego",
         "email": "diego.mamani@outlook.com",
-        "email_anterior": "diego.mamani@viajero.test",
         "nombres": "Diego",
         "apellidos": "Mamani",
         "documento": "6543210",
@@ -79,7 +75,6 @@ CLIENTES = [
     {
         "clave": "camila",
         "email": "camila.torrez@yahoo.com",
-        "email_anterior": "camila.torrez@viajero.test",
         "nombres": "Camila",
         "apellidos": "Torrez",
         "documento": "5678901",
@@ -273,10 +268,6 @@ class Command(BaseCommand):
         clientes: dict[str, Cliente] = {}
         for datos in CLIENTES:
             usuario = Usuario.objects.filter(email__iexact=datos["email"]).first()
-            if usuario is None and datos.get("email_anterior"):
-                usuario = Usuario.objects.filter(
-                    email__iexact=datos["email_anterior"]
-                ).first()
             if usuario is None:
                 usuario = Usuario.objects.create_user(
                     email=datos["email"],
