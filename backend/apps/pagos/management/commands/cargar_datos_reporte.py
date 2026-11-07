@@ -1,6 +1,6 @@
 """Datos de demostración para los reportes gerenciales (CU12).
 
-Crea cinco clientes con cuenta, cinco vuelos internacionales, dos paquetes
+Crea seis clientes con cuenta, cinco vuelos internacionales, dos paquetes
 a otros países, salidas en fin de semana y reservas/pagos repartidos en
 distintos fines de semana para que las gráficas tengan datos variados.
 
@@ -38,7 +38,8 @@ PASSWORD = "Viajero12345"
 CLIENTES = [
     {
         "clave": "lucia",
-        "email": "lucia.quispe@viajero.test",
+        "email": "lucia.quispe@gmail.com",
+        "email_anterior": "lucia.quispe@viajero.test",
         "nombres": "Lucía",
         "apellidos": "Quispe",
         "documento": "8123456",
@@ -47,7 +48,8 @@ CLIENTES = [
     },
     {
         "clave": "mateo",
-        "email": "mateo.fernandez@viajero.test",
+        "email": "mateo.fernandez@hotmail.com",
+        "email_anterior": "mateo.fernandez@viajero.test",
         "nombres": "Mateo",
         "apellidos": "Fernández",
         "documento": "7456123",
@@ -56,7 +58,8 @@ CLIENTES = [
     },
     {
         "clave": "valentina",
-        "email": "valentina.rojas@viajero.test",
+        "email": "valentina.rojas@gmail.com",
+        "email_anterior": "valentina.rojas@viajero.test",
         "nombres": "Valentina",
         "apellidos": "Rojas",
         "documento": "9234567",
@@ -65,7 +68,8 @@ CLIENTES = [
     },
     {
         "clave": "diego",
-        "email": "diego.mamani@viajero.test",
+        "email": "diego.mamani@outlook.com",
+        "email_anterior": "diego.mamani@viajero.test",
         "nombres": "Diego",
         "apellidos": "Mamani",
         "documento": "6543210",
@@ -74,12 +78,22 @@ CLIENTES = [
     },
     {
         "clave": "camila",
-        "email": "camila.torrez@viajero.test",
+        "email": "camila.torrez@yahoo.com",
+        "email_anterior": "camila.torrez@viajero.test",
         "nombres": "Camila",
         "apellidos": "Torrez",
         "documento": "5678901",
         "telefono": "+591 75678901",
         "fecha_nacimiento": date(1996, 5, 30),
+    },
+    {
+        "clave": "andrea",
+        "email": "cliente.illimani@gmail.com",
+        "nombres": "Andrea",
+        "apellidos": "Vargas",
+        "documento": "1122334",
+        "telefono": "+591 76789012",
+        "fecha_nacimiento": date(1997, 9, 14),
     },
 ]
 
@@ -228,7 +242,7 @@ def _aware(fecha: date, hora: int, minuto: int = 0) -> datetime:
 
 class Command(BaseCommand):
     help = (
-        "Carga 5 clientes con cuenta, 5 vuelos, 2 paquetes internacionales y "
+        "Carga 6 clientes con cuenta, 5 vuelos, 2 paquetes internacionales y "
         "reservas/pagos de fin de semana para los reportes."
     )
 
@@ -259,6 +273,10 @@ class Command(BaseCommand):
         clientes: dict[str, Cliente] = {}
         for datos in CLIENTES:
             usuario = Usuario.objects.filter(email__iexact=datos["email"]).first()
+            if usuario is None and datos.get("email_anterior"):
+                usuario = Usuario.objects.filter(
+                    email__iexact=datos["email_anterior"]
+                ).first()
             if usuario is None:
                 usuario = Usuario.objects.create_user(
                     email=datos["email"],
@@ -266,6 +284,7 @@ class Command(BaseCommand):
                     rol=rol_cliente,
                 )
             else:
+                usuario.email = datos["email"]
                 usuario.rol = rol_cliente
                 usuario.activo = True
                 if not usuario.check_password(PASSWORD):
