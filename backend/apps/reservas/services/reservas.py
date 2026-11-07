@@ -75,6 +75,7 @@ def crear_reserva(
     pasajeros_datos: list[dict],
     canal: str = "web",
     conversacion_id=None,
+    registrado_por=None,
 ) -> Reserva:
     """Crea una reserva de forma atómica descontando cupos con bloqueo concurrente."""
     if num_personas <= 0:
@@ -118,6 +119,7 @@ def crear_reserva(
         moneda=salida.paquete.moneda,
         canal=canal,
         conversacion_id=conversacion_id,
+        registrado_por=registrado_por,
     )
 
     # Registrar pasajeros

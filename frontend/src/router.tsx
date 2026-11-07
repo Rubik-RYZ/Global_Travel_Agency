@@ -14,6 +14,7 @@ import { DashboardView } from '@/views/admin/DashboardView'
 import { EditorDestinoView } from '@/views/admin/EditorDestinoView'
 import { FichaClienteAdminView } from '@/views/admin/FichaClienteAdminView'
 import { ProveedoresAdminView } from '@/views/admin/ProveedoresAdminView'
+import { ReportesView } from '@/views/admin/ReportesView'
 import { RolesView } from '@/views/admin/RolesView'
 import { VuelosAdminView } from '@/views/admin/VuelosAdminView'
 import { HotelesAdminView } from '@/views/admin/HotelesAdminView'
@@ -107,6 +108,11 @@ export const router = createBrowserRouter([
             path: '/admin/auditoria',
             element: <RutaAdmin />,
             children: [{ index: true, element: <AuditoriaView /> }],
+          },
+          {
+            path: '/admin/reportes',
+            element: <RutaAdmin />,
+            children: [{ index: true, element: <ReportesView /> }],
           },
           { path: '/admin/clientes', element: <ClientesAdminView /> },
           { path: '/admin/clientes/:id', element: <FichaClienteAdminView /> },

@@ -7,6 +7,7 @@ import { Footer } from '@/components/layout/Footer'
 import { PerfilMenu } from '@/components/layout/PerfilMenu'
 import {
   IconoChevron,
+  IconoDescarga,
   IconoEdificio,
   IconoEscudo,
   IconoFlechaDerecha,
@@ -60,9 +61,16 @@ const MODULOS: Modulo[] = [
     soloAdmin: true,
   },
   {
+    a: '/admin/reportes',
+    titulo: 'Reportes gerenciales',
+    descripcion: 'Ventas, ingresos, ocupación y exportación CSV',
+    icono: <IconoDescarga className="h-4 w-4" />,
+    soloAdmin: true,
+  },
+  {
     a: '/admin/destinos',
     titulo: 'Destinos',
-    descripcion: 'Catálogo de destinos y paquetes turísticos',
+    descripcion: 'Cat��logo de destinos y paquetes tur��sticos',
     icono: <IconoUbicacion className="h-4 w-4" />,
   },
   {

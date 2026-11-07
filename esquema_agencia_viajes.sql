@@ -272,25 +272,27 @@ CREATE INDEX ix_mensajes_intencion ON mensajes (intencion_id);
 CREATE SEQUENCE seq_codigo_reserva START 1;
 
 CREATE TABLE reservas (
-    id               BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
-    codigo           TEXT NOT NULL UNIQUE DEFAULT
-                     ('RES-' || to_char(now(), 'YYYY') || '-' ||
-                      lpad(nextval('seq_codigo_reserva')::text, 6, '0')),
-    cliente_id       BIGINT NOT NULL REFERENCES clientes(id),
-    salida_id        BIGINT NOT NULL REFERENCES paquete_salidas(id),
-    num_personas     SMALLINT NOT NULL CHECK (num_personas > 0),
-    estado           TEXT NOT NULL DEFAULT 'pendiente'
-                     CHECK (estado IN ('pendiente','confirmada','pagada','cancelada')),
-    total            NUMERIC(12,2) NOT NULL CHECK (total >= 0),
-    moneda           CHAR(3) NOT NULL CHECK (moneda IN ('BOB','USD','EUR')),
-    canal            TEXT NOT NULL DEFAULT 'web' CHECK (canal IN ('web','agente','personal')),
-    conversacion_id  UUID REFERENCES conversaciones(id),  -- si la creó el agente
-    creada_en        TIMESTAMPTZ NOT NULL DEFAULT now(),
-    actualizada_en   TIMESTAMPTZ NOT NULL DEFAULT now()
+    id                BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    codigo            TEXT NOT NULL UNIQUE DEFAULT
+                      ('RES-' || to_char(now(), 'YYYY') || '-' ||
+                       lpad(nextval('seq_codigo_reserva')::text, 6, '0')),
+    cliente_id        BIGINT NOT NULL REFERENCES clientes(id),
+    salida_id         BIGINT NOT NULL REFERENCES paquete_salidas(id),
+    num_personas      SMALLINT NOT NULL CHECK (num_personas > 0),
+    estado            TEXT NOT NULL DEFAULT 'pendiente'
+                      CHECK (estado IN ('pendiente','confirmada','pagada','cancelada')),
+    total             NUMERIC(12,2) NOT NULL CHECK (total >= 0),
+    moneda            CHAR(3) NOT NULL CHECK (moneda IN ('BOB','USD','EUR')),
+    canal             TEXT NOT NULL DEFAULT 'web' CHECK (canal IN ('web','agente','personal')),
+    registrado_por_id BIGINT REFERENCES usuarios(id) ON DELETE SET NULL,
+    conversacion_id   UUID REFERENCES conversaciones(id),  -- si la creó el agente
+    creada_en         TIMESTAMPTZ NOT NULL DEFAULT now(),
+    actualizada_en    TIMESTAMPTZ NOT NULL DEFAULT now()
 );
 CREATE INDEX ix_reservas_cliente ON reservas (cliente_id);
 CREATE INDEX ix_reservas_estado ON reservas (estado);
 CREATE INDEX ix_reservas_salida ON reservas (salida_id);
+CREATE INDEX ix_reservas_registrado_por ON reservas (registrado_por_id);
 
 CREATE TABLE reserva_pasajeros (
     id                BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,

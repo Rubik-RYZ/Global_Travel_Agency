@@ -53,6 +53,15 @@ class Reserva(models.Model):
     total = models.DecimalField(max_digits=12, decimal_places=2, help_text="Importe total liquidado")
     moneda = models.CharField(max_length=3, choices=MONEDA_CHOICES, default="USD")
     canal = models.CharField(max_length=20, choices=CANAL_CHOICES, default=CANAL_WEB)
+    registrado_por = models.ForeignKey(
+        "usuarios.Usuario",
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name="reservas_registradas",
+        db_column="registrado_por_id",
+        help_text="Usuario del equipo que registro la venta (ventanilla/agente).",
+    )
     conversacion_id = models.UUIDField(null=True, blank=True, help_text="Conversación origen si fue creada por chatbot")
     creada_en = models.DateTimeField(auto_now_add=True)
     actualizada_en = models.DateTimeField(auto_now=True)
@@ -66,6 +75,7 @@ class Reserva(models.Model):
             models.Index(fields=["cliente"], name="ix_reservas_cliente"),
             models.Index(fields=["salida"], name="ix_reservas_salida"),
             models.Index(fields=["estado"], name="ix_reservas_estado"),
+            models.Index(fields=["registrado_por"], name="ix_reservas_registrado_por"),
         ]
         constraints = [
             CheckConstraint(

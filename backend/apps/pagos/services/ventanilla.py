@@ -41,6 +41,7 @@ def registrar_venta_ventanilla(
     num_personas: int,
     pasajeros_datos: list[dict],
     metodo: str = "efectivo",
+    registrado_por=None,
 ):
     """Registra la venta completa de mostrador (cliente + reserva + pago)."""
     cliente = _resolver_cliente(cliente_id=cliente_id, cliente_nuevo=cliente_nuevo)
@@ -50,4 +51,5 @@ def registrar_venta_ventanilla(
         num_personas=num_personas,
         pasajeros_datos=pasajeros_datos,
         metodo=metodo,
+        registrado_por=registrado_por,
     )

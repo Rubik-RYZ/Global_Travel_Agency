@@ -401,6 +401,7 @@ class Command(BaseCommand):
     def handle(self, *args, **options):
         self._seed_roles()
         self._seed_admin()
+        self._seed_soporte()
         self._seed_cliente()
         self._seed_ventanilla()
         self._seed_destinos()
@@ -426,6 +427,29 @@ class Command(BaseCommand):
             self.stdout.write(f"  admin creado: {email} / Admin12345")
         else:
             self.stdout.write(f"  admin ya existia: {email}")
+
+    def _seed_soporte(self):
+        """Cuenta de soporte con los mismos permisos que el administrador."""
+        email = "soporte@illimanitravel.bo"
+        usuario, creado = Usuario.objects.get_or_create(
+            email=email,
+            defaults={"rol_id": ROL_ADMINISTRADOR, "activo": True},
+        )
+        if creado:
+            usuario.set_password("Soporte12345")
+            usuario.save(update_fields=["password"])
+            self.stdout.write(f"  soporte creado: {email} / Soporte12345")
+        else:
+            cambios = []
+            if usuario.rol_id != ROL_ADMINISTRADOR:
+                usuario.rol_id = ROL_ADMINISTRADOR
+                cambios.append("rol")
+            if not usuario.activo:
+                usuario.activo = True
+                cambios.append("activo")
+            if cambios:
+                usuario.save(update_fields=cambios)
+            self.stdout.write(f"  soporte ya existia: {email}")
 
     def _seed_cliente(self):
         email = "cliente@illimanitravel.bo"

@@ -161,6 +161,7 @@ def crear_reserva_pagada(
     num_personas: int,
     pasajeros_datos: list[dict],
     metodo: str = "efectivo",
+    registrado_por=None,
 ):
     """Reserva de mostrador: crea la reserva y registra el pago total en una sola transaccion."""
     from apps.reservas.services.reservas import crear_reserva
@@ -171,6 +172,7 @@ def crear_reserva_pagada(
         num_personas=num_personas,
         pasajeros_datos=pasajeros_datos,
         canal=Reserva.CANAL_PERSONAL,
+        registrado_por=registrado_por,
     )
     pago = registrar_pago(reserva_id=reserva.pk, monto=reserva.total, metodo=metodo)
     reserva.refresh_from_db()

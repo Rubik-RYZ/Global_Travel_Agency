@@ -83,6 +83,7 @@ class VentaVentanillaSerializer(serializers.Serializer):
                 num_personas=validated_data["num_personas"],
                 pasajeros_datos=validated_data["pasajeros"],
                 metodo=validated_data["metodo"],
+                registrado_por=self.context["request"].user,
             )
         except DjangoValidationError as exc:
             _como_drf_validation(exc)
