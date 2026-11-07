@@ -3,6 +3,7 @@ import { NavLink, Outlet } from 'react-router-dom'
 import { RosaVientos } from '@/components/brand/RosaVientos'
 import { Footer } from '@/components/layout/Footer'
 import { Navbar } from '@/components/layout/Navbar'
+import { ChatbotWidget } from '@/components/shared/ChatbotWidget/ChatbotWidget'
 
 const secciones = [
   { a: '/mi-cuenta', texto: 'Resumen', fin: true },
@@ -55,6 +56,7 @@ export function AppLayout() {
       </main>
 
       <Footer />
+      <ChatbotWidget />
     </div>
   )
 }

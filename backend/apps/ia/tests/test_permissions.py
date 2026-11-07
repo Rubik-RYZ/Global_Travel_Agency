@@ -2,6 +2,7 @@
 import pytest
 from django.core.management import call_command
 
+from apps.ia.management.commands.cargar_intenciones_ia import INTENCIONES
 from apps.ia.models import FraseEntrenamiento, Intencion
 from apps.ia.permissions import (
     INTENCIONES_ADMINISTRADOR,
@@ -56,10 +57,12 @@ def test_prompt_cambia_por_rol():
 
 @pytest.mark.django_db
 def test_comando_carga_catalogo_idempotente():
-    call_command("cargar_intenciones_ia", verbosity=0)
-    assert Intencion.objects.count() == 27
-    assert FraseEntrenamiento.objects.count() == 206
+    total_frases = sum(len(datos["frases"]) for datos in INTENCIONES.values())
 
     call_command("cargar_intenciones_ia", verbosity=0)
     assert Intencion.objects.count() == 27
-    assert FraseEntrenamiento.objects.count() == 206
+    assert FraseEntrenamiento.objects.count() == total_frases
+
+    call_command("cargar_intenciones_ia", verbosity=0)
+    assert Intencion.objects.count() == 27
+    assert FraseEntrenamiento.objects.count() == total_frases

@@ -22,7 +22,7 @@ El equipo trabaja en 4 sprints de desarrollo (S2–S5). La base de datos ya est�
 **Emails**: Resend (llamadas síncronas — sin Celery, sin Redis)  
 **Moneda**: ExchangeRate-API (BOB/USD, free tier)  
 **Aeropuertos**: OurAirports CSV (carga única con management command)  
-**IA/NLP**: scikit-learn — pipeline TF-IDF + LogisticRegression, 7 intents  
+**IA/NLP**: scikit-learn — pipeline TF-IDF + LogisticRegression, 27 intenciones por rol  
 **Mapas**: Leaflet + OpenStreetMap (sin costo)
 
 **Frontend**: React 18 · TypeScript · Vite  

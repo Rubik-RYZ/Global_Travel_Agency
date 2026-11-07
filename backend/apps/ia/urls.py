@@ -1,6 +1,8 @@
-﻿from rest_framework.routers import DefaultRouter
+﻿"""Rutas del dominio 'ia' (CU10/CU11)."""
+from django.urls import path
 
-router = DefaultRouter()
+from apps.ia.views import ChatView
 
-urlpatterns = router.urls
-
+urlpatterns = [
+    path("ia/chat/", ChatView.as_view(), name="ia-chat"),
+]

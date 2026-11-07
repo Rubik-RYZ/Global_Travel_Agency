@@ -3,6 +3,7 @@ import { Outlet, useLocation } from 'react-router-dom'
 
 import { Footer } from '@/components/layout/Footer'
 import { Navbar } from '@/components/layout/Navbar'
+import { ChatbotWidget } from '@/components/shared/ChatbotWidget/ChatbotWidget'
 
 export function PublicLayout() {
   const { pathname, hash } = useLocation()
@@ -29,6 +30,7 @@ export function PublicLayout() {
         <Outlet />
       </main>
       <Footer />
+      <ChatbotWidget />
     </div>
   )
 }

@@ -12,6 +12,7 @@ import {
   BriefcaseIcon,
   BuildingOffice2Icon,
   CalendarDaysIcon,
+  ChatBubbleLeftRightIcon,
   CheckBadgeIcon,
   ChevronDownIcon,
   ChevronUpIcon,
@@ -31,8 +32,9 @@ import {
   MagnifyingGlassIcon,
   MapIcon,
   MapPinIcon,
-  PencilSquareIcon,
+  PaperAirplaneIcon,
   PauseCircleIcon,
+  PencilSquareIcon,
   PhoneIcon,
   PlayIcon,
   PlusIcon,
@@ -211,4 +213,12 @@ export function IconoPlay({ className = 'h-4 w-4', ...props }: Props) {
 }
 export function IconoPausa({ className = 'h-4 w-4', ...props }: Props) {
   return <PauseCircleIcon className={className} {...props} />
+}
+
+/* --- Asistente conversacional --- */
+export function IconoChat({ className = 'h-5 w-5', ...props }: Props) {
+  return <ChatBubbleLeftRightIcon className={className} {...props} />
+}
+export function IconoEnviar({ className = 'h-4 w-4', ...props }: Props) {
+  return <PaperAirplaneIcon className={className} {...props} />
 }

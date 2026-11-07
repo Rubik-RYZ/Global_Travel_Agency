@@ -1,1 +1,4 @@
-"""Capa de esquema del dominio 'ia' (se implementa en su sprint)."""
+"""Capa de esquema del dominio 'ia'."""
+from apps.ia.serializers.chat import MensajeEntradaSerializer, RespuestaChatSerializer
+
+__all__ = ["MensajeEntradaSerializer", "RespuestaChatSerializer"]

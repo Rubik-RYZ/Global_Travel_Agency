@@ -10,6 +10,7 @@ from django.core.management.base import BaseCommand
 from django.db import transaction
 
 from apps.ia.models import FraseEntrenamiento, Intencion
+from apps.ia.services.clasificador import recargar_clasificador
 
 INTENCIONES = {
     "saludo": {
@@ -296,6 +297,14 @@ INTENCIONES = {
             "Qué dijiste",
             "No comprendo",
             "Estoy confundido",
+            "Cuéntame un chiste",
+            "Cuál es la capital de Francia",
+            "Qué hora es",
+            "Habla del clima",
+            "Quiero hablar de política",
+            "Recomiéndame una película",
+            "Ayúdame con mi tarea",
+            "Qué es el fútbol",
         ],
     },
     "buscar_reserva": {
@@ -401,3 +410,7 @@ class Command(BaseCommand):
             f"Total del catálogo: {Intencion.objects.count()} intenciones, "
             f"{total_frases} frases."
         )
+
+        clasificador = recargar_clasificador()
+        estado = "entrenado" if clasificador.entrenado else "sin frases suficientes"
+        self.stdout.write(f"Clasificador de intenciones: {estado}.")
