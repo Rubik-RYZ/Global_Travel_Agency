@@ -1,12 +1,18 @@
 /** Servicios de API para pagos y boleta de viaje (CU9). */
 import { api } from '@/lib/axios'
 import type {
+  FiltrosPagoAdmin,
   PagoClientePayload,
+  PagosAdminPagina,
   VentaResultado,
   VentaVentanillaPayload,
 } from '@/types/pago.types'
 
 export const pagosApi = {
+  /** Libro de pagos del panel (admin o agente), con filtros y totales. */
+  listarPagos: (filtros: FiltrosPagoAdmin = {}) =>
+    api.get<PagosAdminPagina>('/pagos/', { params: filtros }).then((r) => r.data),
+
   /** Venta presencial en ventanilla (admin o agente). */
   ventaVentanilla: (payload: VentaVentanillaPayload) =>
     api.post<VentaResultado>('/pagos/ventanilla/', payload).then((r) => r.data),

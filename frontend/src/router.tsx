@@ -22,6 +22,7 @@ import { VuelosAdminView } from '@/views/admin/VuelosAdminView'
 import { HotelesAdminView } from '@/views/admin/HotelesAdminView'
 import { PaquetesAdminView } from '@/views/admin/PaquetesAdminView'
 import { SalidasAdminView } from '@/views/admin/SalidasAdminView'
+import { PagosAdminView } from '@/views/admin/PagosAdminView'
 import { ReservasAdminView } from '@/views/admin/ReservasAdminView'
 import { DetalleReservaAdminView } from '@/views/admin/DetalleReservaAdminView'
 import { NuevaReservaAdminView } from '@/views/admin/NuevaReservaAdminView'
@@ -146,6 +147,7 @@ export const router = createBrowserRouter([
           { path: '/admin/paquetes', element: <PaquetesAdminView /> },
           { path: '/admin/salidas', element: <SalidasAdminView /> },
           { path: '/admin/reservas', element: <ReservasAdminView /> },
+          { path: '/admin/pagos', element: <PagosAdminView /> },
           { path: '/admin/reservas/nueva', element: <NuevaReservaAdminView /> },
           { path: '/admin/reservas/:id', element: <DetalleReservaAdminView /> },
           { path: '/admin/reservas/:id/itinerario', element: <EditorItinerarioAdminView /> },

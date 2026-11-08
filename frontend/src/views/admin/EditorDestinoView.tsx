@@ -4,6 +4,7 @@ import { Link, useNavigate, useParams } from 'react-router-dom'
 
 import { catalogoApi, type Destino, type ItinerarioDia } from '@/api/catalogo'
 import { RosaVientos } from '@/components/brand/RosaVientos'
+import { MapaDestino } from '@/components/shared/MapaDestino'
 import { Button } from '@/components/ui/Button/Button'
 import { SubidorImagen } from '@/components/ui/SubidorImagen/SubidorImagen'
 import {
@@ -404,6 +405,22 @@ export function EditorDestinoView() {
                       />
                     </div>
                   </Campo>
+
+                  <div className="flex flex-col gap-1.5 md:col-span-2">
+                    <span className="coord flex items-center gap-1.5">
+                      <IconoMapa className="h-3.5 w-3.5 text-terracotta" />
+                      Previsualización cartográfica del enclave
+                    </span>
+                    <MapaDestino
+                      latitud={form.latitud}
+                      longitud={form.longitud}
+                      nombre={form.nombre}
+                    />
+                    <span className="font-sans text-xs italic text-secondary">
+                      Referencia para el equipo de ventas y soporte; el mapa se actualiza al
+                      editar las coordenadas.
+                    </span>
+                  </div>
 
                   <Campo etiqueta="Carácter del viaje">
                     <Selector

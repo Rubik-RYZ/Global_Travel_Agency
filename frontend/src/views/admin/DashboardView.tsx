@@ -9,6 +9,7 @@ import {
   IconoEscudo,
   IconoFlechaDerecha,
   IconoMaletin,
+  IconoMoneda,
   IconoPersona,
   IconoPortapapeles,
   IconoSello,
@@ -48,6 +49,12 @@ const ACCESOS: ModuloAcceso[] = [
     descripcion: 'Atlas de rutas, itinerarios día a día y láminas del catálogo.',
     a: '/admin/destinos',
     icono: <IconoUbicacion className="h-5 w-5" />,
+  },
+  {
+    titulo: 'Libro de pagos',
+    descripcion: 'Cobros, estados, métodos y boletas de los viajeros.',
+    a: '/admin/pagos',
+    icono: <IconoMoneda className="h-5 w-5" />,
   },
   {
     titulo: 'Proveedores',

@@ -1,5 +1,6 @@
 /** Tipos del dominio de pagos y boleta de viaje (CU9). */
-import type { Reserva } from '@/types/reserva.types'
+import type { Paginated } from '@/types/api.types'
+import type { EstadoReserva, Reserva } from '@/types/reserva.types'
 
 export type MetodoVentanilla = 'efectivo' | 'tarjeta' | 'qr' | 'transferencia'
 export type MetodoCliente = 'tarjeta' | 'qr'
@@ -16,6 +17,40 @@ export interface Pago {
   metodo: string
   estado: EstadoPago
   creado_en: string
+}
+
+export interface PagoAdmin extends Pago {
+  reserva_codigo: string
+  reserva_estado: EstadoReserva
+  cliente_id: number
+  cliente_nombre: string
+  cliente_documento: string | null
+  paquete_nombre: string
+  destino_nombre: string
+  fecha_salida: string
+}
+
+export interface TotalesPagos {
+  total_registros: number
+  total_bob: string
+  aprobado_bob: string
+  pendiente_bob: string
+  reembolsado_bob: string
+}
+
+export interface PagosAdminPagina extends Paginated<PagoAdmin> {
+  totales: TotalesPagos
+}
+
+export interface FiltrosPagoAdmin {
+  q?: string
+  estado?: EstadoPago | ''
+  metodo?: string
+  moneda?: string
+  reserva_id?: number
+  desde?: string
+  hasta?: string
+  page?: number
 }
 
 export interface VentaResultado {

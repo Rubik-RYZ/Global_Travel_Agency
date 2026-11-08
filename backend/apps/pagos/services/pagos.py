@@ -6,7 +6,7 @@ from decimal import Decimal, InvalidOperation
 
 from django.core.exceptions import ValidationError
 from django.db import transaction
-from django.db.models import QuerySet, Sum
+from django.db.models import Q, QuerySet, Sum
 
 from apps.notificaciones.services.envio import enviar
 from apps.pagos.models import Pago
@@ -19,12 +19,40 @@ CERO = Decimal("0.00")
 DOS_DECIMALES = Decimal("0.01")
 
 
-def listar_pagos(*, reserva_id: int | None = None, estado: str | None = None) -> QuerySet[Pago]:
-    qs = Pago.objects.select_related("reserva", "reserva__cliente")
+def listar_pagos(
+    *,
+    reserva_id: int | None = None,
+    estado: str | None = None,
+    metodo: str | None = None,
+    moneda: str | None = None,
+    q: str | None = None,
+    desde=None,
+    hasta=None,
+) -> QuerySet[Pago]:
+    qs = Pago.objects.select_related(
+        "reserva",
+        "reserva__cliente",
+        "reserva__salida__paquete__destino",
+    )
     if reserva_id:
         qs = qs.filter(reserva_id=reserva_id)
     if estado:
         qs = qs.filter(estado=estado)
+    if metodo:
+        qs = qs.filter(metodo=metodo)
+    if moneda:
+        qs = qs.filter(moneda=moneda)
+    if q:
+        qs = qs.filter(
+            Q(reserva__codigo__icontains=q)
+            | Q(reserva__cliente__nombres__icontains=q)
+            | Q(reserva__cliente__apellidos__icontains=q)
+            | Q(reserva__cliente__documento_numero__icontains=q)
+        )
+    if desde:
+        qs = qs.filter(creado_en__date__gte=desde)
+    if hasta:
+        qs = qs.filter(creado_en__date__lte=hasta)
     return qs.order_by("-creado_en")
 
 

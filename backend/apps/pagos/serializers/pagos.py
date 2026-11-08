@@ -31,6 +31,51 @@ class PagoSerializer(serializers.ModelSerializer):
         ]
 
 
+class PagoAdminSerializer(serializers.ModelSerializer):
+    """Pago con contexto de reserva y cliente para el libro de pagos (CU9)."""
+
+    reserva_codigo = serializers.CharField(source="reserva.codigo", read_only=True)
+    reserva_estado = serializers.CharField(source="reserva.estado", read_only=True)
+    cliente_id = serializers.IntegerField(source="reserva.cliente_id", read_only=True)
+    cliente_nombre = serializers.CharField(
+        source="reserva.cliente.nombre_completo", read_only=True
+    )
+    cliente_documento = serializers.CharField(
+        source="reserva.cliente.documento_numero", read_only=True
+    )
+    paquete_nombre = serializers.CharField(
+        source="reserva.salida.paquete.nombre", read_only=True
+    )
+    destino_nombre = serializers.CharField(
+        source="reserva.salida.paquete.destino.nombre", read_only=True
+    )
+    fecha_salida = serializers.DateField(
+        source="reserva.salida.fecha_salida", read_only=True
+    )
+
+    class Meta:
+        model = Pago
+        fields = [
+            "id",
+            "reserva",
+            "reserva_codigo",
+            "reserva_estado",
+            "cliente_id",
+            "cliente_nombre",
+            "cliente_documento",
+            "paquete_nombre",
+            "destino_nombre",
+            "fecha_salida",
+            "monto",
+            "moneda",
+            "tipo_cambio_a_bob",
+            "monto_bob",
+            "metodo",
+            "estado",
+            "creado_en",
+        ]
+
+
 class ClienteNuevoSerializer(serializers.Serializer):
     nombres = serializers.CharField(max_length=150)
     apellidos = serializers.CharField(max_length=150)

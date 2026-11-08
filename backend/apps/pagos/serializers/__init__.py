@@ -1,6 +1,7 @@
 """Capa de esquema del dominio de pagos (CU9)."""
 from apps.pagos.serializers.pagos import (
     ClienteNuevoSerializer,
+    PagoAdminSerializer,
     PagoClienteSerializer,
     PagoSerializer,
     VentaVentanillaSerializer,
@@ -8,6 +9,7 @@ from apps.pagos.serializers.pagos import (
 
 __all__ = [
     "ClienteNuevoSerializer",
+    "PagoAdminSerializer",
     "PagoClienteSerializer",
     "PagoSerializer",
     "VentaVentanillaSerializer",

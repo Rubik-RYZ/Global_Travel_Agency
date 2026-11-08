@@ -47,7 +47,7 @@ Formato de cada línea:
 15. Explorar destinos                   →  ExplorarDestinosView.tsx         →  /destinos
 16. Ficha de destino                    →  DetalleDestinoView.tsx           →  /destinos/:id
 17. Panel · Atlas de destinos           →  DestinosAdminView.tsx            →  /admin/destinos
-18. Panel · Editor de destino           →  EditorDestinoAdminView.tsx       →  /admin/destinos/:id
+18. Panel · Editor de destino           →  EditorDestinoAdminView.tsx       →  /admin/destinos/:id       ✅ done (mapa Leaflet/OSM)
 19. Panel · Libreta de proveedores      →  ProveedoresAdminView.tsx         →  /admin/proveedores
 20. Panel · Ficha de proveedor          →  FichaProveedorAdminView.tsx      →  /admin/proveedores/:id
 
@@ -94,7 +94,7 @@ Formato de cada línea:
 ### CU9 · Pagos
 
 38. Reservar · Paso 3: Pago             →  ReservaPagoView.tsx              →  /reservar/pago
-39. Panel · Libro de pagos              →  PagosAdminView.tsx               →  /admin/pagos
+39. Panel · Libro de pagos              →  PagosAdminView.tsx               →  /admin/pagos              ✅ done (filtros + totales + boletas)
 
 ---
 

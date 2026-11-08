@@ -15,6 +15,7 @@ import {
   IconoFlechaDerecha,
   IconoMaletin,
   IconoModulos,
+  IconoMoneda,
   IconoPersona,
   IconoPortapapeles,
   IconoSello,
@@ -125,6 +126,12 @@ const MODULOS: Modulo[] = [
     titulo: 'Mesa de Reservas',
     descripcion: 'Control de ventas, expedientes y manifiestos',
     icono: <IconoPortapapeles className="h-4 w-4" />,
+  },
+  {
+    a: '/admin/pagos',
+    titulo: 'Libro de pagos',
+    descripcion: 'Cobros, estados, métodos y boletas del viajero',
+    icono: <IconoMoneda className="h-4 w-4" />,
   },
 ]
 
