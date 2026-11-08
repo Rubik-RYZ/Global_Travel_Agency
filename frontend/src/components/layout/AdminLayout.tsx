@@ -6,8 +6,10 @@ import { Link, Outlet, useLocation } from 'react-router-dom'
 import { Footer } from '@/components/layout/Footer'
 import { PerfilMenu } from '@/components/layout/PerfilMenu'
 import {
+  IconoChat,
   IconoChevron,
   IconoDescarga,
+  IconoDestello,
   IconoEdificio,
   IconoEscudo,
   IconoFlechaDerecha,
@@ -65,6 +67,20 @@ const MODULOS: Modulo[] = [
     titulo: 'Reportes gerenciales',
     descripcion: 'Ventas, ingresos, ocupación y exportación CSV',
     icono: <IconoDescarga className="h-4 w-4" />,
+    soloAdmin: true,
+  },
+  {
+    a: '/admin/asistente-ia',
+    titulo: 'Asistente IA',
+    descripcion: 'Intenciones, frases y reentrenamiento del chatbot',
+    icono: <IconoChat className="h-4 w-4" />,
+    soloAdmin: true,
+  },
+  {
+    a: '/admin/recomendaciones',
+    titulo: 'Recomendaciones',
+    descripcion: 'Calidad del recomendador y aceptación de sugerencias',
+    icono: <IconoDestello className="h-4 w-4" />,
     soloAdmin: true,
   },
   {

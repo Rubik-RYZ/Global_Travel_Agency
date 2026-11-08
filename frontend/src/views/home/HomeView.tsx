@@ -321,12 +321,12 @@ export function HomeView() {
                 Abrir cuaderno de expedición
                 <span className="text-base leading-none">→</span>
               </Link>
-              <a
-                href="#atelier"
+              <Link
+                to="/diseña-tu-viaje"
                 className="inline-flex items-center gap-2 rounded-full border border-white/40 bg-white/5 px-6 py-3.5 font-sans text-xs font-medium uppercase tracking-wider text-white backdrop-blur-sm transition-all hover:bg-white/15"
               >
                 Diseñar a medida
-              </a>
+              </Link>
             </div>
           </motion.div>
 

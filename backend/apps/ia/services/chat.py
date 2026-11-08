@@ -1,152 +1,207 @@
 """Flujo de respuesta del asistente conversacional (CU10)."""
 from __future__ import annotations
 
-from apps.ia.permissions import (
-    INTENCIONES_ADMINISTRADOR,
-    ROL_ANONIMO,
-    puede_usar_intencion,
-    rol_para_permisos,
+from decimal import Decimal
+
+from django.db import transaction
+from rest_framework.exceptions import ValidationError
+
+from apps.ia.models import Conversacion, Intencion, Mensaje, ModeloIA
+from apps.ia.permissions import puede_usar_intencion
+from apps.ia.services.asistente import (
+    _es_afirmativo,
+    _es_negativo,
+    _extraer_codigo,
+    clasificar_por_palabras,
+    construir_respuesta,
+    ejecutar_pendiente,
+    respuesta_denegada,
 )
 from apps.ia.services.clasificador import obtener_clasificador
-from apps.usuarios.constants import NOMBRE_ADMINISTRADOR
-
-RESPUESTAS = {
-    "saludo": (
-        "Hola, soy el asistente de Illimani. Puedo ayudarte con destinos, "
-        "paquetes, precios, disponibilidad y reservas. ¿Qué viaje estás pensando?"
-    ),
-    "despedida": "Con gusto. Cuando quieras seguir planificando tu viaje, aquí estaré.",
-    "ayuda": (
-        "Puedo orientarte sobre paquetes, destinos, precios, fechas, requisitos, "
-        "formas de pago y reservas. Dime qué necesitas y lo revisamos."
-    ),
-    "consultar_paquetes": (
-        "Puedes explorar los paquetes disponibles en la sección «Paquetes "
-        "Turísticos». Cada ficha muestra destinos, duración, precio e itinerario."
-    ),
-    "consultar_destinos": (
-        "Tenemos destinos como Machu Picchu, Costa Amalfitana y Salar de Uyuni. "
-        "Puedes ver el catálogo completo en «Expediciones»."
-    ),
-    "consultar_precios": (
-        "El precio de cada paquete aparece en su ficha y en el catálogo. Dime qué "
-        "destino te interesa y te oriento para revisar su tarifa vigente."
-    ),
-    "consultar_disponibilidad": (
-        "Las fechas y cupos vigentes se muestran en las salidas programadas de "
-        "cada paquete. Indícame el destino y la fecha que te interesa."
-    ),
-    "consultar_incluye": (
-        "Cada paquete detalla qué incluye y qué no incluye en su ficha. Si me "
-        "dices el destino, te indico dónde revisar esa información."
-    ),
-    "consultar_duracion": (
-        "La duración en días y noches está indicada en la ficha de cada paquete. "
-        "Dime cuál te interesa y lo revisamos."
-    ),
-    "consultar_requisitos": (
-        "Los requisitos dependen del destino y de tu nacionalidad. Revisa la ficha "
-        "del viaje o consulta con un agente para confirmar documentos y visas."
-    ),
-    "consultar_politicas": (
-        "Las políticas de cancelación, cambios y devolución están en las "
-        "condiciones de cada paquete. Puedo ayudarte a ubicarlas si me indicas el viaje."
-    ),
-    "consultar_formas_pago": (
-        "Los medios de pago disponibles están publicados en el sitio. Para pagar "
-        "una reserva, ingresa a «Mi viaje» o solicita apoyo a un agente."
-    ),
-    "consultar_tipo_cambio": (
-        "La cotización vigente se muestra en el sitio al momento del pago. Si "
-        "necesitas convertir un monto, dime la moneda y el importe."
-    ),
-    "recomendar_destino": (
-        "Puedo recomendarte según tu estilo de viaje. Cuéntame si buscas cultura, "
-        "naturaleza, gastronomía, playa o aventura, y cuántos días tienes."
-    ),
-    "comparar_paquetes": (
-        "Puedo comparar dos paquetes por duración, precio, destino y servicios "
-        "incluidos. Dime cuáles tienes en mente."
-    ),
-    "solicitar_promociones": (
-        "Las promociones vigentes se muestran en el catálogo y en las fichas de "
-        "cada paquete. Dime qué destino te interesa y revisamos sus opciones."
-    ),
-    "hablar_con_agente": (
-        "Puedo derivarte con un agente de la agencia. Déjame tus datos de contacto "
-        "y el motivo de tu consulta para que te atiendan."
-    ),
-    "iniciar_reserva": (
-        "Para iniciar una reserva, abre la ficha del paquete y elige la salida. "
-        "Si prefieres, un agente puede acompañarte en el proceso."
-    ),
-    "estado_reserva": (
-        "Puedes consultar el estado de tu reserva en «Mi viaje». Ten a mano tu "
-        "código de reserva para ubicarla."
-    ),
-    "cancelar_reserva": (
-        "Para cancelar una reserva, ingresa a «Mi viaje» o solicita atención con "
-        "un agente. Antes de confirmar, revisa las condiciones del paquete."
-    ),
-    "modificar_reserva": (
-        "Los cambios de fecha o pasajeros se gestionan desde «Mi viaje» o con un "
-        "agente. Revisa las condiciones del paquete antes de confirmar."
-    ),
-    "fallback": (
-        "No estoy seguro de haber entendido. Puedo ayudarte con paquetes, destinos, "
-        "precios, disponibilidad, requisitos, pagos y reservas. ¿Puedes reformularlo?"
-    ),
-    "buscar_reserva": (
-        "Puedo buscar una reserva por código, cliente o documento. Indícame el "
-        "criterio y el dato exacto para localizarla."
-    ),
-    "consultar_cupos": (
-        "Indícame el paquete y la fecha de salida para revisar los cupos "
-        "disponibles y el aforo de esa salida."
-    ),
-    "registrar_pago": (
-        "Para registrar un pago, abre la reserva correspondiente y confirma el "
-        "método y el monto antes de guardar la operación."
-    ),
-    "resumen_ventas": (
-        "El resumen de ventas está disponible en «Reportes gerenciales», con "
-        "filtros por fecha, canal y agrupación."
-    ),
-    "reporte_ocupacion": (
-        "El reporte de ocupación está en «Reportes gerenciales». Puedes revisar "
-        "cupos vendidos y disponibilidad por paquete o salida."
-    ),
-}
 
 
-def _respuesta_denegada(usuario, intencion: str) -> str:
-    rol = rol_para_permisos(usuario)
-    if rol == ROL_ANONIMO:
-        return (
-            "Para consultar tus reservas o realizar esa acción necesitas iniciar "
-            "sesión. También puedes pedir atención con un agente."
+def _conversacion_existente(usuario, conversacion_id) -> Conversacion | None:
+    """Carga una conversación propia; nunca permite reutilizar la de otro usuario."""
+    if not getattr(usuario, "is_authenticated", False) or not conversacion_id:
+        return None
+    try:
+        return Conversacion.objects.get(
+            pk=conversacion_id, usuario=usuario, cerrada=False
         )
-    if intencion in INTENCIONES_ADMINISTRADOR and rol != NOMBRE_ADMINISTRADOR:
-        return "Esa consulta está reservada al administrador de la agencia."
-    return (
-        "Tu rol no tiene permiso para esa función. Puedo ayudarte con información "
-        "de viajes, paquetes y disponibilidad."
+    except (Conversacion.DoesNotExist, ValueError, TypeError) as exc:
+        raise ValidationError(
+            {"conversacion_id": "La conversación no existe o no pertenece al usuario."}
+        ) from exc
+
+
+def _persistir_intercambio(
+    *,
+    usuario,
+    texto: str,
+    intencion_nombre: str,
+    confianza: float,
+    respuesta: str,
+    conversacion_id=None,
+    conversacion: Conversacion | None = None,
+    estado: dict | None = None,
+) -> Conversacion | None:
+    """Guarda el turno completo cuando el usuario tiene sesión."""
+    if not getattr(usuario, "is_authenticated", False):
+        return None
+
+    with transaction.atomic():
+        if conversacion is not None:
+            conversacion_actual = (
+                Conversacion.objects.select_for_update()
+                .get(pk=conversacion.pk, usuario=usuario, cerrada=False)
+            )
+        elif conversacion_id:
+            try:
+                conversacion_actual = (
+                    Conversacion.objects.select_for_update()
+                    .get(pk=conversacion_id, usuario=usuario, cerrada=False)
+                )
+            except Conversacion.DoesNotExist as exc:
+                raise ValidationError(
+                    {
+                        "conversacion_id": (
+                            "La conversación no existe o no pertenece al usuario."
+                        )
+                    }
+                ) from exc
+        else:
+            conversacion_actual = Conversacion.objects.create(usuario=usuario)
+
+        intencion = Intencion.objects.filter(nombre=intencion_nombre).first()
+        modelo = ModeloIA.objects.filter(
+            tipo=ModeloIA.TIPO_CLASIFICADOR, activo=True
+        ).first()
+        valor_confianza = Decimal(str(confianza))
+
+        Mensaje.objects.create(
+            conversacion=conversacion_actual,
+            emisor=Mensaje.EMISOR_USUARIO,
+            texto=texto,
+            intencion=intencion,
+            confianza=valor_confianza,
+            modelo=modelo,
+        )
+        Mensaje.objects.create(
+            conversacion=conversacion_actual,
+            emisor=Mensaje.EMISOR_AGENTE,
+            texto=respuesta,
+            intencion=intencion,
+            modelo=modelo,
+        )
+
+        if estado is None:
+            estado = dict(conversacion_actual.estado_dialogo or {})
+        estado = dict(estado)
+        estado.update(
+            {
+                "ultima_intencion": intencion_nombre,
+                "ultima_confianza": confianza,
+            }
+        )
+        conversacion_actual.intencion_activa = intencion_nombre
+        conversacion_actual.estado_dialogo = estado
+        conversacion_actual.save(
+            update_fields=["intencion_activa", "estado_dialogo", "ultima_actividad"]
+        )
+        return conversacion_actual
+
+
+def procesar_mensaje(usuario, texto: str, conversacion_id=None) -> dict:
+    """Clasifica el mensaje, valida el rol, responde y persiste el turno."""
+    conversacion = _conversacion_existente(usuario, conversacion_id)
+    estado = dict(conversacion.estado_dialogo or {}) if conversacion else {}
+    pendiente = estado.get("pendiente")
+    manejado = False
+    confianza = 0.0
+
+    if pendiente and getattr(usuario, "is_authenticated", False):
+        intencion = pendiente.get("intencion", "")
+        if _es_afirmativo(texto):
+            permitida = puede_usar_intencion(usuario, intencion)
+            if permitida:
+                respuesta, estado = ejecutar_pendiente(
+                    usuario,
+                    pendiente,
+                    conversacion_id=conversacion.id if conversacion else None,
+                )
+            else:
+                respuesta = respuesta_denegada(usuario, intencion)
+                estado = {}
+            confianza = 1.0
+            manejado = True
+        elif _es_negativo(texto):
+            respuesta = "Operación cancelada. No se realizó ningún cambio."
+            estado = {}
+            intencion = pendiente.get("intencion", "fallback")
+            confianza = 1.0
+            permitida = True
+            manejado = True
+        else:
+            estado.pop("pendiente", None)
+
+    if not manejado:
+        clasificador = obtener_clasificador()
+        prediccion = clasificador.predecir(texto)
+        forzada = clasificar_por_palabras(texto)
+        intencion = forzada or prediccion.intencion
+        confianza = 0.99 if forzada else prediccion.confianza
+        permitida = puede_usar_intencion(usuario, intencion)
+
+        texto_normalizado = texto.lower()
+        if (
+            intencion == "buscar_reserva"
+            and not permitida
+            and puede_usar_intencion(usuario, "estado_reserva")
+            and (
+                _extraer_codigo(texto)
+                or "mi reserva" in texto_normalizado
+                or "mis reservas" in texto_normalizado
+            )
+        ):
+            intencion = "estado_reserva"
+            permitida = True
+
+        if (
+            intencion == "consultar_cupos"
+            and not permitida
+            and puede_usar_intencion(usuario, "consultar_disponibilidad")
+        ):
+            intencion = "consultar_disponibilidad"
+            permitida = True
+
+        if permitida:
+            respuesta, estado = construir_respuesta(
+                usuario,
+                texto,
+                intencion,
+                estado,
+                conversacion.id if conversacion else None,
+            )
+        else:
+            respuesta = respuesta_denegada(usuario, intencion)
+            estado = dict(estado or {})
+            estado.pop("pendiente", None)
+
+    conversacion = _persistir_intercambio(
+        usuario=usuario,
+        texto=texto,
+        intencion_nombre=intencion,
+        confianza=confianza,
+        respuesta=respuesta,
+        conversacion_id=conversacion_id,
+        conversacion=conversacion,
+        estado=estado,
     )
-
-
-def procesar_mensaje(usuario, texto: str) -> dict:
-    """Clasifica el mensaje, valida el rol y devuelve la respuesta."""
-    prediccion = obtener_clasificador().predecir(texto)
-    permitida = puede_usar_intencion(usuario, prediccion.intencion)
-
-    if permitida:
-        respuesta = RESPUESTAS.get(prediccion.intencion, RESPUESTAS["fallback"])
-    else:
-        respuesta = _respuesta_denegada(usuario, prediccion.intencion)
 
     return {
         "respuesta": respuesta,
-        "intencion": prediccion.intencion,
-        "confianza": prediccion.confianza,
+        "intencion": intencion,
+        "confianza": confianza,
         "permitida": permitida,
+        "conversacion_id": str(conversacion.id) if conversacion else None,
     }

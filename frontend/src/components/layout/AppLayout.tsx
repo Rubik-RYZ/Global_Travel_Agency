@@ -8,6 +8,7 @@ import { ChatbotWidget } from '@/components/shared/ChatbotWidget/ChatbotWidget'
 const secciones = [
   { a: '/mi-cuenta', texto: 'Resumen', fin: true },
   { a: '/mi-cuenta/preferencias', texto: 'Perfil y preferencias' },
+  { a: '/mi-cuenta/recomendaciones', texto: 'Pensado para ti' },
 ]
 
 /**

@@ -6,6 +6,7 @@ from decimal import Decimal
 from django.core.exceptions import ValidationError
 from django.db import connection, transaction
 from django.db.models import Q, QuerySet
+from django.utils import timezone
 
 from apps.catalogo.models import PaqueteSalida
 from apps.reservas.models import Reserva, ReservaPasajero
@@ -142,6 +143,70 @@ def crear_reserva(
     # CU8: Notificación y correo
     registrar_notificacion_reserva(reserva)
 
+    return reserva
+
+
+@transaction.atomic
+def modificar_salida_reserva(reserva_id: int, nueva_salida_id: int) -> Reserva:
+    """Cambia la salida de una reserva y ajusta cupos y precio de forma atómica."""
+    try:
+        reserva = (
+            Reserva.objects.select_for_update()
+            .select_related("salida", "salida__paquete")
+            .get(pk=reserva_id)
+        )
+    except Reserva.DoesNotExist:
+        raise ValidationError({"reserva_id": "Reserva no encontrada."})
+
+    if reserva.estado not in (Reserva.ESTADO_PENDIENTE, Reserva.ESTADO_CONFIRMADA):
+        raise ValidationError(
+            {"reserva": "Solo se pueden modificar reservas pendientes o confirmadas."}
+        )
+    if reserva.salida_id == nueva_salida_id:
+        return reserva
+
+    try:
+        nueva = (
+            PaqueteSalida.objects.select_for_update()
+            .select_related("paquete")
+            .get(pk=nueva_salida_id)
+        )
+    except PaqueteSalida.DoesNotExist:
+        raise ValidationError({"salida_id": "La salida indicada no existe."})
+
+    if nueva.paquete_id != reserva.salida.paquete_id:
+        raise ValidationError(
+            {"salida_id": "La nueva salida debe pertenecer al mismo paquete."}
+        )
+    if nueva.fecha_salida < timezone.localdate():
+        raise ValidationError({"salida_id": "La nueva salida ya pasó."})
+    if nueva.cupos_disponibles < reserva.num_personas:
+        raise ValidationError(
+            {
+                "cupos": (
+                    f"No hay cupos suficientes. Requeridos: {reserva.num_personas}, "
+                    f"disponibles: {nueva.cupos_disponibles}."
+                )
+            }
+        )
+
+    anterior = PaqueteSalida.objects.select_for_update().get(pk=reserva.salida_id)
+    anterior.cupos_disponibles = min(
+        anterior.cupos_totales, anterior.cupos_disponibles + reserva.num_personas
+    )
+    anterior.save(update_fields=["cupos_disponibles"])
+
+    nueva.cupos_disponibles -= reserva.num_personas
+    nueva.save(update_fields=["cupos_disponibles"])
+
+    reserva.salida = nueva
+    reserva.total = Decimal(str(nueva.paquete.precio_base)) * Decimal(
+        str(reserva.num_personas)
+    )
+    reserva.moneda = nueva.paquete.moneda
+    reserva.save(
+        update_fields=["salida", "total", "moneda", "actualizada_en"]
+    )
     return reserva
 
 

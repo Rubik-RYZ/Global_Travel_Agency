@@ -9,14 +9,16 @@ from __future__ import annotations
 from dataclasses import dataclass
 from threading import Lock
 
+from django.utils import timezone
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.linear_model import LogisticRegression
 from sklearn.pipeline import Pipeline
 
-from apps.ia.models import FraseEntrenamiento
+from apps.ia.models import FraseEntrenamiento, ModeloIA
 
 INTENCION_FALLBACK = "fallback"
 CONFIANZA_MINIMA = 0.25
+NOMBRE_MODELO = "clasificador-intenciones"
 
 
 @dataclass(frozen=True)
@@ -30,8 +32,9 @@ class Prediccion:
 class ClasificadorIntenciones:
     """Clasificador entrenado a partir del catálogo de frases."""
 
-    def __init__(self, pipeline: Pipeline | None = None):
+    def __init__(self, pipeline: Pipeline | None = None, modelo_id: int | None = None):
         self._pipeline = pipeline
+        self.modelo_id = modelo_id
 
     @property
     def entrenado(self) -> bool:
@@ -53,7 +56,32 @@ class ClasificadorIntenciones:
         return Prediccion(intencion, confianza)
 
 
-def _construir_pipeline() -> Pipeline | None:
+def _registrar_modelo(
+    pipeline: Pipeline,
+    textos: list[str],
+    categorias: list[str],
+) -> ModeloIA:
+    """Guarda la versión entrenada y sus métricas en ``modelos_ia``."""
+    ModeloIA.objects.filter(tipo=ModeloIA.TIPO_CLASIFICADOR).update(activo=False)
+    version = timezone.now().strftime("%Y%m%d%H%M%S%f")
+    return ModeloIA.objects.create(
+        nombre=NOMBRE_MODELO,
+        version=version,
+        tipo=ModeloIA.TIPO_CLASIFICADOR,
+        metricas={
+            "frases": len(textos),
+            "intenciones": len(set(categorias)),
+            "precision_entrenamiento": round(
+                float(pipeline.score(textos, categorias)), 4
+            ),
+            "confianza_minima": CONFIANZA_MINIMA,
+            "algoritmo": "tfidf+logistic_regression",
+        },
+        activo=True,
+    )
+
+
+def _construir_pipeline() -> tuple[Pipeline, int] | None:
     filas = list(
         FraseEntrenamiento.objects.filter(intencion__activa=True).values_list(
             "texto", "intencion__nombre"
@@ -92,7 +120,16 @@ def _construir_pipeline() -> Pipeline | None:
         ]
     )
     pipeline.fit(textos, categorias)
-    return pipeline
+    modelo = _registrar_modelo(pipeline, textos, categorias)
+    return pipeline, modelo.id
+
+
+def _nuevo_clasificador() -> ClasificadorIntenciones:
+    resultado = _construir_pipeline()
+    if resultado is None:
+        return ClasificadorIntenciones()
+    pipeline, modelo_id = resultado
+    return ClasificadorIntenciones(pipeline, modelo_id=modelo_id)
 
 
 _lock = Lock()
@@ -103,7 +140,7 @@ def recargar_clasificador() -> ClasificadorIntenciones:
     """Reentrena el clasificador con el catálogo actual de frases."""
     global _clasificador
     with _lock:
-        _clasificador = ClasificadorIntenciones(_construir_pipeline())
+        _clasificador = _nuevo_clasificador()
     return _clasificador
 
 
@@ -113,5 +150,5 @@ def obtener_clasificador() -> ClasificadorIntenciones:
     if not _clasificador.entrenado:
         with _lock:
             if not _clasificador.entrenado:
-                _clasificador = ClasificadorIntenciones(_construir_pipeline())
+                _clasificador = _nuevo_clasificador()
     return _clasificador

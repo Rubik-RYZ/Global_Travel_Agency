@@ -28,6 +28,7 @@ interface EnlaceNav {
 const ENLACES: EnlaceNav[] = [
   { a: '/destinos', texto: 'Expediciones' },
   { a: '/viajes', texto: 'Paquetes Turísticos' },
+  { a: '/diseña-tu-viaje', texto: 'Diseña tu viaje' },
   { a: '/#itinerarios', texto: 'Itinerarios de autor', ancla: true },
   { a: '/#manifiesto', texto: 'Manifiesto', ancla: true },
 ]

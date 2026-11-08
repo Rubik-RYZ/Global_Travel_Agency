@@ -7,6 +7,7 @@ import { PublicLayout } from '@/components/layout/PublicLayout'
 import { RutaAdmin, RutaCliente, RutaPanel } from '@/components/layout/RutaProtegida'
 import { ForbiddenView } from '@/views/ForbiddenView'
 import { NotFoundView } from '@/views/NotFoundView'
+import { AsistenteIAAdminView } from '@/views/admin/AsistenteIAAdminView'
 import { AuditoriaView } from '@/views/admin/AuditoriaView'
 import { AtlasDestinosView } from '@/views/admin/AtlasDestinosView'
 import { ClientesAdminView } from '@/views/admin/ClientesAdminView'
@@ -14,6 +15,7 @@ import { DashboardView } from '@/views/admin/DashboardView'
 import { EditorDestinoView } from '@/views/admin/EditorDestinoView'
 import { FichaClienteAdminView } from '@/views/admin/FichaClienteAdminView'
 import { ProveedoresAdminView } from '@/views/admin/ProveedoresAdminView'
+import { RecomendacionesAdminView } from '@/views/admin/RecomendacionesAdminView'
 import { ReportesView } from '@/views/admin/ReportesView'
 import { RolesView } from '@/views/admin/RolesView'
 import { VuelosAdminView } from '@/views/admin/VuelosAdminView'
@@ -26,6 +28,7 @@ import { NuevaReservaAdminView } from '@/views/admin/NuevaReservaAdminView'
 import { EditorItinerarioAdminView } from '@/views/admin/EditorItinerarioAdminView'
 import { CatalogoPaquetesView } from '@/views/catalogo/CatalogoPaquetesView'
 import { DetallePaqueteView } from '@/views/catalogo/DetallePaqueteView'
+import { DisenaTuViajeView } from '@/views/catalogo/DisenaTuViajeView'
 import { ReservaSeleccionView } from '@/views/reserva/ReservaSeleccionView'
 import { ReservaPasajerosView } from '@/views/reserva/ReservaPasajerosView'
 import { ReservaConfirmacionView } from '@/views/reserva/ReservaConfirmacionView'
@@ -42,6 +45,7 @@ import { DetalleDestinoView } from '@/views/catalogo/DetalleDestinoView'
 import { ExplorarDestinosView } from '@/views/catalogo/ExplorarDestinosView'
 import { PanelViajeroView } from '@/views/cliente/PanelViajeroView'
 import { PreferenciasView } from '@/views/cliente/PreferenciasView'
+import { RecomendacionesView } from '@/views/cliente/RecomendacionesView'
 import { HomeView } from '@/views/home/HomeView'
 
 /**
@@ -60,6 +64,8 @@ export const router = createBrowserRouter([
       { path: '/destinos/:id', element: <DetalleDestinoView /> },
       { path: '/viajes', element: <CatalogoPaquetesView /> },
       { path: '/viajes/:id', element: <DetallePaqueteView /> },
+      { path: '/diseña-tu-viaje', element: <DisenaTuViajeView /> },
+      { path: '/disena-tu-viaje', element: <DisenaTuViajeView /> },
       { path: '/reservar/:paqueteId', element: <ReservaSeleccionView /> },
       { path: '/reservar/pasajeros', element: <ReservaPasajerosView /> },
       { path: '/reservar/confirmacion', element: <ReservaConfirmacionView /> },
@@ -88,6 +94,7 @@ export const router = createBrowserRouter([
           { path: '/mi-cuenta/viajes/:id', element: <DetalleViajeView /> },
           { path: '/mi-cuenta/viajes/:id/itinerario', element: <ItinerarioView /> },
           { path: '/mi-cuenta/notificaciones', element: <NotificacionesView /> },
+          { path: '/mi-cuenta/recomendaciones', element: <RecomendacionesView /> },
         ],
       },
     ],
@@ -113,6 +120,16 @@ export const router = createBrowserRouter([
             path: '/admin/reportes',
             element: <RutaAdmin />,
             children: [{ index: true, element: <ReportesView /> }],
+          },
+          {
+            path: '/admin/asistente-ia',
+            element: <RutaAdmin />,
+            children: [{ index: true, element: <AsistenteIAAdminView /> }],
+          },
+          {
+            path: '/admin/recomendaciones',
+            element: <RutaAdmin />,
+            children: [{ index: true, element: <RecomendacionesAdminView /> }],
           },
           { path: '/admin/clientes', element: <ClientesAdminView /> },
           { path: '/admin/clientes/:id', element: <FichaClienteAdminView /> },

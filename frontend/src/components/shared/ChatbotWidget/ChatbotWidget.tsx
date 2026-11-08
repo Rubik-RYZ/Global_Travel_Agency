@@ -10,6 +10,7 @@ import {
   IconoCerrar,
   IconoFlechaIzquierda,
 } from '@/components/ui/Iconos'
+import { useAuthStore } from '@/store/authStore'
 import type { ConversacionChat, MensajeChat } from '@/types/ia.types'
 
 const CLAVE_ALMACEN = 'illimani-chat'
@@ -90,11 +91,39 @@ function guardarEstado(estado: EstadoChat): void {
   }
 }
 
+/** Conserva los chats locales que aún no tienen conversación en el servidor. */
+function fusionarHistorial(
+  previo: EstadoChat,
+  servidor: ConversacionChat[],
+): EstadoChat {
+  const locales = previo.conversaciones.filter(
+    (conversacion) =>
+      !conversacion.servidorId &&
+      conversacion.mensajes.some((mensaje) => mensaje.emisor === 'usuario'),
+  )
+  const conversaciones = [...servidor, ...locales]
+
+  if (conversaciones.length === 0) {
+    const nueva = crearConversacion()
+    return { conversaciones: [nueva], activaId: nueva.id }
+  }
+
+  const activaId = conversaciones.some(
+    (conversacion) => conversacion.id === previo.activaId,
+  )
+    ? previo.activaId
+    : conversaciones[0].id
+
+  return { conversaciones, activaId }
+}
+
 export function ChatbotWidget() {
+  const usuario = useAuthStore((s) => s.usuario)
   const [abierto, setAbierto] = useState(false)
   const [verHistorial, setVerHistorial] = useState(false)
   const [estado, setEstado] = useState<EstadoChat>(leerEstado)
   const [enviandoEn, setEnviandoEn] = useState<string | null>(null)
+  const historialCargado = useRef<number | null>(null)
   const finMensajes = useRef<HTMLDivElement>(null)
 
   const activa =
@@ -105,6 +134,33 @@ export function ChatbotWidget() {
   useEffect(() => {
     guardarEstado(estado)
   }, [estado])
+
+  useEffect(() => {
+    const usuarioId = usuario?.id ?? null
+    if (!usuarioId) {
+      historialCargado.current = null
+      return
+    }
+    if (historialCargado.current === usuarioId) return
+
+    historialCargado.current = usuarioId
+    let cancelado = false
+
+    iaApi
+      .historial()
+      .then((servidor) => {
+        if (!cancelado) {
+          setEstado((previo) => fusionarHistorial(previo, servidor))
+        }
+      })
+      .catch(() => {
+        historialCargado.current = null
+      })
+
+    return () => {
+      cancelado = true
+    }
+  }, [usuario?.id])
 
   useEffect(() => {
     if (!abierto) return
@@ -165,6 +221,17 @@ export function ChatbotWidget() {
     })
   }
 
+  const vincularServidor = (conversacionLocalId: string, servidorId: string) => {
+    setEstado((previo) => ({
+      ...previo,
+      conversaciones: previo.conversaciones.map((conversacion) =>
+        conversacion.id === conversacionLocalId
+          ? { ...conversacion, servidorId, persistida: true }
+          : conversacion,
+      ),
+    }))
+  }
+
   const enviarMensaje = async (texto: string) => {
     const conversacionId = activa.id
     const ahora = new Date().toISOString()
@@ -173,7 +240,13 @@ export function ChatbotWidget() {
     setEnviandoEn(conversacionId)
 
     try {
-      const { respuesta } = await iaApi.chat(texto)
+      const { respuesta, conversacion_id } = await iaApi.chat(
+        texto,
+        activa.servidorId,
+      )
+      if (conversacion_id) {
+        vincularServidor(conversacionId, conversacion_id)
+      }
       agregarMensaje(crearMensaje('agente', respuesta), conversacionId)
     } catch {
       agregarMensaje(

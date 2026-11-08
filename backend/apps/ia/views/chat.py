@@ -19,5 +19,6 @@ class ChatView(APIView):
         resultado = procesar_mensaje(
             request.user,
             entrada.validated_data["mensaje"],
+            entrada.validated_data.get("conversacion_id"),
         )
         return Response(RespuestaChatSerializer(resultado).data)

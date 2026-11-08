@@ -102,13 +102,13 @@ Formato de cada línea:
 
 ### CU10 · Asistente Conversacional
 
-40. Diseña tu viaje (asistente)         →  DiseñaTuViajeView.tsx            →  /diseña-tu-viaje
-41. Panel · Entrenamiento del asistente →  AsistenteIAAdminView.tsx         →  /admin/asistente-ia
+40. Diseña tu viaje (asistente)         →  DisenaTuViajeView.tsx            →  /diseña-tu-viaje          ✅ done (datos reales + acciones por rol)
+41. Panel · Entrenamiento del asistente →  AsistenteIAAdminView.tsx         →  /admin/asistente-ia       ✅ done (intenciones + frases + reentrenamiento)
 
 ### CU11 · Recomendaciones IA
 
-42. Mi viaje · Pensado para ti          →  RecomendacionesView.tsx          →  /mi-cuenta/recomendaciones
-43. Panel · Calidad de recomendaciones  →  RecomendacionesAdminView.tsx     →  /admin/recomendaciones
+42. Mi viaje · Pensado para ti          →  RecomendacionesView.tsx          →  /mi-cuenta/recomendaciones ✅ done (content-based + aceptación)
+43. Panel · Calidad de recomendaciones  →  RecomendacionesAdminView.tsx     →  /admin/recomendaciones    ✅ done (KPIs + tablas + actividad)
 
 ### CU12 · Reportes
 
