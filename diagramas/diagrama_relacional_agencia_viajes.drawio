@@ -1,0 +1,1263 @@
+<mxfile host="app.diagrams.net">
+  <diagram id="relacional" name="Modelo Relacional">
+    <mxGraphModel grid="0" page="0" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" pageScale="1" pageWidth="2200" pageHeight="2100" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="title" value="&lt;b&gt;Modelo Relacional — Sistema Web Inteligente para Agencia de Viajes&lt;/b&gt;&lt;br&gt;&lt;span style=&quot;font-size:12px;font-weight:normal;color:#555;&quot;&gt;Base de datos actual (PostgreSQL) · 27 tablas&lt;/span&gt;" style="text;html=1;align=left;verticalAlign=middle;fontSize=22;fontColor=#1F4E79;" parent="1" vertex="1">
+          <mxGeometry as="geometry" x="40" y="20" width="1700" height="52" />
+        </mxCell>
+        <mxCell id="legend" value="&lt;b&gt;PK&lt;/b&gt; Primary Key &amp;nbsp;·&amp;nbsp; &lt;b&gt;FK&lt;/b&gt; Foreign Key &amp;nbsp;·&amp;nbsp; &lt;b&gt;UQ&lt;/b&gt; Unique (simple o compuesta)&lt;br&gt;Relaciones: &lt;b&gt;1:M&lt;/b&gt; uno a muchos &amp;nbsp;·&amp;nbsp; &lt;b&gt;1:1&lt;/b&gt; uno a uno&lt;br&gt;&lt;span style=&quot;color:#666;&quot;&gt;Basado en el esquema real de la BD. No se dibuja PAGO–TIPO_CAMBIO porque no existe FK en la BD actual.&lt;/span&gt;" style="text;html=1;align=left;verticalAlign=top;fontSize=11;fontColor=#333;" parent="1" vertex="1">
+          <mxGeometry as="geometry" x="40" y="80" width="1700" height="66" />
+        </mxCell>
+        <mxCell id="group_40" value="SEGURIDAD Y CLIENTES" style="text;html=1;align=left;verticalAlign=bottom;fontSize=12;fontStyle=1;fontColor=#1F4E79;" parent="1" vertex="1">
+          <mxGeometry as="geometry" x="40" y="165" width="300" height="22" />
+        </mxCell>
+        <mxCell id="group_400" value="CATÁLOGO" style="text;html=1;align=left;verticalAlign=bottom;fontSize=12;fontStyle=1;fontColor=#1F4E79;" parent="1" vertex="1">
+          <mxGeometry as="geometry" x="400" y="165" width="300" height="22" />
+        </mxCell>
+        <mxCell id="group_760" value="CATÁLOGO Y RESERVAS" style="text;html=1;align=left;verticalAlign=bottom;fontSize=12;fontStyle=1;fontColor=#1F4E79;" parent="1" vertex="1">
+          <mxGeometry as="geometry" x="760" y="165" width="300" height="22" />
+        </mxCell>
+        <mxCell id="group_1120" value="RESERVAS, PAGOS E ITINERARIOS" style="text;html=1;align=left;verticalAlign=bottom;fontSize=12;fontStyle=1;fontColor=#1F4E79;" parent="1" vertex="1">
+          <mxGeometry as="geometry" x="1120" y="165" width="300" height="22" />
+        </mxCell>
+        <mxCell id="group_1480" value="IA Y NOTIFICACIONES" style="text;html=1;align=left;verticalAlign=bottom;fontSize=12;fontStyle=1;fontColor=#1F4E79;" parent="1" vertex="1">
+          <mxGeometry as="geometry" x="1480" y="165" width="300" height="22" />
+        </mxCell>
+        <mxCell id="fk_aeropuertos_destino_id_81db1114_fk_destinos_id" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=none;strokeColor=#1E88E5;strokeWidth=1;exitX=1;exitY=0.5;entryX=1;entryY=0.5;" parent="1" edge="1" source="h_destinos" target="h_aeropuertos">
+          <mxGeometry as="geometry" relative="1">
+            <Array as="points">
+              <mxPoint x="720" y="504.0" />
+              <mxPoint x="720" y="1156.0" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="fk_auditoria_usuario_id_5e766294_fk_usuarios_id" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=none;strokeColor=#1E88E5;strokeWidth=1;exitX=0.5;exitY=1;entryX=0.5;entryY=0;" parent="1" edge="1" source="h_usuarios" target="h_auditoria">
+          <mxGeometry as="geometry" relative="1" />
+        </mxCell>
+        <mxCell id="fk_cliente_preferencias_cliente_id_187bff48_fk_clientes_id" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=none;strokeColor=#1E88E5;strokeWidth=1;exitX=0.5;exitY=1;entryX=0.5;entryY=0;" parent="1" edge="1" source="h_clientes" target="h_cliente_preferencias">
+          <mxGeometry as="geometry" relative="1" />
+        </mxCell>
+        <mxCell id="fk_clientes_usuario_id_07f7990e_fk_usuarios_id" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=none;strokeColor=#1E88E5;strokeWidth=1;exitX=1;exitY=0.5;entryX=1;entryY=0.5;" parent="1" edge="1" source="h_usuarios" target="h_clientes">
+          <mxGeometry as="geometry" relative="1">
+            <Array as="points">
+              <mxPoint x="368" y="464.0" />
+              <mxPoint x="368" y="1116.0" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="fk_conversaciones_usuario_id_ad9321ef_fk_usuarios_id" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=none;strokeColor=#1E88E5;strokeWidth=1;exitX=1;exitY=0.5;entryX=0;entryY=0.5;" parent="1" edge="1" source="h_usuarios" target="h_conversaciones">
+          <mxGeometry as="geometry" relative="1">
+            <Array as="points">
+              <mxPoint x="362" y="464.0" />
+              <mxPoint x="362" y="1988" />
+              <mxPoint x="1458" y="1988" />
+              <mxPoint x="1458" y="1220.0" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="fk_frases_entrenamiento_intencion_id_20d432ba_fk_intenciones_id" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=none;strokeColor=#1E88E5;strokeWidth=1;exitX=0.5;exitY=1;entryX=0.5;entryY=0;" parent="1" edge="1" source="h_intenciones" target="h_frases_entrenamiento">
+          <mxGeometry as="geometry" relative="1" />
+        </mxCell>
+        <mxCell id="fk_habitaciones_hotel_id_ecf1ac8f_fk_hoteles_id" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=none;strokeColor=#1E88E5;strokeWidth=1;exitX=0.5;exitY=1;entryX=0.5;entryY=0;" parent="1" edge="1" source="h_hoteles" target="h_habitaciones">
+          <mxGeometry as="geometry" relative="1" />
+        </mxCell>
+        <mxCell id="fk_hoteles_destino_id_90d64807_fk_destinos_id" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=none;strokeColor=#1E88E5;strokeWidth=1;exitX=1;exitY=0.5;entryX=0;entryY=0.5;" parent="1" edge="1" source="h_destinos" target="h_hoteles">
+          <mxGeometry as="geometry" relative="1" />
+        </mxCell>
+        <mxCell id="fk_hoteles_proveedor_id_1a390c8b_fk_proveedores_id" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=none;strokeColor=#1E88E5;strokeWidth=1;exitX=1;exitY=0.5;entryX=0;entryY=0.5;" parent="1" edge="1" source="h_proveedores" target="h_hoteles">
+          <mxGeometry as="geometry" relative="1" />
+        </mxCell>
+        <mxCell id="fk_itinerario_dias_destino_id_bc602c7c_fk_destinos_id" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=none;strokeColor=#1E88E5;strokeWidth=1;exitX=0.5;exitY=1;entryX=0.5;entryY=0;" parent="1" edge="1" source="h_destinos" target="h_itinerario_dias">
+          <mxGeometry as="geometry" relative="1" />
+        </mxCell>
+        <mxCell id="fk_itinerario_items_itinerario_id_443fbd60_fk_itinerarios_id" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=none;strokeColor=#1E88E5;strokeWidth=1;exitX=0.5;exitY=1;entryX=0.5;entryY=0;" parent="1" edge="1" source="h_itinerarios" target="h_itinerario_items">
+          <mxGeometry as="geometry" relative="1" />
+        </mxCell>
+        <mxCell id="fk_itinerarios_reserva_id_15f1b552_fk_reservas_id" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=none;strokeColor=#1E88E5;strokeWidth=1;exitX=1;exitY=0.5;entryX=0;entryY=0.5;" parent="1" edge="1" source="h_reservas" target="h_itinerarios">
+          <mxGeometry as="geometry" relative="1" />
+        </mxCell>
+        <mxCell id="fk_mensajes_intencion_id_97ac816a_fk_intenciones_id" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=none;strokeColor=#1E88E5;strokeWidth=1;exitX=1;exitY=0.5;entryX=1;entryY=0.5;" parent="1" edge="1" source="h_intenciones" target="h_mensajes">
+          <mxGeometry as="geometry" relative="1">
+            <Array as="points">
+              <mxPoint x="1816" y="524.0" />
+              <mxPoint x="1816" y="1504.0" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="fk_mensajes_conversacion_id_8ecb8683_fk_conversaciones_id" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=none;strokeColor=#1E88E5;strokeWidth=1;exitX=0.5;exitY=1;entryX=0.5;entryY=0;" parent="1" edge="1" source="h_conversaciones" target="h_mensajes">
+          <mxGeometry as="geometry" relative="1" />
+        </mxCell>
+        <mxCell id="fk_mensajes_modelo_id_666bd88c_fk_modelos_ia_id" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=none;strokeColor=#1E88E5;strokeWidth=1;exitX=1;exitY=0.5;entryX=1;entryY=0.5;" parent="1" edge="1" source="h_modelos_ia" target="h_mensajes">
+          <mxGeometry as="geometry" relative="1">
+            <Array as="points">
+              <mxPoint x="1824" y="960.0" />
+              <mxPoint x="1824" y="1504.0" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="fk_notificaciones_usuario_id_a75f5971_fk_usuarios_id" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=none;strokeColor=#1E88E5;strokeWidth=1;exitX=1;exitY=0.5;entryX=0;entryY=0.5;" parent="1" edge="1" source="h_usuarios" target="h_notificaciones">
+          <mxGeometry as="geometry" relative="1">
+            <Array as="points">
+              <mxPoint x="370" y="464.0" />
+              <mxPoint x="370" y="1998" />
+              <mxPoint x="1450" y="1998" />
+              <mxPoint x="1450" y="300.0" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="fk_notificaciones_reserva_id_a139e2bc_fk_reservas_id" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=none;strokeColor=#1E88E5;strokeWidth=1;exitX=1;exitY=0.5;entryX=0;entryY=0.5;" parent="1" edge="1" source="h_reservas" target="h_notificaciones">
+          <mxGeometry as="geometry" relative="1">
+            <Array as="points">
+              <mxPoint x="1098" y="1532.0" />
+              <mxPoint x="1098" y="2008" />
+              <mxPoint x="1442" y="2008" />
+              <mxPoint x="1442" y="300.0" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="fk_pagos_reserva_id_0aa8e127_fk_reservas_id" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=none;strokeColor=#1E88E5;strokeWidth=1;exitX=1;exitY=0.5;entryX=0;entryY=0.5;" parent="1" edge="1" source="h_reservas" target="h_pagos">
+          <mxGeometry as="geometry" relative="1" />
+        </mxCell>
+        <mxCell id="fk_paquete_salidas_vuelo_vuelta_id_745d7434_fk_vuelos_id" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=none;strokeColor=#1E88E5;strokeWidth=1;exitX=1;exitY=0.3333333333333333;entryX=0;entryY=0.3333333333333333;" parent="1" edge="1" source="h_vuelos" target="h_paquete_salidas">
+          <mxGeometry as="geometry" relative="1" />
+        </mxCell>
+        <mxCell id="fk_paquete_salidas_vuelo_ida_id_c723f5ea_fk_vuelos_id" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=none;strokeColor=#1E88E5;strokeWidth=1;exitX=1;exitY=0.6666666666666666;entryX=0;entryY=0.6666666666666666;" parent="1" edge="1" source="h_vuelos" target="h_paquete_salidas">
+          <mxGeometry as="geometry" relative="1" />
+        </mxCell>
+        <mxCell id="fk_paquete_salidas_paquete_id_3ac761b2_fk_paquetes_id" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=none;strokeColor=#1E88E5;strokeWidth=1;exitX=0.5;exitY=1;entryX=0.5;entryY=0;" parent="1" edge="1" source="h_paquetes" target="h_paquete_salidas">
+          <mxGeometry as="geometry" relative="1" />
+        </mxCell>
+        <mxCell id="fk_paquetes_destino_id_4f8a5067_fk_destinos_id" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=none;strokeColor=#1E88E5;strokeWidth=1;exitX=1;exitY=0.5;entryX=0;entryY=0.5;" parent="1" edge="1" source="h_destinos" target="h_paquetes">
+          <mxGeometry as="geometry" relative="1" />
+        </mxCell>
+        <mxCell id="fk_paquetes_hotel_id_b284ac4c_fk_hoteles_id" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=none;strokeColor=#1E88E5;strokeWidth=1;exitX=1;exitY=0.5;entryX=1;entryY=0.5;" parent="1" edge="1" source="h_hoteles" target="h_paquetes">
+          <mxGeometry as="geometry" relative="1">
+            <Array as="points">
+              <mxPoint x="1080" y="336.0" />
+              <mxPoint x="1080" y="904.0" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="fk_recomendaciones_modelo_id_11fabb07_fk_modelos_ia_id" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=none;strokeColor=#1E88E5;strokeWidth=1;exitX=1;exitY=0.5;entryX=1;entryY=0.5;" parent="1" edge="1" source="h_modelos_ia" target="h_recomendaciones">
+          <mxGeometry as="geometry" relative="1">
+            <Array as="points">
+              <mxPoint x="1808" y="960.0" />
+              <mxPoint x="1808" y="1812.0" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="fk_recomendaciones_cliente_id_a2d32f18_fk_clientes_id" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=none;strokeColor=#1E88E5;strokeWidth=1;exitX=1;exitY=0.5;entryX=0;entryY=0.5;" parent="1" edge="1" source="h_clientes" target="h_recomendaciones">
+          <mxGeometry as="geometry" relative="1">
+            <Array as="points">
+              <mxPoint x="362" y="1116.0" />
+              <mxPoint x="362" y="2018" />
+              <mxPoint x="1458" y="2018" />
+              <mxPoint x="1458" y="1812.0" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="fk_recomendaciones_paquete_id_228cd3a6_fk_paquetes_id" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=none;strokeColor=#1E88E5;strokeWidth=1;exitX=1;exitY=0.5;entryX=0;entryY=0.5;" parent="1" edge="1" source="h_paquetes" target="h_recomendaciones">
+          <mxGeometry as="geometry" relative="1">
+            <Array as="points">
+              <mxPoint x="1090" y="904.0" />
+              <mxPoint x="1090" y="2028" />
+              <mxPoint x="1450" y="2028" />
+              <mxPoint x="1450" y="1812.0" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="fk_reserva_pasajeros_reserva_id_e2da6313_fk_reservas_id" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=none;strokeColor=#1E88E5;strokeWidth=1;exitX=1;exitY=0.5;entryX=0;entryY=0.5;" parent="1" edge="1" source="h_reservas" target="h_reserva_pasajeros">
+          <mxGeometry as="geometry" relative="1" />
+        </mxCell>
+        <mxCell id="fk_reservas_salida_id_05762a88_fk_paquete_salidas_id" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=none;strokeColor=#1E88E5;strokeWidth=1;exitX=0.5;exitY=1;entryX=0.5;entryY=0;" parent="1" edge="1" source="h_paquete_salidas" target="h_reservas">
+          <mxGeometry as="geometry" relative="1" />
+        </mxCell>
+        <mxCell id="fk_reservas_cliente_id_ad6386cc_fk_clientes_id" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=none;strokeColor=#1E88E5;strokeWidth=1;exitX=1;exitY=0.5;entryX=0;entryY=0.5;" parent="1" edge="1" source="h_clientes" target="h_reservas">
+          <mxGeometry as="geometry" relative="1">
+            <Array as="points">
+              <mxPoint x="378" y="1116.0" />
+              <mxPoint x="378" y="2038" />
+              <mxPoint x="722" y="2038" />
+              <mxPoint x="722" y="1532.0" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="fk_reservas_registrado_por_id_1b8e8013_fk_usuarios_id" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=none;strokeColor=#1E88E5;strokeWidth=1;exitX=1;exitY=0.5;entryX=0;entryY=0.5;" parent="1" edge="1" source="h_usuarios" target="h_reservas">
+          <mxGeometry as="geometry" relative="1">
+            <Array as="points">
+              <mxPoint x="362" y="464.0" />
+              <mxPoint x="362" y="2048" />
+              <mxPoint x="738" y="2048" />
+              <mxPoint x="738" y="1532.0" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="fk_usuarios_rol_id_fa223853_fk_roles_id" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=none;strokeColor=#1E88E5;strokeWidth=1;exitX=0.5;exitY=1;entryX=0.5;entryY=0;" parent="1" edge="1" source="h_roles" target="h_usuarios">
+          <mxGeometry as="geometry" relative="1" />
+        </mxCell>
+        <mxCell id="fk_vuelos_destino_36680175_fk_aeropuertos_codigo_iata" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=none;strokeColor=#1E88E5;strokeWidth=1;exitX=1;exitY=0.5;entryX=1;entryY=0.5;" parent="1" edge="1" source="h_aeropuertos" target="h_vuelos">
+          <mxGeometry as="geometry" relative="1">
+            <Array as="points">
+              <mxPoint x="736" y="1156.0" />
+              <mxPoint x="736" y="1808.0" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="fk_vuelos_origen_6e462295_fk_aeropuertos_codigo_iata" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=none;strokeColor=#1E88E5;strokeWidth=1;exitX=1;exitY=0.5;entryX=1;entryY=0.5;" parent="1" edge="1" source="h_aeropuertos" target="h_vuelos">
+          <mxGeometry as="geometry" relative="1">
+            <Array as="points">
+              <mxPoint x="744" y="1156.0" />
+              <mxPoint x="744" y="1808.0" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="fk_vuelos_proveedor_id_073e26be_fk_proveedores_id" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=none;strokeColor=#1E88E5;strokeWidth=1;exitX=0.5;exitY=1;entryX=0.5;entryY=0;" parent="1" edge="1" source="h_proveedores" target="h_vuelos">
+          <mxGeometry as="geometry" relative="1" />
+        </mxCell>
+        <mxCell id="h_roles" value="ROLES" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#6FA8DC;strokeColor=#000000;fontColor=#FFFFFF;fontStyle=1;fontSize=13;align=center;verticalAlign=middle;" parent="1" vertex="1">
+          <mxGeometry as="geometry" x="40" y="200" width="300" height="32" />
+        </mxCell>
+        <mxCell id="r_roles_id" value="&lt;b&gt;&lt;u&gt;id&lt;/u&gt;&lt;/b&gt;  &lt;span style=&quot;color:#9E9E9E;&quot;&gt;·&lt;/span&gt;  &lt;span style=&quot;color:#1565C0;font-weight:bold;&quot;&gt;PK&lt;/span&gt;" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#BFBFBF;fontColor=#000000;fontSize=10.5;align=left;verticalAlign=middle;spacingLeft=6;" parent="1" vertex="1">
+          <mxGeometry as="geometry" x="40" y="232" width="300" height="24" />
+        </mxCell>
+        <mxCell id="r_roles_nombre" value="nombre  &lt;span style=&quot;color:#9E9E9E;&quot;&gt;·&lt;/span&gt;  &lt;span style=&quot;color:#6A1B9A;font-weight:bold;&quot;&gt;UQ&lt;/span&gt;" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#F5F8FC;strokeColor=#BFBFBF;fontColor=#000000;fontSize=10.5;align=left;verticalAlign=middle;spacingLeft=6;" parent="1" vertex="1">
+          <mxGeometry as="geometry" x="40" y="256" width="300" height="24" />
+        </mxCell>
+        <mxCell id="frame_roles" value="" style="rounded=0;whiteSpace=wrap;html=1;fillColor=none;strokeColor=#000000;strokeWidth=1.5;pointerEvents=0;" parent="1" vertex="1">
+          <mxGeometry as="geometry" x="40" y="200" width="300" height="80" />
+        </mxCell>
+        <mxCell id="h_usuarios" value="USUARIOS" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#6FA8DC;strokeColor=#000000;fontColor=#FFFFFF;fontStyle=1;fontSize=13;align=center;verticalAlign=middle;" parent="1" vertex="1">
+          <mxGeometry as="geometry" x="40" y="340" width="300" height="32" />
+        </mxCell>
+        <mxCell id="r_usuarios_id" value="&lt;b&gt;&lt;u&gt;id&lt;/u&gt;&lt;/b&gt;  &lt;span style=&quot;color:#9E9E9E;&quot;&gt;·&lt;/span&gt;  &lt;span style=&quot;color:#1565C0;font-weight:bold;&quot;&gt;PK&lt;/span&gt;" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#BFBFBF;fontColor=#000000;fontSize=10.5;align=left;verticalAlign=middle;spacingLeft=6;" parent="1" vertex="1">
+          <mxGeometry as="geometry" x="40" y="372" width="300" height="24" />
+        </mxCell>
+        <mxCell id="r_usuarios_rol_id" value="rol_id  &lt;span style=&quot;color:#9E9E9E;&quot;&gt;·&lt;/span&gt;  &lt;span style=&quot;color:#1565C0;font-weight:bold;&quot;&gt;FK&lt;/span&gt;" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#F5F8FC;strokeColor=#BFBFBF;fontColor=#000000;fontSize=10.5;align=left;verticalAlign=middle;spacingLeft=6;" parent="1" vertex="1">
+          <mxGeometry as="geometry" x="40" y="396" width="300" height="24" />
+        </mxCell>
+        <mxCell id="r_usuarios_email" value="email  &lt;span style=&quot;color:#9E9E9E;&quot;&gt;·&lt;/span&gt;  &lt;span style=&quot;color:#6A1B9A;font-weight:bold;&quot;&gt;UQ&lt;/span&gt;" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#BFBFBF;fontColor=#000000;fontSize=10.5;align=left;verticalAlign=middle;spacingLeft=6;" parent="1" vertex="1">
+          <mxGeometry as="geometry" x="40" y="420" width="300" height="24" />
+        </mxCell>
+        <mxCell id="r_usuarios_activo" value="activo" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#F5F8FC;strokeColor=#BFBFBF;fontColor=#000000;fontSize=10.5;align=left;verticalAlign=middle;spacingLeft=6;" parent="1" vertex="1">
+          <mxGeometry as="geometry" x="40" y="444" width="300" height="24" />
+        </mxCell>
+        <mxCell id="r_usuarios_creado_en" value="creado_en" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#BFBFBF;fontColor=#000000;fontSize=10.5;align=left;verticalAlign=middle;spacingLeft=6;" parent="1" vertex="1">
+          <mxGeometry as="geometry" x="40" y="468" width="300" height="24" />
+        </mxCell>
+        <mxCell id="r_usuarios_ultimo_acceso" value="ultimo_acceso" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#F5F8FC;strokeColor=#BFBFBF;fontColor=#000000;fontSize=10.5;align=left;verticalAlign=middle;spacingLeft=6;" parent="1" vertex="1">
+          <mxGeometry as="geometry" x="40" y="492" width="300" height="24" />
+        </mxCell>
+        <mxCell id="r_usuarios_password_hash" value="password_hash" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#BFBFBF;fontColor=#000000;fontSize=10.5;align=left;verticalAlign=middle;spacingLeft=6;" parent="1" vertex="1">
+          <mxGeometry as="geometry" x="40" y="516" width="300" height="24" />
+        </mxCell>
+        <mxCell id="r_usuarios_foto_public_id" value="foto_public_id" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#F5F8FC;strokeColor=#BFBFBF;fontColor=#000000;fontSize=10.5;align=left;verticalAlign=middle;spacingLeft=6;" parent="1" vertex="1">
+          <mxGeometry as="geometry" x="40" y="540" width="300" height="24" />
+        </mxCell>
+        <mxCell id="r_usuarios_foto_url" value="foto_url" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#BFBFBF;fontColor=#000000;fontSize=10.5;align=left;verticalAlign=middle;spacingLeft=6;" parent="1" vertex="1">
+          <mxGeometry as="geometry" x="40" y="564" width="300" height="24" />
+        </mxCell>
+        <mxCell id="frame_usuarios" value="" style="rounded=0;whiteSpace=wrap;html=1;fillColor=none;strokeColor=#000000;strokeWidth=1.5;pointerEvents=0;" parent="1" vertex="1">
+          <mxGeometry as="geometry" x="40" y="340" width="300" height="248" />
+        </mxCell>
+        <mxCell id="h_auditoria" value="AUDITORIA" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#6FA8DC;strokeColor=#000000;fontColor=#FFFFFF;fontStyle=1;fontSize=13;align=center;verticalAlign=middle;" parent="1" vertex="1">
+          <mxGeometry as="geometry" x="40" y="648" width="300" height="32" />
+        </mxCell>
+        <mxCell id="r_auditoria_id" value="&lt;b&gt;&lt;u&gt;id&lt;/u&gt;&lt;/b&gt;  &lt;span style=&quot;color:#9E9E9E;&quot;&gt;·&lt;/span&gt;  &lt;span style=&quot;color:#1565C0;font-weight:bold;&quot;&gt;PK&lt;/span&gt;" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#BFBFBF;fontColor=#000000;fontSize=10.5;align=left;verticalAlign=middle;spacingLeft=6;" parent="1" vertex="1">
+          <mxGeometry as="geometry" x="40" y="680" width="300" height="24" />
+        </mxCell>
+        <mxCell id="r_auditoria_usuario_id" value="usuario_id  &lt;span style=&quot;color:#9E9E9E;&quot;&gt;·&lt;/span&gt;  &lt;span style=&quot;color:#1565C0;font-weight:bold;&quot;&gt;FK&lt;/span&gt;" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#F5F8FC;strokeColor=#BFBFBF;fontColor=#000000;fontSize=10.5;align=left;verticalAlign=middle;spacingLeft=6;" parent="1" vertex="1">
+          <mxGeometry as="geometry" x="40" y="704" width="300" height="24" />
+        </mxCell>
+        <mxCell id="r_auditoria_accion" value="accion" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#BFBFBF;fontColor=#000000;fontSize=10.5;align=left;verticalAlign=middle;spacingLeft=6;" parent="1" vertex="1">
+          <mxGeometry as="geometry" x="40" y="728" width="300" height="24" />
+        </mxCell>
+        <mxCell id="r_auditoria_entidad" value="entidad" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#F5F8FC;strokeColor=#BFBFBF;fontColor=#000000;fontSize=10.5;align=left;verticalAlign=middle;spacingLeft=6;" parent="1" vertex="1">
+          <mxGeometry as="geometry" x="40" y="752" width="300" height="24" />
+        </mxCell>
+        <mxCell id="r_auditoria_entidad_id" value="entidad_id" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#BFBFBF;fontColor=#000000;fontSize=10.5;align=left;verticalAlign=middle;spacingLeft=6;" parent="1" vertex="1">
+          <mxGeometry as="geometry" x="40" y="776" width="300" height="24" />
+        </mxCell>
+        <mxCell id="r_auditoria_detalle" value="detalle" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#F5F8FC;strokeColor=#BFBFBF;fontColor=#000000;fontSize=10.5;align=left;verticalAlign=middle;spacingLeft=6;" parent="1" vertex="1">
+          <mxGeometry as="geometry" x="40" y="800" width="300" height="24" />
+        </mxCell>
+        <mxCell id="r_auditoria_ip" value="ip" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#BFBFBF;fontColor=#000000;fontSize=10.5;align=left;verticalAlign=middle;spacingLeft=6;" parent="1" vertex="1">
+          <mxGeometry as="geometry" x="40" y="824" width="300" height="24" />
+        </mxCell>
+        <mxCell id="r_auditoria_creado_en" value="creado_en" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#F5F8FC;strokeColor=#BFBFBF;fontColor=#000000;fontSize=10.5;align=left;verticalAlign=middle;spacingLeft=6;" parent="1" vertex="1">
+          <mxGeometry as="geometry" x="40" y="848" width="300" height="24" />
+        </mxCell>
+        <mxCell id="frame_auditoria" value="" style="rounded=0;whiteSpace=wrap;html=1;fillColor=none;strokeColor=#000000;strokeWidth=1.5;pointerEvents=0;" parent="1" vertex="1">
+          <mxGeometry as="geometry" x="40" y="648" width="300" height="224" />
+        </mxCell>
+        <mxCell id="h_clientes" value="CLIENTES" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#6FA8DC;strokeColor=#000000;fontColor=#FFFFFF;fontStyle=1;fontSize=13;align=center;verticalAlign=middle;" parent="1" vertex="1">
+          <mxGeometry as="geometry" x="40" y="932" width="300" height="32" />
+        </mxCell>
+        <mxCell id="r_clientes_id" value="&lt;b&gt;&lt;u&gt;id&lt;/u&gt;&lt;/b&gt;  &lt;span style=&quot;color:#9E9E9E;&quot;&gt;·&lt;/span&gt;  &lt;span style=&quot;color:#1565C0;font-weight:bold;&quot;&gt;PK&lt;/span&gt;" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#BFBFBF;fontColor=#000000;fontSize=10.5;align=left;verticalAlign=middle;spacingLeft=6;" parent="1" vertex="1">
+          <mxGeometry as="geometry" x="40" y="964" width="300" height="24" />
+        </mxCell>
+        <mxCell id="r_clientes_usuario_id" value="usuario_id  &lt;span style=&quot;color:#9E9E9E;&quot;&gt;·&lt;/span&gt;  &lt;span style=&quot;color:#1565C0;font-weight:bold;&quot;&gt;FK&lt;/span&gt; &lt;span style=&quot;color:#6A1B9A;font-weight:bold;&quot;&gt;UQ&lt;/span&gt;" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#F5F8FC;strokeColor=#BFBFBF;fontColor=#000000;fontSize=10.5;align=left;verticalAlign=middle;spacingLeft=6;" parent="1" vertex="1">
+          <mxGeometry as="geometry" x="40" y="988" width="300" height="24" />
+        </mxCell>
+        <mxCell id="r_clientes_nombres" value="nombres" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#BFBFBF;fontColor=#000000;fontSize=10.5;align=left;verticalAlign=middle;spacingLeft=6;" parent="1" vertex="1">
+          <mxGeometry as="geometry" x="40" y="1012" width="300" height="24" />
+        </mxCell>
+        <mxCell id="r_clientes_apellidos" value="apellidos" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#F5F8FC;strokeColor=#BFBFBF;fontColor=#000000;fontSize=10.5;align=left;verticalAlign=middle;spacingLeft=6;" parent="1" vertex="1">
+          <mxGeometry as="geometry" x="40" y="1036" width="300" height="24" />
+        </mxCell>
+        <mxCell id="r_clientes_documento_tipo" value="documento_tipo" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#BFBFBF;fontColor=#000000;fontSize=10.5;align=left;verticalAlign=middle;spacingLeft=6;" parent="1" vertex="1">
+          <mxGeometry as="geometry" x="40" y="1060" width="300" height="24" />
+        </mxCell>
+        <mxCell id="r_clientes_documento_numero" value="documento_numero" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#F5F8FC;strokeColor=#BFBFBF;fontColor=#000000;fontSize=10.5;align=left;verticalAlign=middle;spacingLeft=6;" parent="1" vertex="1">
+          <mxGeometry as="geometry" x="40" y="1084" width="300" height="24" />
+        </mxCell>
+        <mxCell id="r_clientes_telefono" value="telefono" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#BFBFBF;fontColor=#000000;fontSize=10.5;align=left;verticalAlign=middle;spacingLeft=6;" parent="1" vertex="1">
+          <mxGeometry as="geometry" x="40" y="1108" width="300" height="24" />
+        </mxCell>
+        <mxCell id="r_clientes_fecha_nacimiento" value="fecha_nacimiento" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#F5F8FC;strokeColor=#BFBFBF;fontColor=#000000;fontSize=10.5;align=left;verticalAlign=middle;spacingLeft=6;" parent="1" vertex="1">
+          <mxGeometry as="geometry" x="40" y="1132" width="300" height="24" />
+        </mxCell>
+        <mxCell id="r_clientes_pais_origen" value="pais_origen" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#BFBFBF;fontColor=#000000;fontSize=10.5;align=left;verticalAlign=middle;spacingLeft=6;" parent="1" vertex="1">
+          <mxGeometry as="geometry" x="40" y="1156" width="300" height="24" />
+        </mxCell>
+        <mxCell id="r_clientes_creado_en" value="creado_en" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#F5F8FC;strokeColor=#BFBFBF;fontColor=#000000;fontSize=10.5;align=left;verticalAlign=middle;spacingLeft=6;" parent="1" vertex="1">
+          <mxGeometry as="geometry" x="40" y="1180" width="300" height="24" />
+        </mxCell>
+        <mxCell id="r_clientes_carnet_public_id" value="carnet_public_id" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#BFBFBF;fontColor=#000000;fontSize=10.5;align=left;verticalAlign=middle;spacingLeft=6;" parent="1" vertex="1">
+          <mxGeometry as="geometry" x="40" y="1204" width="300" height="24" />
+        </mxCell>
+        <mxCell id="r_clientes_carnet_url" value="carnet_url" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#F5F8FC;strokeColor=#BFBFBF;fontColor=#000000;fontSize=10.5;align=left;verticalAlign=middle;spacingLeft=6;" parent="1" vertex="1">
+          <mxGeometry as="geometry" x="40" y="1228" width="300" height="24" />
+        </mxCell>
+        <mxCell id="r_clientes_pasaporte_public_id" value="pasaporte_public_id" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#BFBFBF;fontColor=#000000;fontSize=10.5;align=left;verticalAlign=middle;spacingLeft=6;" parent="1" vertex="1">
+          <mxGeometry as="geometry" x="40" y="1252" width="300" height="24" />
+        </mxCell>
+        <mxCell id="r_clientes_pasaporte_url" value="pasaporte_url" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#F5F8FC;strokeColor=#BFBFBF;fontColor=#000000;fontSize=10.5;align=left;verticalAlign=middle;spacingLeft=6;" parent="1" vertex="1">
+          <mxGeometry as="geometry" x="40" y="1276" width="300" height="24" />
+        </mxCell>
+        <mxCell id="frame_clientes" value="" style="rounded=0;whiteSpace=wrap;html=1;fillColor=none;strokeColor=#000000;strokeWidth=1.5;pointerEvents=0;" parent="1" vertex="1">
+          <mxGeometry as="geometry" x="40" y="932" width="300" height="368" />
+        </mxCell>
+        <mxCell id="h_cliente_preferencias" value="CLIENTE_PREFERENCIAS" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#6FA8DC;strokeColor=#000000;fontColor=#FFFFFF;fontStyle=1;fontSize=13;align=center;verticalAlign=middle;" parent="1" vertex="1">
+          <mxGeometry as="geometry" x="40" y="1360" width="300" height="32" />
+        </mxCell>
+        <mxCell id="r_cliente_preferencias_cliente_id" value="&lt;b&gt;&lt;u&gt;cliente_id&lt;/u&gt;&lt;/b&gt;  &lt;span style=&quot;color:#9E9E9E;&quot;&gt;·&lt;/span&gt;  &lt;span style=&quot;color:#1565C0;font-weight:bold;&quot;&gt;PK&lt;/span&gt; &lt;span style=&quot;color:#1565C0;font-weight:bold;&quot;&gt;FK&lt;/span&gt;" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#BFBFBF;fontColor=#000000;fontSize=10.5;align=left;verticalAlign=middle;spacingLeft=6;" parent="1" vertex="1">
+          <mxGeometry as="geometry" x="40" y="1392" width="300" height="24" />
+        </mxCell>
+        <mxCell id="r_cliente_preferencias_presupuesto_max" value="presupuesto_max" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#F5F8FC;strokeColor=#BFBFBF;fontColor=#000000;fontSize=10.5;align=left;verticalAlign=middle;spacingLeft=6;" parent="1" vertex="1">
+          <mxGeometry as="geometry" x="40" y="1416" width="300" height="24" />
+        </mxCell>
+        <mxCell id="r_cliente_preferencias_moneda" value="moneda" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#BFBFBF;fontColor=#000000;fontSize=10.5;align=left;verticalAlign=middle;spacingLeft=6;" parent="1" vertex="1">
+          <mxGeometry as="geometry" x="40" y="1440" width="300" height="24" />
+        </mxCell>
+        <mxCell id="r_cliente_preferencias_intereses" value="intereses" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#F5F8FC;strokeColor=#BFBFBF;fontColor=#000000;fontSize=10.5;align=left;verticalAlign=middle;spacingLeft=6;" parent="1" vertex="1">
+          <mxGeometry as="geometry" x="40" y="1464" width="300" height="24" />
+        </mxCell>
+        <mxCell id="r_cliente_preferencias_actualizado_en" value="actualizado_en" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#BFBFBF;fontColor=#000000;fontSize=10.5;align=left;verticalAlign=middle;spacingLeft=6;" parent="1" vertex="1">
+          <mxGeometry as="geometry" x="40" y="1488" width="300" height="24" />
+        </mxCell>
+        <mxCell id="frame_cliente_preferencias" value="" style="rounded=0;whiteSpace=wrap;html=1;fillColor=none;strokeColor=#000000;strokeWidth=1.5;pointerEvents=0;" parent="1" vertex="1">
+          <mxGeometry as="geometry" x="40" y="1360" width="300" height="152" />
+        </mxCell>
+        <mxCell id="h_destinos" value="DESTINOS" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#6FA8DC;strokeColor=#000000;fontColor=#FFFFFF;fontStyle=1;fontSize=13;align=center;verticalAlign=middle;" parent="1" vertex="1">
+          <mxGeometry as="geometry" x="400" y="200" width="300" height="32" />
+        </mxCell>
+        <mxCell id="r_destinos_id" value="&lt;b&gt;&lt;u&gt;id&lt;/u&gt;&lt;/b&gt;  &lt;span style=&quot;color:#9E9E9E;&quot;&gt;·&lt;/span&gt;  &lt;span style=&quot;color:#1565C0;font-weight:bold;&quot;&gt;PK&lt;/span&gt;" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#BFBFBF;fontColor=#000000;fontSize=10.5;align=left;verticalAlign=middle;spacingLeft=6;" parent="1" vertex="1">
+          <mxGeometry as="geometry" x="400" y="232" width="300" height="24" />
+        </mxCell>
+        <mxCell id="r_destinos_nombre" value="nombre  &lt;span style=&quot;color:#9E9E9E;&quot;&gt;·&lt;/span&gt;  &lt;span style=&quot;color:#6A1B9A;font-weight:bold;&quot;&gt;UQ&lt;/span&gt;" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#F5F8FC;strokeColor=#BFBFBF;fontColor=#000000;fontSize=10.5;align=left;verticalAlign=middle;spacingLeft=6;" parent="1" vertex="1">
+          <mxGeometry as="geometry" x="400" y="256" width="300" height="24" />
+        </mxCell>
+        <mxCell id="r_destinos_pais" value="pais  &lt;span style=&quot;color:#9E9E9E;&quot;&gt;·&lt;/span&gt;  &lt;span style=&quot;color:#6A1B9A;font-weight:bold;&quot;&gt;UQ&lt;/span&gt;" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#BFBFBF;fontColor=#000000;fontSize=10.5;align=left;verticalAlign=middle;spacingLeft=6;" parent="1" vertex="1">
+          <mxGeometry as="geometry" x="400" y="280" width="300" height="24" />
+        </mxCell>
+        <mxCell id="r_destinos_descripcion" value="descripcion" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#F5F8FC;strokeColor=#BFBFBF;fontColor=#000000;fontSize=10.5;align=left;verticalAlign=middle;spacingLeft=6;" parent="1" vertex="1">
+          <mxGeometry as="geometry" x="400" y="304" width="300" height="24" />
+        </mxCell>
+        <mxCell id="r_destinos_latitud" value="latitud" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#BFBFBF;fontColor=#000000;fontSize=10.5;align=left;verticalAlign=middle;spacingLeft=6;" parent="1" vertex="1">
+          <mxGeometry as="geometry" x="400" y="328" width="300" height="24" />
+        </mxCell>
+        <mxCell id="r_destinos_longitud" value="longitud" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#F5F8FC;strokeColor=#BFBFBF;fontColor=#000000;fontSize=10.5;align=left;verticalAlign=middle;spacingLeft=6;" parent="1" vertex="1">
+          <mxGeometry as="geometry" x="400" y="352" width="300" height="24" />
+        </mxCell>
+        <mxCell id="r_destinos_etiquetas" value="etiquetas" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#BFBFBF;fontColor=#000000;fontSize=10.5;align=left;verticalAlign=middle;spacingLeft=6;" parent="1" vertex="1">
+          <mxGeometry as="geometry" x="400" y="376" width="300" height="24" />
+        </mxCell>
+        <mxCell id="r_destinos_activo" value="activo" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#F5F8FC;strokeColor=#BFBFBF;fontColor=#000000;fontSize=10.5;align=left;verticalAlign=middle;spacingLeft=6;" parent="1" vertex="1">
+          <mxGeometry as="geometry" x="400" y="400" width="300" height="24" />
+        </mxCell>
+        <mxCell id="r_destinos_caracter" value="caracter" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#BFBFBF;fontColor=#000000;fontSize=10.5;align=left;verticalAlign=middle;spacingLeft=6;" parent="1" vertex="1">
+          <mxGeometry as="geometry" x="400" y="424" width="300" height="24" />
+        </mxCell>
+        <mxCell id="r_destinos_destacado" value="destacado" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#F5F8FC;strokeColor=#BFBFBF;fontColor=#000000;fontSize=10.5;align=left;verticalAlign=middle;spacingLeft=6;" parent="1" vertex="1">
+          <mxGeometry as="geometry" x="400" y="448" width="300" height="24" />
+        </mxCell>
+        <mxCell id="r_destinos_duracion_dias" value="duracion_dias" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#BFBFBF;fontColor=#000000;fontSize=10.5;align=left;verticalAlign=middle;spacingLeft=6;" parent="1" vertex="1">
+          <mxGeometry as="geometry" x="400" y="472" width="300" height="24" />
+        </mxCell>
+        <mxCell id="r_destinos_duracion_noches" value="duracion_noches" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#F5F8FC;strokeColor=#BFBFBF;fontColor=#000000;fontSize=10.5;align=left;verticalAlign=middle;spacingLeft=6;" parent="1" vertex="1">
+          <mxGeometry as="geometry" x="400" y="496" width="300" height="24" />
+        </mxCell>
+        <mxCell id="r_destinos_imagen_principal" value="imagen_principal" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#BFBFBF;fontColor=#000000;fontSize=10.5;align=left;verticalAlign=middle;spacingLeft=6;" parent="1" vertex="1">
+          <mxGeometry as="geometry" x="400" y="520" width="300" height="24" />
+        </mxCell>
+        <mxCell id="r_destinos_incluye" value="incluye" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#F5F8FC;strokeColor=#BFBFBF;fontColor=#000000;fontSize=10.5;align=left;verticalAlign=middle;spacingLeft=6;" parent="1" vertex="1">
+          <mxGeometry as="geometry" x="400" y="544" width="300" height="24" />
+        </mxCell>
+        <mxCell id="r_destinos_mejor_epoca" value="mejor_epoca" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#BFBFBF;fontColor=#000000;fontSize=10.5;align=left;verticalAlign=middle;spacingLeft=6;" parent="1" vertex="1">
+          <mxGeometry as="geometry" x="400" y="568" width="300" height="24" />
+        </mxCell>
+        <mxCell id="r_destinos_moneda" value="moneda" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#F5F8FC;strokeColor=#BFBFBF;fontColor=#000000;fontSize=10.5;align=left;verticalAlign=middle;spacingLeft=6;" parent="1" vertex="1">
+          <mxGeometry as="geometry" x="400" y="592" width="300" height="24" />
+        </mxCell>
+        <mxCell id="r_destinos_no_incluye" value="no_incluye" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#BFBFBF;fontColor=#000000;fontSize=10.5;align=left;verticalAlign=middle;spacingLeft=6;" parent="1" vertex="1">
+          <mxGeometry as="geometry" x="400" y="616" width="300" height="24" />
+        </mxCell>
+        <mxCell id="r_destinos_pais_codigo" value="pais_codigo" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#F5F8FC;strokeColor=#BFBFBF;fontColor=#000000;fontSize=10.5;align=left;verticalAlign=middle;spacingLeft=6;" parent="1" vertex="1">
+          <mxGeometry as="geometry" x="400" y="640" width="300" height="24" />
+        </mxCell>
+        <mxCell id="r_destinos_precio_desde" value="precio_desde" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#BFBFBF;fontColor=#000000;fontSize=10.5;align=left;verticalAlign=middle;spacingLeft=6;" parent="1" vertex="1">
+          <mxGeometry as="geometry" x="400" y="664" width="300" height="24" />
+        </mxCell>
+        <mxCell id="r_destinos_region" value="region" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#F5F8FC;strokeColor=#BFBFBF;fontColor=#000000;fontSize=10.5;align=left;verticalAlign=middle;spacingLeft=6;" parent="1" vertex="1">
+          <mxGeometry as="geometry" x="400" y="688" width="300" height="24" />
+        </mxCell>
+        <mxCell id="r_destinos_resumen" value="resumen" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#BFBFBF;fontColor=#000000;fontSize=10.5;align=left;verticalAlign=middle;spacingLeft=6;" parent="1" vertex="1">
+          <mxGeometry as="geometry" x="400" y="712" width="300" height="24" />
+        </mxCell>
+        <mxCell id="r_destinos_slug" value="slug  &lt;span style=&quot;color:#9E9E9E;&quot;&gt;·&lt;/span&gt;  &lt;span style=&quot;color:#6A1B9A;font-weight:bold;&quot;&gt;UQ&lt;/span&gt;" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#F5F8FC;strokeColor=#BFBFBF;fontColor=#000000;fontSize=10.5;align=left;verticalAlign=middle;spacingLeft=6;" parent="1" vertex="1">
+          <mxGeometry as="geometry" x="400" y="736" width="300" height="24" />
+        </mxCell>
+        <mxCell id="r_destinos_lema" value="lema" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#BFBFBF;fontColor=#000000;fontSize=10.5;align=left;verticalAlign=middle;spacingLeft=6;" parent="1" vertex="1">
+          <mxGeometry as="geometry" x="400" y="760" width="300" height="24" />
+        </mxCell>
+        <mxCell id="r_destinos_imagen_public_id" value="imagen_public_id" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#F5F8FC;strokeColor=#BFBFBF;fontColor=#000000;fontSize=10.5;align=left;verticalAlign=middle;spacingLeft=6;" parent="1" vertex="1">
+          <mxGeometry as="geometry" x="400" y="784" width="300" height="24" />
+        </mxCell>
+        <mxCell id="frame_destinos" value="" style="rounded=0;whiteSpace=wrap;html=1;fillColor=none;strokeColor=#000000;strokeWidth=1.5;pointerEvents=0;" parent="1" vertex="1">
+          <mxGeometry as="geometry" x="400" y="200" width="300" height="608" />
+        </mxCell>
+        <mxCell id="h_itinerario_dias" value="ITINERARIO_DIAS" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#6FA8DC;strokeColor=#000000;fontColor=#FFFFFF;fontStyle=1;fontSize=13;align=center;verticalAlign=middle;" parent="1" vertex="1">
+          <mxGeometry as="geometry" x="400" y="868" width="300" height="32" />
+        </mxCell>
+        <mxCell id="r_itinerario_dias_id" value="&lt;b&gt;&lt;u&gt;id&lt;/u&gt;&lt;/b&gt;  &lt;span style=&quot;color:#9E9E9E;&quot;&gt;·&lt;/span&gt;  &lt;span style=&quot;color:#1565C0;font-weight:bold;&quot;&gt;PK&lt;/span&gt;" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#BFBFBF;fontColor=#000000;fontSize=10.5;align=left;verticalAlign=middle;spacingLeft=6;" parent="1" vertex="1">
+          <mxGeometry as="geometry" x="400" y="900" width="300" height="24" />
+        </mxCell>
+        <mxCell id="r_itinerario_dias_destino_id" value="destino_id  &lt;span style=&quot;color:#9E9E9E;&quot;&gt;·&lt;/span&gt;  &lt;span style=&quot;color:#1565C0;font-weight:bold;&quot;&gt;FK&lt;/span&gt; &lt;span style=&quot;color:#6A1B9A;font-weight:bold;&quot;&gt;UQ&lt;/span&gt;" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#F5F8FC;strokeColor=#BFBFBF;fontColor=#000000;fontSize=10.5;align=left;verticalAlign=middle;spacingLeft=6;" parent="1" vertex="1">
+          <mxGeometry as="geometry" x="400" y="924" width="300" height="24" />
+        </mxCell>
+        <mxCell id="r_itinerario_dias_numero_dia" value="numero_dia  &lt;span style=&quot;color:#9E9E9E;&quot;&gt;·&lt;/span&gt;  &lt;span style=&quot;color:#6A1B9A;font-weight:bold;&quot;&gt;UQ&lt;/span&gt;" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#BFBFBF;fontColor=#000000;fontSize=10.5;align=left;verticalAlign=middle;spacingLeft=6;" parent="1" vertex="1">
+          <mxGeometry as="geometry" x="400" y="948" width="300" height="24" />
+        </mxCell>
+        <mxCell id="r_itinerario_dias_titulo" value="titulo" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#F5F8FC;strokeColor=#BFBFBF;fontColor=#000000;fontSize=10.5;align=left;verticalAlign=middle;spacingLeft=6;" parent="1" vertex="1">
+          <mxGeometry as="geometry" x="400" y="972" width="300" height="24" />
+        </mxCell>
+        <mxCell id="r_itinerario_dias_descripcion" value="descripcion" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#BFBFBF;fontColor=#000000;fontSize=10.5;align=left;verticalAlign=middle;spacingLeft=6;" parent="1" vertex="1">
+          <mxGeometry as="geometry" x="400" y="996" width="300" height="24" />
+        </mxCell>
+        <mxCell id="r_itinerario_dias_ubicacion" value="ubicacion" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#F5F8FC;strokeColor=#BFBFBF;fontColor=#000000;fontSize=10.5;align=left;verticalAlign=middle;spacingLeft=6;" parent="1" vertex="1">
+          <mxGeometry as="geometry" x="400" y="1020" width="300" height="24" />
+        </mxCell>
+        <mxCell id="frame_itinerario_dias" value="" style="rounded=0;whiteSpace=wrap;html=1;fillColor=none;strokeColor=#000000;strokeWidth=1.5;pointerEvents=0;" parent="1" vertex="1">
+          <mxGeometry as="geometry" x="400" y="868" width="300" height="176" />
+        </mxCell>
+        <mxCell id="h_aeropuertos" value="AEROPUERTOS" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#6FA8DC;strokeColor=#000000;fontColor=#FFFFFF;fontStyle=1;fontSize=13;align=center;verticalAlign=middle;" parent="1" vertex="1">
+          <mxGeometry as="geometry" x="400" y="1104" width="300" height="32" />
+        </mxCell>
+        <mxCell id="r_aeropuertos_codigo_iata" value="&lt;b&gt;&lt;u&gt;codigo_iata&lt;/u&gt;&lt;/b&gt;  &lt;span style=&quot;color:#9E9E9E;&quot;&gt;·&lt;/span&gt;  &lt;span style=&quot;color:#1565C0;font-weight:bold;&quot;&gt;PK&lt;/span&gt;" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#BFBFBF;fontColor=#000000;fontSize=10.5;align=left;verticalAlign=middle;spacingLeft=6;" parent="1" vertex="1">
+          <mxGeometry as="geometry" x="400" y="1136" width="300" height="24" />
+        </mxCell>
+        <mxCell id="r_aeropuertos_destino_id" value="destino_id  &lt;span style=&quot;color:#9E9E9E;&quot;&gt;·&lt;/span&gt;  &lt;span style=&quot;color:#1565C0;font-weight:bold;&quot;&gt;FK&lt;/span&gt;" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#F5F8FC;strokeColor=#BFBFBF;fontColor=#000000;fontSize=10.5;align=left;verticalAlign=middle;spacingLeft=6;" parent="1" vertex="1">
+          <mxGeometry as="geometry" x="400" y="1160" width="300" height="24" />
+        </mxCell>
+        <mxCell id="r_aeropuertos_nombre" value="nombre" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#BFBFBF;fontColor=#000000;fontSize=10.5;align=left;verticalAlign=middle;spacingLeft=6;" parent="1" vertex="1">
+          <mxGeometry as="geometry" x="400" y="1184" width="300" height="24" />
+        </mxCell>
+        <mxCell id="frame_aeropuertos" value="" style="rounded=0;whiteSpace=wrap;html=1;fillColor=none;strokeColor=#000000;strokeWidth=1.5;pointerEvents=0;" parent="1" vertex="1">
+          <mxGeometry as="geometry" x="400" y="1104" width="300" height="104" />
+        </mxCell>
+        <mxCell id="h_proveedores" value="PROVEEDORES" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#6FA8DC;strokeColor=#000000;fontColor=#FFFFFF;fontStyle=1;fontSize=13;align=center;verticalAlign=middle;" parent="1" vertex="1">
+          <mxGeometry as="geometry" x="400" y="1268" width="300" height="32" />
+        </mxCell>
+        <mxCell id="r_proveedores_id" value="&lt;b&gt;&lt;u&gt;id&lt;/u&gt;&lt;/b&gt;  &lt;span style=&quot;color:#9E9E9E;&quot;&gt;·&lt;/span&gt;  &lt;span style=&quot;color:#1565C0;font-weight:bold;&quot;&gt;PK&lt;/span&gt;" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#BFBFBF;fontColor=#000000;fontSize=10.5;align=left;verticalAlign=middle;spacingLeft=6;" parent="1" vertex="1">
+          <mxGeometry as="geometry" x="400" y="1300" width="300" height="24" />
+        </mxCell>
+        <mxCell id="r_proveedores_nombre" value="nombre  &lt;span style=&quot;color:#9E9E9E;&quot;&gt;·&lt;/span&gt;  &lt;span style=&quot;color:#6A1B9A;font-weight:bold;&quot;&gt;UQ&lt;/span&gt;" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#F5F8FC;strokeColor=#BFBFBF;fontColor=#000000;fontSize=10.5;align=left;verticalAlign=middle;spacingLeft=6;" parent="1" vertex="1">
+          <mxGeometry as="geometry" x="400" y="1324" width="300" height="24" />
+        </mxCell>
+        <mxCell id="r_proveedores_tipo" value="tipo" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#BFBFBF;fontColor=#000000;fontSize=10.5;align=left;verticalAlign=middle;spacingLeft=6;" parent="1" vertex="1">
+          <mxGeometry as="geometry" x="400" y="1348" width="300" height="24" />
+        </mxCell>
+        <mxCell id="r_proveedores_email" value="email" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#F5F8FC;strokeColor=#BFBFBF;fontColor=#000000;fontSize=10.5;align=left;verticalAlign=middle;spacingLeft=6;" parent="1" vertex="1">
+          <mxGeometry as="geometry" x="400" y="1372" width="300" height="24" />
+        </mxCell>
+        <mxCell id="r_proveedores_telefono" value="telefono" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#BFBFBF;fontColor=#000000;fontSize=10.5;align=left;verticalAlign=middle;spacingLeft=6;" parent="1" vertex="1">
+          <mxGeometry as="geometry" x="400" y="1396" width="300" height="24" />
+        </mxCell>
+        <mxCell id="r_proveedores_activo" value="activo" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#F5F8FC;strokeColor=#BFBFBF;fontColor=#000000;fontSize=10.5;align=left;verticalAlign=middle;spacingLeft=6;" parent="1" vertex="1">
+          <mxGeometry as="geometry" x="400" y="1420" width="300" height="24" />
+        </mxCell>
+        <mxCell id="r_proveedores_ciudad" value="ciudad" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#BFBFBF;fontColor=#000000;fontSize=10.5;align=left;verticalAlign=middle;spacingLeft=6;" parent="1" vertex="1">
+          <mxGeometry as="geometry" x="400" y="1444" width="300" height="24" />
+        </mxCell>
+        <mxCell id="r_proveedores_contacto" value="contacto" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#F5F8FC;strokeColor=#BFBFBF;fontColor=#000000;fontSize=10.5;align=left;verticalAlign=middle;spacingLeft=6;" parent="1" vertex="1">
+          <mxGeometry as="geometry" x="400" y="1468" width="300" height="24" />
+        </mxCell>
+        <mxCell id="r_proveedores_notas" value="notas" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#BFBFBF;fontColor=#000000;fontSize=10.5;align=left;verticalAlign=middle;spacingLeft=6;" parent="1" vertex="1">
+          <mxGeometry as="geometry" x="400" y="1492" width="300" height="24" />
+        </mxCell>
+        <mxCell id="r_proveedores_pais" value="pais" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#F5F8FC;strokeColor=#BFBFBF;fontColor=#000000;fontSize=10.5;align=left;verticalAlign=middle;spacingLeft=6;" parent="1" vertex="1">
+          <mxGeometry as="geometry" x="400" y="1516" width="300" height="24" />
+        </mxCell>
+        <mxCell id="r_proveedores_logo_url" value="logo_url" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#BFBFBF;fontColor=#000000;fontSize=10.5;align=left;verticalAlign=middle;spacingLeft=6;" parent="1" vertex="1">
+          <mxGeometry as="geometry" x="400" y="1540" width="300" height="24" />
+        </mxCell>
+        <mxCell id="r_proveedores_logo_public_id" value="logo_public_id" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#F5F8FC;strokeColor=#BFBFBF;fontColor=#000000;fontSize=10.5;align=left;verticalAlign=middle;spacingLeft=6;" parent="1" vertex="1">
+          <mxGeometry as="geometry" x="400" y="1564" width="300" height="24" />
+        </mxCell>
+        <mxCell id="frame_proveedores" value="" style="rounded=0;whiteSpace=wrap;html=1;fillColor=none;strokeColor=#000000;strokeWidth=1.5;pointerEvents=0;" parent="1" vertex="1">
+          <mxGeometry as="geometry" x="400" y="1268" width="300" height="320" />
+        </mxCell>
+        <mxCell id="h_vuelos" value="VUELOS" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#6FA8DC;strokeColor=#000000;fontColor=#FFFFFF;fontStyle=1;fontSize=13;align=center;verticalAlign=middle;" parent="1" vertex="1">
+          <mxGeometry as="geometry" x="400" y="1648" width="300" height="32" />
+        </mxCell>
+        <mxCell id="r_vuelos_id" value="&lt;b&gt;&lt;u&gt;id&lt;/u&gt;&lt;/b&gt;  &lt;span style=&quot;color:#9E9E9E;&quot;&gt;·&lt;/span&gt;  &lt;span style=&quot;color:#1565C0;font-weight:bold;&quot;&gt;PK&lt;/span&gt;" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#BFBFBF;fontColor=#000000;fontSize=10.5;align=left;verticalAlign=middle;spacingLeft=6;" parent="1" vertex="1">
+          <mxGeometry as="geometry" x="400" y="1680" width="300" height="24" />
+        </mxCell>
+        <mxCell id="r_vuelos_destino" value="destino  &lt;span style=&quot;color:#9E9E9E;&quot;&gt;·&lt;/span&gt;  &lt;span style=&quot;color:#1565C0;font-weight:bold;&quot;&gt;FK&lt;/span&gt;" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#F5F8FC;strokeColor=#BFBFBF;fontColor=#000000;fontSize=10.5;align=left;verticalAlign=middle;spacingLeft=6;" parent="1" vertex="1">
+          <mxGeometry as="geometry" x="400" y="1704" width="300" height="24" />
+        </mxCell>
+        <mxCell id="r_vuelos_origen" value="origen  &lt;span style=&quot;color:#9E9E9E;&quot;&gt;·&lt;/span&gt;  &lt;span style=&quot;color:#1565C0;font-weight:bold;&quot;&gt;FK&lt;/span&gt;" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#BFBFBF;fontColor=#000000;fontSize=10.5;align=left;verticalAlign=middle;spacingLeft=6;" parent="1" vertex="1">
+          <mxGeometry as="geometry" x="400" y="1728" width="300" height="24" />
+        </mxCell>
+        <mxCell id="r_vuelos_proveedor_id" value="proveedor_id  &lt;span style=&quot;color:#9E9E9E;&quot;&gt;·&lt;/span&gt;  &lt;span style=&quot;color:#1565C0;font-weight:bold;&quot;&gt;FK&lt;/span&gt;" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#F5F8FC;strokeColor=#BFBFBF;fontColor=#000000;fontSize=10.5;align=left;verticalAlign=middle;spacingLeft=6;" parent="1" vertex="1">
+          <mxGeometry as="geometry" x="400" y="1752" width="300" height="24" />
+        </mxCell>
+        <mxCell id="r_vuelos_numero_vuelo" value="numero_vuelo  &lt;span style=&quot;color:#9E9E9E;&quot;&gt;·&lt;/span&gt;  &lt;span style=&quot;color:#6A1B9A;font-weight:bold;&quot;&gt;UQ&lt;/span&gt;" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#BFBFBF;fontColor=#000000;fontSize=10.5;align=left;verticalAlign=middle;spacingLeft=6;" parent="1" vertex="1">
+          <mxGeometry as="geometry" x="400" y="1776" width="300" height="24" />
+        </mxCell>
+        <mxCell id="r_vuelos_salida" value="salida  &lt;span style=&quot;color:#9E9E9E;&quot;&gt;·&lt;/span&gt;  &lt;span style=&quot;color:#6A1B9A;font-weight:bold;&quot;&gt;UQ&lt;/span&gt;" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#F5F8FC;strokeColor=#BFBFBF;fontColor=#000000;fontSize=10.5;align=left;verticalAlign=middle;spacingLeft=6;" parent="1" vertex="1">
+          <mxGeometry as="geometry" x="400" y="1800" width="300" height="24" />
+        </mxCell>
+        <mxCell id="r_vuelos_llegada" value="llegada" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#BFBFBF;fontColor=#000000;fontSize=10.5;align=left;verticalAlign=middle;spacingLeft=6;" parent="1" vertex="1">
+          <mxGeometry as="geometry" x="400" y="1824" width="300" height="24" />
+        </mxCell>
+        <mxCell id="r_vuelos_precio" value="precio" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#F5F8FC;strokeColor=#BFBFBF;fontColor=#000000;fontSize=10.5;align=left;verticalAlign=middle;spacingLeft=6;" parent="1" vertex="1">
+          <mxGeometry as="geometry" x="400" y="1848" width="300" height="24" />
+        </mxCell>
+        <mxCell id="r_vuelos_moneda" value="moneda" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#BFBFBF;fontColor=#000000;fontSize=10.5;align=left;verticalAlign=middle;spacingLeft=6;" parent="1" vertex="1">
+          <mxGeometry as="geometry" x="400" y="1872" width="300" height="24" />
+        </mxCell>
+        <mxCell id="r_vuelos_cupos_totales" value="cupos_totales" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#F5F8FC;strokeColor=#BFBFBF;fontColor=#000000;fontSize=10.5;align=left;verticalAlign=middle;spacingLeft=6;" parent="1" vertex="1">
+          <mxGeometry as="geometry" x="400" y="1896" width="300" height="24" />
+        </mxCell>
+        <mxCell id="r_vuelos_cupos_disponibles" value="cupos_disponibles" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#BFBFBF;fontColor=#000000;fontSize=10.5;align=left;verticalAlign=middle;spacingLeft=6;" parent="1" vertex="1">
+          <mxGeometry as="geometry" x="400" y="1920" width="300" height="24" />
+        </mxCell>
+        <mxCell id="r_vuelos_referencia_externa" value="referencia_externa" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#F5F8FC;strokeColor=#BFBFBF;fontColor=#000000;fontSize=10.5;align=left;verticalAlign=middle;spacingLeft=6;" parent="1" vertex="1">
+          <mxGeometry as="geometry" x="400" y="1944" width="300" height="24" />
+        </mxCell>
+        <mxCell id="frame_vuelos" value="" style="rounded=0;whiteSpace=wrap;html=1;fillColor=none;strokeColor=#000000;strokeWidth=1.5;pointerEvents=0;" parent="1" vertex="1">
+          <mxGeometry as="geometry" x="400" y="1648" width="300" height="320" />
+        </mxCell>
+        <mxCell id="h_hoteles" value="HOTELES" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#6FA8DC;strokeColor=#000000;fontColor=#FFFFFF;fontStyle=1;fontSize=13;align=center;verticalAlign=middle;" parent="1" vertex="1">
+          <mxGeometry as="geometry" x="760" y="200" width="300" height="32" />
+        </mxCell>
+        <mxCell id="r_hoteles_id" value="&lt;b&gt;&lt;u&gt;id&lt;/u&gt;&lt;/b&gt;  &lt;span style=&quot;color:#9E9E9E;&quot;&gt;·&lt;/span&gt;  &lt;span style=&quot;color:#1565C0;font-weight:bold;&quot;&gt;PK&lt;/span&gt;" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#BFBFBF;fontColor=#000000;fontSize=10.5;align=left;verticalAlign=middle;spacingLeft=6;" parent="1" vertex="1">
+          <mxGeometry as="geometry" x="760" y="232" width="300" height="24" />
+        </mxCell>
+        <mxCell id="r_hoteles_destino_id" value="destino_id  &lt;span style=&quot;color:#9E9E9E;&quot;&gt;·&lt;/span&gt;  &lt;span style=&quot;color:#1565C0;font-weight:bold;&quot;&gt;FK&lt;/span&gt;" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#F5F8FC;strokeColor=#BFBFBF;fontColor=#000000;fontSize=10.5;align=left;verticalAlign=middle;spacingLeft=6;" parent="1" vertex="1">
+          <mxGeometry as="geometry" x="760" y="256" width="300" height="24" />
+        </mxCell>
+        <mxCell id="r_hoteles_proveedor_id" value="proveedor_id  &lt;span style=&quot;color:#9E9E9E;&quot;&gt;·&lt;/span&gt;  &lt;span style=&quot;color:#1565C0;font-weight:bold;&quot;&gt;FK&lt;/span&gt;" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#BFBFBF;fontColor=#000000;fontSize=10.5;align=left;verticalAlign=middle;spacingLeft=6;" parent="1" vertex="1">
+          <mxGeometry as="geometry" x="760" y="280" width="300" height="24" />
+        </mxCell>
+        <mxCell id="r_hoteles_nombre" value="nombre" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#F5F8FC;strokeColor=#BFBFBF;fontColor=#000000;fontSize=10.5;align=left;verticalAlign=middle;spacingLeft=6;" parent="1" vertex="1">
+          <mxGeometry as="geometry" x="760" y="304" width="300" height="24" />
+        </mxCell>
+        <mxCell id="r_hoteles_estrellas" value="estrellas" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#BFBFBF;fontColor=#000000;fontSize=10.5;align=left;verticalAlign=middle;spacingLeft=6;" parent="1" vertex="1">
+          <mxGeometry as="geometry" x="760" y="328" width="300" height="24" />
+        </mxCell>
+        <mxCell id="r_hoteles_direccion" value="direccion" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#F5F8FC;strokeColor=#BFBFBF;fontColor=#000000;fontSize=10.5;align=left;verticalAlign=middle;spacingLeft=6;" parent="1" vertex="1">
+          <mxGeometry as="geometry" x="760" y="352" width="300" height="24" />
+        </mxCell>
+        <mxCell id="r_hoteles_latitud" value="latitud" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#BFBFBF;fontColor=#000000;fontSize=10.5;align=left;verticalAlign=middle;spacingLeft=6;" parent="1" vertex="1">
+          <mxGeometry as="geometry" x="760" y="376" width="300" height="24" />
+        </mxCell>
+        <mxCell id="r_hoteles_longitud" value="longitud" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#F5F8FC;strokeColor=#BFBFBF;fontColor=#000000;fontSize=10.5;align=left;verticalAlign=middle;spacingLeft=6;" parent="1" vertex="1">
+          <mxGeometry as="geometry" x="760" y="400" width="300" height="24" />
+        </mxCell>
+        <mxCell id="r_hoteles_descripcion" value="descripcion" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#BFBFBF;fontColor=#000000;fontSize=10.5;align=left;verticalAlign=middle;spacingLeft=6;" parent="1" vertex="1">
+          <mxGeometry as="geometry" x="760" y="424" width="300" height="24" />
+        </mxCell>
+        <mxCell id="r_hoteles_activo" value="activo" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#F5F8FC;strokeColor=#BFBFBF;fontColor=#000000;fontSize=10.5;align=left;verticalAlign=middle;spacingLeft=6;" parent="1" vertex="1">
+          <mxGeometry as="geometry" x="760" y="448" width="300" height="24" />
+        </mxCell>
+        <mxCell id="frame_hoteles" value="" style="rounded=0;whiteSpace=wrap;html=1;fillColor=none;strokeColor=#000000;strokeWidth=1.5;pointerEvents=0;" parent="1" vertex="1">
+          <mxGeometry as="geometry" x="760" y="200" width="300" height="272" />
+        </mxCell>
+        <mxCell id="h_habitaciones" value="HABITACIONES" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#6FA8DC;strokeColor=#000000;fontColor=#FFFFFF;fontStyle=1;fontSize=13;align=center;verticalAlign=middle;" parent="1" vertex="1">
+          <mxGeometry as="geometry" x="760" y="532" width="300" height="32" />
+        </mxCell>
+        <mxCell id="r_habitaciones_id" value="&lt;b&gt;&lt;u&gt;id&lt;/u&gt;&lt;/b&gt;  &lt;span style=&quot;color:#9E9E9E;&quot;&gt;·&lt;/span&gt;  &lt;span style=&quot;color:#1565C0;font-weight:bold;&quot;&gt;PK&lt;/span&gt;" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#BFBFBF;fontColor=#000000;fontSize=10.5;align=left;verticalAlign=middle;spacingLeft=6;" parent="1" vertex="1">
+          <mxGeometry as="geometry" x="760" y="564" width="300" height="24" />
+        </mxCell>
+        <mxCell id="r_habitaciones_hotel_id" value="hotel_id  &lt;span style=&quot;color:#9E9E9E;&quot;&gt;·&lt;/span&gt;  &lt;span style=&quot;color:#1565C0;font-weight:bold;&quot;&gt;FK&lt;/span&gt;" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#F5F8FC;strokeColor=#BFBFBF;fontColor=#000000;fontSize=10.5;align=left;verticalAlign=middle;spacingLeft=6;" parent="1" vertex="1">
+          <mxGeometry as="geometry" x="760" y="588" width="300" height="24" />
+        </mxCell>
+        <mxCell id="r_habitaciones_tipo" value="tipo" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#BFBFBF;fontColor=#000000;fontSize=10.5;align=left;verticalAlign=middle;spacingLeft=6;" parent="1" vertex="1">
+          <mxGeometry as="geometry" x="760" y="612" width="300" height="24" />
+        </mxCell>
+        <mxCell id="r_habitaciones_capacidad" value="capacidad" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#F5F8FC;strokeColor=#BFBFBF;fontColor=#000000;fontSize=10.5;align=left;verticalAlign=middle;spacingLeft=6;" parent="1" vertex="1">
+          <mxGeometry as="geometry" x="760" y="636" width="300" height="24" />
+        </mxCell>
+        <mxCell id="r_habitaciones_precio_noche" value="precio_noche" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#BFBFBF;fontColor=#000000;fontSize=10.5;align=left;verticalAlign=middle;spacingLeft=6;" parent="1" vertex="1">
+          <mxGeometry as="geometry" x="760" y="660" width="300" height="24" />
+        </mxCell>
+        <mxCell id="r_habitaciones_moneda" value="moneda" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#F5F8FC;strokeColor=#BFBFBF;fontColor=#000000;fontSize=10.5;align=left;verticalAlign=middle;spacingLeft=6;" parent="1" vertex="1">
+          <mxGeometry as="geometry" x="760" y="684" width="300" height="24" />
+        </mxCell>
+        <mxCell id="frame_habitaciones" value="" style="rounded=0;whiteSpace=wrap;html=1;fillColor=none;strokeColor=#000000;strokeWidth=1.5;pointerEvents=0;" parent="1" vertex="1">
+          <mxGeometry as="geometry" x="760" y="532" width="300" height="176" />
+        </mxCell>
+        <mxCell id="h_paquetes" value="PAQUETES" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#6FA8DC;strokeColor=#000000;fontColor=#FFFFFF;fontStyle=1;fontSize=13;align=center;verticalAlign=middle;" parent="1" vertex="1">
+          <mxGeometry as="geometry" x="760" y="768" width="300" height="32" />
+        </mxCell>
+        <mxCell id="r_paquetes_id" value="&lt;b&gt;&lt;u&gt;id&lt;/u&gt;&lt;/b&gt;  &lt;span style=&quot;color:#9E9E9E;&quot;&gt;·&lt;/span&gt;  &lt;span style=&quot;color:#1565C0;font-weight:bold;&quot;&gt;PK&lt;/span&gt;" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#BFBFBF;fontColor=#000000;fontSize=10.5;align=left;verticalAlign=middle;spacingLeft=6;" parent="1" vertex="1">
+          <mxGeometry as="geometry" x="760" y="800" width="300" height="24" />
+        </mxCell>
+        <mxCell id="r_paquetes_destino_id" value="destino_id  &lt;span style=&quot;color:#9E9E9E;&quot;&gt;·&lt;/span&gt;  &lt;span style=&quot;color:#1565C0;font-weight:bold;&quot;&gt;FK&lt;/span&gt;" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#F5F8FC;strokeColor=#BFBFBF;fontColor=#000000;fontSize=10.5;align=left;verticalAlign=middle;spacingLeft=6;" parent="1" vertex="1">
+          <mxGeometry as="geometry" x="760" y="824" width="300" height="24" />
+        </mxCell>
+        <mxCell id="r_paquetes_hotel_id" value="hotel_id  &lt;span style=&quot;color:#9E9E9E;&quot;&gt;·&lt;/span&gt;  &lt;span style=&quot;color:#1565C0;font-weight:bold;&quot;&gt;FK&lt;/span&gt;" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#BFBFBF;fontColor=#000000;fontSize=10.5;align=left;verticalAlign=middle;spacingLeft=6;" parent="1" vertex="1">
+          <mxGeometry as="geometry" x="760" y="848" width="300" height="24" />
+        </mxCell>
+        <mxCell id="r_paquetes_nombre" value="nombre" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#F5F8FC;strokeColor=#BFBFBF;fontColor=#000000;fontSize=10.5;align=left;verticalAlign=middle;spacingLeft=6;" parent="1" vertex="1">
+          <mxGeometry as="geometry" x="760" y="872" width="300" height="24" />
+        </mxCell>
+        <mxCell id="r_paquetes_descripcion" value="descripcion" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#BFBFBF;fontColor=#000000;fontSize=10.5;align=left;verticalAlign=middle;spacingLeft=6;" parent="1" vertex="1">
+          <mxGeometry as="geometry" x="760" y="896" width="300" height="24" />
+        </mxCell>
+        <mxCell id="r_paquetes_duracion_dias" value="duracion_dias" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#F5F8FC;strokeColor=#BFBFBF;fontColor=#000000;fontSize=10.5;align=left;verticalAlign=middle;spacingLeft=6;" parent="1" vertex="1">
+          <mxGeometry as="geometry" x="760" y="920" width="300" height="24" />
+        </mxCell>
+        <mxCell id="r_paquetes_precio_base" value="precio_base" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#BFBFBF;fontColor=#000000;fontSize=10.5;align=left;verticalAlign=middle;spacingLeft=6;" parent="1" vertex="1">
+          <mxGeometry as="geometry" x="760" y="944" width="300" height="24" />
+        </mxCell>
+        <mxCell id="r_paquetes_moneda" value="moneda" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#F5F8FC;strokeColor=#BFBFBF;fontColor=#000000;fontSize=10.5;align=left;verticalAlign=middle;spacingLeft=6;" parent="1" vertex="1">
+          <mxGeometry as="geometry" x="760" y="968" width="300" height="24" />
+        </mxCell>
+        <mxCell id="r_paquetes_etiquetas" value="etiquetas" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#BFBFBF;fontColor=#000000;fontSize=10.5;align=left;verticalAlign=middle;spacingLeft=6;" parent="1" vertex="1">
+          <mxGeometry as="geometry" x="760" y="992" width="300" height="24" />
+        </mxCell>
+        <mxCell id="r_paquetes_activo" value="activo" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#F5F8FC;strokeColor=#BFBFBF;fontColor=#000000;fontSize=10.5;align=left;verticalAlign=middle;spacingLeft=6;" parent="1" vertex="1">
+          <mxGeometry as="geometry" x="760" y="1016" width="300" height="24" />
+        </mxCell>
+        <mxCell id="frame_paquetes" value="" style="rounded=0;whiteSpace=wrap;html=1;fillColor=none;strokeColor=#000000;strokeWidth=1.5;pointerEvents=0;" parent="1" vertex="1">
+          <mxGeometry as="geometry" x="760" y="768" width="300" height="272" />
+        </mxCell>
+        <mxCell id="h_paquete_salidas" value="PAQUETE_SALIDAS" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#6FA8DC;strokeColor=#000000;fontColor=#FFFFFF;fontStyle=1;fontSize=13;align=center;verticalAlign=middle;" parent="1" vertex="1">
+          <mxGeometry as="geometry" x="760" y="1100" width="300" height="32" />
+        </mxCell>
+        <mxCell id="r_paquete_salidas_id" value="&lt;b&gt;&lt;u&gt;id&lt;/u&gt;&lt;/b&gt;  &lt;span style=&quot;color:#9E9E9E;&quot;&gt;·&lt;/span&gt;  &lt;span style=&quot;color:#1565C0;font-weight:bold;&quot;&gt;PK&lt;/span&gt;" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#BFBFBF;fontColor=#000000;fontSize=10.5;align=left;verticalAlign=middle;spacingLeft=6;" parent="1" vertex="1">
+          <mxGeometry as="geometry" x="760" y="1132" width="300" height="24" />
+        </mxCell>
+        <mxCell id="r_paquete_salidas_paquete_id" value="paquete_id  &lt;span style=&quot;color:#9E9E9E;&quot;&gt;·&lt;/span&gt;  &lt;span style=&quot;color:#1565C0;font-weight:bold;&quot;&gt;FK&lt;/span&gt; &lt;span style=&quot;color:#6A1B9A;font-weight:bold;&quot;&gt;UQ&lt;/span&gt;" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#F5F8FC;strokeColor=#BFBFBF;fontColor=#000000;fontSize=10.5;align=left;verticalAlign=middle;spacingLeft=6;" parent="1" vertex="1">
+          <mxGeometry as="geometry" x="760" y="1156" width="300" height="24" />
+        </mxCell>
+        <mxCell id="r_paquete_salidas_vuelo_ida_id" value="vuelo_ida_id  &lt;span style=&quot;color:#9E9E9E;&quot;&gt;·&lt;/span&gt;  &lt;span style=&quot;color:#1565C0;font-weight:bold;&quot;&gt;FK&lt;/span&gt;" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#BFBFBF;fontColor=#000000;fontSize=10.5;align=left;verticalAlign=middle;spacingLeft=6;" parent="1" vertex="1">
+          <mxGeometry as="geometry" x="760" y="1180" width="300" height="24" />
+        </mxCell>
+        <mxCell id="r_paquete_salidas_vuelo_vuelta_id" value="vuelo_vuelta_id  &lt;span style=&quot;color:#9E9E9E;&quot;&gt;·&lt;/span&gt;  &lt;span style=&quot;color:#1565C0;font-weight:bold;&quot;&gt;FK&lt;/span&gt;" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#F5F8FC;strokeColor=#BFBFBF;fontColor=#000000;fontSize=10.5;align=left;verticalAlign=middle;spacingLeft=6;" parent="1" vertex="1">
+          <mxGeometry as="geometry" x="760" y="1204" width="300" height="24" />
+        </mxCell>
+        <mxCell id="r_paquete_salidas_fecha_salida" value="fecha_salida  &lt;span style=&quot;color:#9E9E9E;&quot;&gt;·&lt;/span&gt;  &lt;span style=&quot;color:#6A1B9A;font-weight:bold;&quot;&gt;UQ&lt;/span&gt;" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#BFBFBF;fontColor=#000000;fontSize=10.5;align=left;verticalAlign=middle;spacingLeft=6;" parent="1" vertex="1">
+          <mxGeometry as="geometry" x="760" y="1228" width="300" height="24" />
+        </mxCell>
+        <mxCell id="r_paquete_salidas_cupos_totales" value="cupos_totales" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#F5F8FC;strokeColor=#BFBFBF;fontColor=#000000;fontSize=10.5;align=left;verticalAlign=middle;spacingLeft=6;" parent="1" vertex="1">
+          <mxGeometry as="geometry" x="760" y="1252" width="300" height="24" />
+        </mxCell>
+        <mxCell id="r_paquete_salidas_cupos_disponibles" value="cupos_disponibles" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#BFBFBF;fontColor=#000000;fontSize=10.5;align=left;verticalAlign=middle;spacingLeft=6;" parent="1" vertex="1">
+          <mxGeometry as="geometry" x="760" y="1276" width="300" height="24" />
+        </mxCell>
+        <mxCell id="frame_paquete_salidas" value="" style="rounded=0;whiteSpace=wrap;html=1;fillColor=none;strokeColor=#000000;strokeWidth=1.5;pointerEvents=0;" parent="1" vertex="1">
+          <mxGeometry as="geometry" x="760" y="1100" width="300" height="200" />
+        </mxCell>
+        <mxCell id="h_reservas" value="RESERVAS" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#6FA8DC;strokeColor=#000000;fontColor=#FFFFFF;fontStyle=1;fontSize=13;align=center;verticalAlign=middle;" parent="1" vertex="1">
+          <mxGeometry as="geometry" x="760" y="1360" width="300" height="32" />
+        </mxCell>
+        <mxCell id="r_reservas_id" value="&lt;b&gt;&lt;u&gt;id&lt;/u&gt;&lt;/b&gt;  &lt;span style=&quot;color:#9E9E9E;&quot;&gt;·&lt;/span&gt;  &lt;span style=&quot;color:#1565C0;font-weight:bold;&quot;&gt;PK&lt;/span&gt;" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#BFBFBF;fontColor=#000000;fontSize=10.5;align=left;verticalAlign=middle;spacingLeft=6;" parent="1" vertex="1">
+          <mxGeometry as="geometry" x="760" y="1392" width="300" height="24" />
+        </mxCell>
+        <mxCell id="r_reservas_cliente_id" value="cliente_id  &lt;span style=&quot;color:#9E9E9E;&quot;&gt;·&lt;/span&gt;  &lt;span style=&quot;color:#1565C0;font-weight:bold;&quot;&gt;FK&lt;/span&gt;" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#F5F8FC;strokeColor=#BFBFBF;fontColor=#000000;fontSize=10.5;align=left;verticalAlign=middle;spacingLeft=6;" parent="1" vertex="1">
+          <mxGeometry as="geometry" x="760" y="1416" width="300" height="24" />
+        </mxCell>
+        <mxCell id="r_reservas_salida_id" value="salida_id  &lt;span style=&quot;color:#9E9E9E;&quot;&gt;·&lt;/span&gt;  &lt;span style=&quot;color:#1565C0;font-weight:bold;&quot;&gt;FK&lt;/span&gt;" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#BFBFBF;fontColor=#000000;fontSize=10.5;align=left;verticalAlign=middle;spacingLeft=6;" parent="1" vertex="1">
+          <mxGeometry as="geometry" x="760" y="1440" width="300" height="24" />
+        </mxCell>
+        <mxCell id="r_reservas_registrado_por_id" value="registrado_por_id  &lt;span style=&quot;color:#9E9E9E;&quot;&gt;·&lt;/span&gt;  &lt;span style=&quot;color:#1565C0;font-weight:bold;&quot;&gt;FK&lt;/span&gt;" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#F5F8FC;strokeColor=#BFBFBF;fontColor=#000000;fontSize=10.5;align=left;verticalAlign=middle;spacingLeft=6;" parent="1" vertex="1">
+          <mxGeometry as="geometry" x="760" y="1464" width="300" height="24" />
+        </mxCell>
+        <mxCell id="r_reservas_codigo" value="codigo  &lt;span style=&quot;color:#9E9E9E;&quot;&gt;·&lt;/span&gt;  &lt;span style=&quot;color:#6A1B9A;font-weight:bold;&quot;&gt;UQ&lt;/span&gt;" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#BFBFBF;fontColor=#000000;fontSize=10.5;align=left;verticalAlign=middle;spacingLeft=6;" parent="1" vertex="1">
+          <mxGeometry as="geometry" x="760" y="1488" width="300" height="24" />
+        </mxCell>
+        <mxCell id="r_reservas_num_personas" value="num_personas" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#F5F8FC;strokeColor=#BFBFBF;fontColor=#000000;fontSize=10.5;align=left;verticalAlign=middle;spacingLeft=6;" parent="1" vertex="1">
+          <mxGeometry as="geometry" x="760" y="1512" width="300" height="24" />
+        </mxCell>
+        <mxCell id="r_reservas_estado" value="estado" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#BFBFBF;fontColor=#000000;fontSize=10.5;align=left;verticalAlign=middle;spacingLeft=6;" parent="1" vertex="1">
+          <mxGeometry as="geometry" x="760" y="1536" width="300" height="24" />
+        </mxCell>
+        <mxCell id="r_reservas_total" value="total" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#F5F8FC;strokeColor=#BFBFBF;fontColor=#000000;fontSize=10.5;align=left;verticalAlign=middle;spacingLeft=6;" parent="1" vertex="1">
+          <mxGeometry as="geometry" x="760" y="1560" width="300" height="24" />
+        </mxCell>
+        <mxCell id="r_reservas_moneda" value="moneda" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#BFBFBF;fontColor=#000000;fontSize=10.5;align=left;verticalAlign=middle;spacingLeft=6;" parent="1" vertex="1">
+          <mxGeometry as="geometry" x="760" y="1584" width="300" height="24" />
+        </mxCell>
+        <mxCell id="r_reservas_canal" value="canal" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#F5F8FC;strokeColor=#BFBFBF;fontColor=#000000;fontSize=10.5;align=left;verticalAlign=middle;spacingLeft=6;" parent="1" vertex="1">
+          <mxGeometry as="geometry" x="760" y="1608" width="300" height="24" />
+        </mxCell>
+        <mxCell id="r_reservas_conversacion_id" value="conversacion_id" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#BFBFBF;fontColor=#000000;fontSize=10.5;align=left;verticalAlign=middle;spacingLeft=6;" parent="1" vertex="1">
+          <mxGeometry as="geometry" x="760" y="1632" width="300" height="24" />
+        </mxCell>
+        <mxCell id="r_reservas_creada_en" value="creada_en" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#F5F8FC;strokeColor=#BFBFBF;fontColor=#000000;fontSize=10.5;align=left;verticalAlign=middle;spacingLeft=6;" parent="1" vertex="1">
+          <mxGeometry as="geometry" x="760" y="1656" width="300" height="24" />
+        </mxCell>
+        <mxCell id="r_reservas_actualizada_en" value="actualizada_en" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#BFBFBF;fontColor=#000000;fontSize=10.5;align=left;verticalAlign=middle;spacingLeft=6;" parent="1" vertex="1">
+          <mxGeometry as="geometry" x="760" y="1680" width="300" height="24" />
+        </mxCell>
+        <mxCell id="frame_reservas" value="" style="rounded=0;whiteSpace=wrap;html=1;fillColor=none;strokeColor=#000000;strokeWidth=1.5;pointerEvents=0;" parent="1" vertex="1">
+          <mxGeometry as="geometry" x="760" y="1360" width="300" height="344" />
+        </mxCell>
+        <mxCell id="h_reserva_pasajeros" value="RESERVA_PASAJEROS" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#6FA8DC;strokeColor=#000000;fontColor=#FFFFFF;fontStyle=1;fontSize=13;align=center;verticalAlign=middle;" parent="1" vertex="1">
+          <mxGeometry as="geometry" x="1120" y="200" width="300" height="32" />
+        </mxCell>
+        <mxCell id="r_reserva_pasajeros_id" value="&lt;b&gt;&lt;u&gt;id&lt;/u&gt;&lt;/b&gt;  &lt;span style=&quot;color:#9E9E9E;&quot;&gt;·&lt;/span&gt;  &lt;span style=&quot;color:#1565C0;font-weight:bold;&quot;&gt;PK&lt;/span&gt;" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#BFBFBF;fontColor=#000000;fontSize=10.5;align=left;verticalAlign=middle;spacingLeft=6;" parent="1" vertex="1">
+          <mxGeometry as="geometry" x="1120" y="232" width="300" height="24" />
+        </mxCell>
+        <mxCell id="r_reserva_pasajeros_reserva_id" value="reserva_id  &lt;span style=&quot;color:#9E9E9E;&quot;&gt;·&lt;/span&gt;  &lt;span style=&quot;color:#1565C0;font-weight:bold;&quot;&gt;FK&lt;/span&gt;" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#F5F8FC;strokeColor=#BFBFBF;fontColor=#000000;fontSize=10.5;align=left;verticalAlign=middle;spacingLeft=6;" parent="1" vertex="1">
+          <mxGeometry as="geometry" x="1120" y="256" width="300" height="24" />
+        </mxCell>
+        <mxCell id="r_reserva_pasajeros_nombres" value="nombres" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#BFBFBF;fontColor=#000000;fontSize=10.5;align=left;verticalAlign=middle;spacingLeft=6;" parent="1" vertex="1">
+          <mxGeometry as="geometry" x="1120" y="280" width="300" height="24" />
+        </mxCell>
+        <mxCell id="r_reserva_pasajeros_apellidos" value="apellidos" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#F5F8FC;strokeColor=#BFBFBF;fontColor=#000000;fontSize=10.5;align=left;verticalAlign=middle;spacingLeft=6;" parent="1" vertex="1">
+          <mxGeometry as="geometry" x="1120" y="304" width="300" height="24" />
+        </mxCell>
+        <mxCell id="r_reserva_pasajeros_documento_tipo" value="documento_tipo" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#BFBFBF;fontColor=#000000;fontSize=10.5;align=left;verticalAlign=middle;spacingLeft=6;" parent="1" vertex="1">
+          <mxGeometry as="geometry" x="1120" y="328" width="300" height="24" />
+        </mxCell>
+        <mxCell id="r_reserva_pasajeros_documento_numero" value="documento_numero" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#F5F8FC;strokeColor=#BFBFBF;fontColor=#000000;fontSize=10.5;align=left;verticalAlign=middle;spacingLeft=6;" parent="1" vertex="1">
+          <mxGeometry as="geometry" x="1120" y="352" width="300" height="24" />
+        </mxCell>
+        <mxCell id="r_reserva_pasajeros_fecha_nacimiento" value="fecha_nacimiento" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#BFBFBF;fontColor=#000000;fontSize=10.5;align=left;verticalAlign=middle;spacingLeft=6;" parent="1" vertex="1">
+          <mxGeometry as="geometry" x="1120" y="376" width="300" height="24" />
+        </mxCell>
+        <mxCell id="frame_reserva_pasajeros" value="" style="rounded=0;whiteSpace=wrap;html=1;fillColor=none;strokeColor=#000000;strokeWidth=1.5;pointerEvents=0;" parent="1" vertex="1">
+          <mxGeometry as="geometry" x="1120" y="200" width="300" height="200" />
+        </mxCell>
+        <mxCell id="h_pagos" value="PAGOS" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#6FA8DC;strokeColor=#000000;fontColor=#FFFFFF;fontStyle=1;fontSize=13;align=center;verticalAlign=middle;" parent="1" vertex="1">
+          <mxGeometry as="geometry" x="1120" y="460" width="300" height="32" />
+        </mxCell>
+        <mxCell id="r_pagos_id" value="&lt;b&gt;&lt;u&gt;id&lt;/u&gt;&lt;/b&gt;  &lt;span style=&quot;color:#9E9E9E;&quot;&gt;·&lt;/span&gt;  &lt;span style=&quot;color:#1565C0;font-weight:bold;&quot;&gt;PK&lt;/span&gt;" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#BFBFBF;fontColor=#000000;fontSize=10.5;align=left;verticalAlign=middle;spacingLeft=6;" parent="1" vertex="1">
+          <mxGeometry as="geometry" x="1120" y="492" width="300" height="24" />
+        </mxCell>
+        <mxCell id="r_pagos_reserva_id" value="reserva_id  &lt;span style=&quot;color:#9E9E9E;&quot;&gt;·&lt;/span&gt;  &lt;span style=&quot;color:#1565C0;font-weight:bold;&quot;&gt;FK&lt;/span&gt;" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#F5F8FC;strokeColor=#BFBFBF;fontColor=#000000;fontSize=10.5;align=left;verticalAlign=middle;spacingLeft=6;" parent="1" vertex="1">
+          <mxGeometry as="geometry" x="1120" y="516" width="300" height="24" />
+        </mxCell>
+        <mxCell id="r_pagos_monto" value="monto" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#BFBFBF;fontColor=#000000;fontSize=10.5;align=left;verticalAlign=middle;spacingLeft=6;" parent="1" vertex="1">
+          <mxGeometry as="geometry" x="1120" y="540" width="300" height="24" />
+        </mxCell>
+        <mxCell id="r_pagos_moneda" value="moneda" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#F5F8FC;strokeColor=#BFBFBF;fontColor=#000000;fontSize=10.5;align=left;verticalAlign=middle;spacingLeft=6;" parent="1" vertex="1">
+          <mxGeometry as="geometry" x="1120" y="564" width="300" height="24" />
+        </mxCell>
+        <mxCell id="r_pagos_tipo_cambio_a_bob" value="tipo_cambio_a_bob" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#BFBFBF;fontColor=#000000;fontSize=10.5;align=left;verticalAlign=middle;spacingLeft=6;" parent="1" vertex="1">
+          <mxGeometry as="geometry" x="1120" y="588" width="300" height="24" />
+        </mxCell>
+        <mxCell id="r_pagos_monto_bob" value="monto_bob" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#F5F8FC;strokeColor=#BFBFBF;fontColor=#000000;fontSize=10.5;align=left;verticalAlign=middle;spacingLeft=6;" parent="1" vertex="1">
+          <mxGeometry as="geometry" x="1120" y="612" width="300" height="24" />
+        </mxCell>
+        <mxCell id="r_pagos_metodo" value="metodo" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#BFBFBF;fontColor=#000000;fontSize=10.5;align=left;verticalAlign=middle;spacingLeft=6;" parent="1" vertex="1">
+          <mxGeometry as="geometry" x="1120" y="636" width="300" height="24" />
+        </mxCell>
+        <mxCell id="r_pagos_estado" value="estado" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#F5F8FC;strokeColor=#BFBFBF;fontColor=#000000;fontSize=10.5;align=left;verticalAlign=middle;spacingLeft=6;" parent="1" vertex="1">
+          <mxGeometry as="geometry" x="1120" y="660" width="300" height="24" />
+        </mxCell>
+        <mxCell id="r_pagos_stripe_payment_id" value="stripe_payment_id  &lt;span style=&quot;color:#9E9E9E;&quot;&gt;·&lt;/span&gt;  &lt;span style=&quot;color:#6A1B9A;font-weight:bold;&quot;&gt;UQ&lt;/span&gt;" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#BFBFBF;fontColor=#000000;fontSize=10.5;align=left;verticalAlign=middle;spacingLeft=6;" parent="1" vertex="1">
+          <mxGeometry as="geometry" x="1120" y="684" width="300" height="24" />
+        </mxCell>
+        <mxCell id="r_pagos_creado_en" value="creado_en" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#F5F8FC;strokeColor=#BFBFBF;fontColor=#000000;fontSize=10.5;align=left;verticalAlign=middle;spacingLeft=6;" parent="1" vertex="1">
+          <mxGeometry as="geometry" x="1120" y="708" width="300" height="24" />
+        </mxCell>
+        <mxCell id="frame_pagos" value="" style="rounded=0;whiteSpace=wrap;html=1;fillColor=none;strokeColor=#000000;strokeWidth=1.5;pointerEvents=0;" parent="1" vertex="1">
+          <mxGeometry as="geometry" x="1120" y="460" width="300" height="272" />
+        </mxCell>
+        <mxCell id="h_tipos_cambio" value="TIPOS_CAMBIO" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#6FA8DC;strokeColor=#000000;fontColor=#FFFFFF;fontStyle=1;fontSize=13;align=center;verticalAlign=middle;" parent="1" vertex="1">
+          <mxGeometry as="geometry" x="1120" y="792" width="300" height="32" />
+        </mxCell>
+        <mxCell id="r_tipos_cambio_id" value="&lt;b&gt;&lt;u&gt;id&lt;/u&gt;&lt;/b&gt;  &lt;span style=&quot;color:#9E9E9E;&quot;&gt;·&lt;/span&gt;  &lt;span style=&quot;color:#1565C0;font-weight:bold;&quot;&gt;PK&lt;/span&gt;" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#BFBFBF;fontColor=#000000;fontSize=10.5;align=left;verticalAlign=middle;spacingLeft=6;" parent="1" vertex="1">
+          <mxGeometry as="geometry" x="1120" y="824" width="300" height="24" />
+        </mxCell>
+        <mxCell id="r_tipos_cambio_fecha" value="fecha  &lt;span style=&quot;color:#9E9E9E;&quot;&gt;·&lt;/span&gt;  &lt;span style=&quot;color:#6A1B9A;font-weight:bold;&quot;&gt;UQ&lt;/span&gt;" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#F5F8FC;strokeColor=#BFBFBF;fontColor=#000000;fontSize=10.5;align=left;verticalAlign=middle;spacingLeft=6;" parent="1" vertex="1">
+          <mxGeometry as="geometry" x="1120" y="848" width="300" height="24" />
+        </mxCell>
+        <mxCell id="r_tipos_cambio_moneda_origen" value="moneda_origen  &lt;span style=&quot;color:#9E9E9E;&quot;&gt;·&lt;/span&gt;  &lt;span style=&quot;color:#6A1B9A;font-weight:bold;&quot;&gt;UQ&lt;/span&gt;" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#BFBFBF;fontColor=#000000;fontSize=10.5;align=left;verticalAlign=middle;spacingLeft=6;" parent="1" vertex="1">
+          <mxGeometry as="geometry" x="1120" y="872" width="300" height="24" />
+        </mxCell>
+        <mxCell id="r_tipos_cambio_moneda_destino" value="moneda_destino  &lt;span style=&quot;color:#9E9E9E;&quot;&gt;·&lt;/span&gt;  &lt;span style=&quot;color:#6A1B9A;font-weight:bold;&quot;&gt;UQ&lt;/span&gt;" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#F5F8FC;strokeColor=#BFBFBF;fontColor=#000000;fontSize=10.5;align=left;verticalAlign=middle;spacingLeft=6;" parent="1" vertex="1">
+          <mxGeometry as="geometry" x="1120" y="896" width="300" height="24" />
+        </mxCell>
+        <mxCell id="r_tipos_cambio_tasa" value="tasa" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#BFBFBF;fontColor=#000000;fontSize=10.5;align=left;verticalAlign=middle;spacingLeft=6;" parent="1" vertex="1">
+          <mxGeometry as="geometry" x="1120" y="920" width="300" height="24" />
+        </mxCell>
+        <mxCell id="frame_tipos_cambio" value="" style="rounded=0;whiteSpace=wrap;html=1;fillColor=none;strokeColor=#000000;strokeWidth=1.5;pointerEvents=0;" parent="1" vertex="1">
+          <mxGeometry as="geometry" x="1120" y="792" width="300" height="152" />
+        </mxCell>
+        <mxCell id="h_itinerarios" value="ITINERARIOS" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#6FA8DC;strokeColor=#000000;fontColor=#FFFFFF;fontStyle=1;fontSize=13;align=center;verticalAlign=middle;" parent="1" vertex="1">
+          <mxGeometry as="geometry" x="1120" y="1004" width="300" height="32" />
+        </mxCell>
+        <mxCell id="r_itinerarios_id" value="&lt;b&gt;&lt;u&gt;id&lt;/u&gt;&lt;/b&gt;  &lt;span style=&quot;color:#9E9E9E;&quot;&gt;·&lt;/span&gt;  &lt;span style=&quot;color:#1565C0;font-weight:bold;&quot;&gt;PK&lt;/span&gt;" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#BFBFBF;fontColor=#000000;fontSize=10.5;align=left;verticalAlign=middle;spacingLeft=6;" parent="1" vertex="1">
+          <mxGeometry as="geometry" x="1120" y="1036" width="300" height="24" />
+        </mxCell>
+        <mxCell id="r_itinerarios_reserva_id" value="reserva_id  &lt;span style=&quot;color:#9E9E9E;&quot;&gt;·&lt;/span&gt;  &lt;span style=&quot;color:#1565C0;font-weight:bold;&quot;&gt;FK&lt;/span&gt; &lt;span style=&quot;color:#6A1B9A;font-weight:bold;&quot;&gt;UQ&lt;/span&gt;" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#F5F8FC;strokeColor=#BFBFBF;fontColor=#000000;fontSize=10.5;align=left;verticalAlign=middle;spacingLeft=6;" parent="1" vertex="1">
+          <mxGeometry as="geometry" x="1120" y="1060" width="300" height="24" />
+        </mxCell>
+        <mxCell id="r_itinerarios_generado_por" value="generado_por" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#BFBFBF;fontColor=#000000;fontSize=10.5;align=left;verticalAlign=middle;spacingLeft=6;" parent="1" vertex="1">
+          <mxGeometry as="geometry" x="1120" y="1084" width="300" height="24" />
+        </mxCell>
+        <mxCell id="r_itinerarios_pdf_url" value="pdf_url" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#F5F8FC;strokeColor=#BFBFBF;fontColor=#000000;fontSize=10.5;align=left;verticalAlign=middle;spacingLeft=6;" parent="1" vertex="1">
+          <mxGeometry as="geometry" x="1120" y="1108" width="300" height="24" />
+        </mxCell>
+        <mxCell id="r_itinerarios_creado_en" value="creado_en" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#BFBFBF;fontColor=#000000;fontSize=10.5;align=left;verticalAlign=middle;spacingLeft=6;" parent="1" vertex="1">
+          <mxGeometry as="geometry" x="1120" y="1132" width="300" height="24" />
+        </mxCell>
+        <mxCell id="frame_itinerarios" value="" style="rounded=0;whiteSpace=wrap;html=1;fillColor=none;strokeColor=#000000;strokeWidth=1.5;pointerEvents=0;" parent="1" vertex="1">
+          <mxGeometry as="geometry" x="1120" y="1004" width="300" height="152" />
+        </mxCell>
+        <mxCell id="h_itinerario_items" value="ITINERARIO_ITEMS" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#6FA8DC;strokeColor=#000000;fontColor=#FFFFFF;fontStyle=1;fontSize=13;align=center;verticalAlign=middle;" parent="1" vertex="1">
+          <mxGeometry as="geometry" x="1120" y="1216" width="300" height="32" />
+        </mxCell>
+        <mxCell id="r_itinerario_items_id" value="&lt;b&gt;&lt;u&gt;id&lt;/u&gt;&lt;/b&gt;  &lt;span style=&quot;color:#9E9E9E;&quot;&gt;·&lt;/span&gt;  &lt;span style=&quot;color:#1565C0;font-weight:bold;&quot;&gt;PK&lt;/span&gt;" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#BFBFBF;fontColor=#000000;fontSize=10.5;align=left;verticalAlign=middle;spacingLeft=6;" parent="1" vertex="1">
+          <mxGeometry as="geometry" x="1120" y="1248" width="300" height="24" />
+        </mxCell>
+        <mxCell id="r_itinerario_items_itinerario_id" value="itinerario_id  &lt;span style=&quot;color:#9E9E9E;&quot;&gt;·&lt;/span&gt;  &lt;span style=&quot;color:#1565C0;font-weight:bold;&quot;&gt;FK&lt;/span&gt; &lt;span style=&quot;color:#6A1B9A;font-weight:bold;&quot;&gt;UQ&lt;/span&gt;" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#F5F8FC;strokeColor=#BFBFBF;fontColor=#000000;fontSize=10.5;align=left;verticalAlign=middle;spacingLeft=6;" parent="1" vertex="1">
+          <mxGeometry as="geometry" x="1120" y="1272" width="300" height="24" />
+        </mxCell>
+        <mxCell id="r_itinerario_items_dia" value="dia  &lt;span style=&quot;color:#9E9E9E;&quot;&gt;·&lt;/span&gt;  &lt;span style=&quot;color:#6A1B9A;font-weight:bold;&quot;&gt;UQ&lt;/span&gt;" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#BFBFBF;fontColor=#000000;fontSize=10.5;align=left;verticalAlign=middle;spacingLeft=6;" parent="1" vertex="1">
+          <mxGeometry as="geometry" x="1120" y="1296" width="300" height="24" />
+        </mxCell>
+        <mxCell id="r_itinerario_items_orden" value="orden  &lt;span style=&quot;color:#9E9E9E;&quot;&gt;·&lt;/span&gt;  &lt;span style=&quot;color:#6A1B9A;font-weight:bold;&quot;&gt;UQ&lt;/span&gt;" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#F5F8FC;strokeColor=#BFBFBF;fontColor=#000000;fontSize=10.5;align=left;verticalAlign=middle;spacingLeft=6;" parent="1" vertex="1">
+          <mxGeometry as="geometry" x="1120" y="1320" width="300" height="24" />
+        </mxCell>
+        <mxCell id="r_itinerario_items_hora" value="hora" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#BFBFBF;fontColor=#000000;fontSize=10.5;align=left;verticalAlign=middle;spacingLeft=6;" parent="1" vertex="1">
+          <mxGeometry as="geometry" x="1120" y="1344" width="300" height="24" />
+        </mxCell>
+        <mxCell id="r_itinerario_items_titulo" value="titulo" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#F5F8FC;strokeColor=#BFBFBF;fontColor=#000000;fontSize=10.5;align=left;verticalAlign=middle;spacingLeft=6;" parent="1" vertex="1">
+          <mxGeometry as="geometry" x="1120" y="1368" width="300" height="24" />
+        </mxCell>
+        <mxCell id="r_itinerario_items_descripcion" value="descripcion" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#BFBFBF;fontColor=#000000;fontSize=10.5;align=left;verticalAlign=middle;spacingLeft=6;" parent="1" vertex="1">
+          <mxGeometry as="geometry" x="1120" y="1392" width="300" height="24" />
+        </mxCell>
+        <mxCell id="r_itinerario_items_latitud" value="latitud" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#F5F8FC;strokeColor=#BFBFBF;fontColor=#000000;fontSize=10.5;align=left;verticalAlign=middle;spacingLeft=6;" parent="1" vertex="1">
+          <mxGeometry as="geometry" x="1120" y="1416" width="300" height="24" />
+        </mxCell>
+        <mxCell id="r_itinerario_items_longitud" value="longitud" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#BFBFBF;fontColor=#000000;fontSize=10.5;align=left;verticalAlign=middle;spacingLeft=6;" parent="1" vertex="1">
+          <mxGeometry as="geometry" x="1120" y="1440" width="300" height="24" />
+        </mxCell>
+        <mxCell id="frame_itinerario_items" value="" style="rounded=0;whiteSpace=wrap;html=1;fillColor=none;strokeColor=#000000;strokeWidth=1.5;pointerEvents=0;" parent="1" vertex="1">
+          <mxGeometry as="geometry" x="1120" y="1216" width="300" height="248" />
+        </mxCell>
+        <mxCell id="h_notificaciones" value="NOTIFICACIONES" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#6FA8DC;strokeColor=#000000;fontColor=#FFFFFF;fontStyle=1;fontSize=13;align=center;verticalAlign=middle;" parent="1" vertex="1">
+          <mxGeometry as="geometry" x="1480" y="200" width="300" height="32" />
+        </mxCell>
+        <mxCell id="r_notificaciones_id" value="&lt;b&gt;&lt;u&gt;id&lt;/u&gt;&lt;/b&gt;  &lt;span style=&quot;color:#9E9E9E;&quot;&gt;·&lt;/span&gt;  &lt;span style=&quot;color:#1565C0;font-weight:bold;&quot;&gt;PK&lt;/span&gt;" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#BFBFBF;fontColor=#000000;fontSize=10.5;align=left;verticalAlign=middle;spacingLeft=6;" parent="1" vertex="1">
+          <mxGeometry as="geometry" x="1480" y="232" width="300" height="24" />
+        </mxCell>
+        <mxCell id="r_notificaciones_reserva_id" value="reserva_id  &lt;span style=&quot;color:#9E9E9E;&quot;&gt;·&lt;/span&gt;  &lt;span style=&quot;color:#1565C0;font-weight:bold;&quot;&gt;FK&lt;/span&gt;" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#F5F8FC;strokeColor=#BFBFBF;fontColor=#000000;fontSize=10.5;align=left;verticalAlign=middle;spacingLeft=6;" parent="1" vertex="1">
+          <mxGeometry as="geometry" x="1480" y="256" width="300" height="24" />
+        </mxCell>
+        <mxCell id="r_notificaciones_usuario_id" value="usuario_id  &lt;span style=&quot;color:#9E9E9E;&quot;&gt;·&lt;/span&gt;  &lt;span style=&quot;color:#1565C0;font-weight:bold;&quot;&gt;FK&lt;/span&gt;" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#BFBFBF;fontColor=#000000;fontSize=10.5;align=left;verticalAlign=middle;spacingLeft=6;" parent="1" vertex="1">
+          <mxGeometry as="geometry" x="1480" y="280" width="300" height="24" />
+        </mxCell>
+        <mxCell id="r_notificaciones_tipo" value="tipo" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#F5F8FC;strokeColor=#BFBFBF;fontColor=#000000;fontSize=10.5;align=left;verticalAlign=middle;spacingLeft=6;" parent="1" vertex="1">
+          <mxGeometry as="geometry" x="1480" y="304" width="300" height="24" />
+        </mxCell>
+        <mxCell id="r_notificaciones_estado" value="estado" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#BFBFBF;fontColor=#000000;fontSize=10.5;align=left;verticalAlign=middle;spacingLeft=6;" parent="1" vertex="1">
+          <mxGeometry as="geometry" x="1480" y="328" width="300" height="24" />
+        </mxCell>
+        <mxCell id="r_notificaciones_resend_message_id" value="resend_message_id" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#F5F8FC;strokeColor=#BFBFBF;fontColor=#000000;fontSize=10.5;align=left;verticalAlign=middle;spacingLeft=6;" parent="1" vertex="1">
+          <mxGeometry as="geometry" x="1480" y="352" width="300" height="24" />
+        </mxCell>
+        <mxCell id="r_notificaciones_creado_en" value="creado_en" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#BFBFBF;fontColor=#000000;fontSize=10.5;align=left;verticalAlign=middle;spacingLeft=6;" parent="1" vertex="1">
+          <mxGeometry as="geometry" x="1480" y="376" width="300" height="24" />
+        </mxCell>
+        <mxCell id="frame_notificaciones" value="" style="rounded=0;whiteSpace=wrap;html=1;fillColor=none;strokeColor=#000000;strokeWidth=1.5;pointerEvents=0;" parent="1" vertex="1">
+          <mxGeometry as="geometry" x="1480" y="200" width="300" height="200" />
+        </mxCell>
+        <mxCell id="h_intenciones" value="INTENCIONES" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#6FA8DC;strokeColor=#000000;fontColor=#FFFFFF;fontStyle=1;fontSize=13;align=center;verticalAlign=middle;" parent="1" vertex="1">
+          <mxGeometry as="geometry" x="1480" y="460" width="300" height="32" />
+        </mxCell>
+        <mxCell id="r_intenciones_id" value="&lt;b&gt;&lt;u&gt;id&lt;/u&gt;&lt;/b&gt;  &lt;span style=&quot;color:#9E9E9E;&quot;&gt;·&lt;/span&gt;  &lt;span style=&quot;color:#1565C0;font-weight:bold;&quot;&gt;PK&lt;/span&gt;" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#BFBFBF;fontColor=#000000;fontSize=10.5;align=left;verticalAlign=middle;spacingLeft=6;" parent="1" vertex="1">
+          <mxGeometry as="geometry" x="1480" y="492" width="300" height="24" />
+        </mxCell>
+        <mxCell id="r_intenciones_nombre" value="nombre  &lt;span style=&quot;color:#9E9E9E;&quot;&gt;·&lt;/span&gt;  &lt;span style=&quot;color:#6A1B9A;font-weight:bold;&quot;&gt;UQ&lt;/span&gt;" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#F5F8FC;strokeColor=#BFBFBF;fontColor=#000000;fontSize=10.5;align=left;verticalAlign=middle;spacingLeft=6;" parent="1" vertex="1">
+          <mxGeometry as="geometry" x="1480" y="516" width="300" height="24" />
+        </mxCell>
+        <mxCell id="r_intenciones_descripcion" value="descripcion" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#BFBFBF;fontColor=#000000;fontSize=10.5;align=left;verticalAlign=middle;spacingLeft=6;" parent="1" vertex="1">
+          <mxGeometry as="geometry" x="1480" y="540" width="300" height="24" />
+        </mxCell>
+        <mxCell id="r_intenciones_activa" value="activa" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#F5F8FC;strokeColor=#BFBFBF;fontColor=#000000;fontSize=10.5;align=left;verticalAlign=middle;spacingLeft=6;" parent="1" vertex="1">
+          <mxGeometry as="geometry" x="1480" y="564" width="300" height="24" />
+        </mxCell>
+        <mxCell id="frame_intenciones" value="" style="rounded=0;whiteSpace=wrap;html=1;fillColor=none;strokeColor=#000000;strokeWidth=1.5;pointerEvents=0;" parent="1" vertex="1">
+          <mxGeometry as="geometry" x="1480" y="460" width="300" height="128" />
+        </mxCell>
+        <mxCell id="h_frases_entrenamiento" value="FRASES_ENTRENAMIENTO" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#6FA8DC;strokeColor=#000000;fontColor=#FFFFFF;fontStyle=1;fontSize=13;align=center;verticalAlign=middle;" parent="1" vertex="1">
+          <mxGeometry as="geometry" x="1480" y="648" width="300" height="32" />
+        </mxCell>
+        <mxCell id="r_frases_entrenamiento_id" value="&lt;b&gt;&lt;u&gt;id&lt;/u&gt;&lt;/b&gt;  &lt;span style=&quot;color:#9E9E9E;&quot;&gt;·&lt;/span&gt;  &lt;span style=&quot;color:#1565C0;font-weight:bold;&quot;&gt;PK&lt;/span&gt;" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#BFBFBF;fontColor=#000000;fontSize=10.5;align=left;verticalAlign=middle;spacingLeft=6;" parent="1" vertex="1">
+          <mxGeometry as="geometry" x="1480" y="680" width="300" height="24" />
+        </mxCell>
+        <mxCell id="r_frases_entrenamiento_intencion_id" value="intencion_id  &lt;span style=&quot;color:#9E9E9E;&quot;&gt;·&lt;/span&gt;  &lt;span style=&quot;color:#1565C0;font-weight:bold;&quot;&gt;FK&lt;/span&gt; &lt;span style=&quot;color:#6A1B9A;font-weight:bold;&quot;&gt;UQ&lt;/span&gt;" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#F5F8FC;strokeColor=#BFBFBF;fontColor=#000000;fontSize=10.5;align=left;verticalAlign=middle;spacingLeft=6;" parent="1" vertex="1">
+          <mxGeometry as="geometry" x="1480" y="704" width="300" height="24" />
+        </mxCell>
+        <mxCell id="r_frases_entrenamiento_texto" value="texto  &lt;span style=&quot;color:#9E9E9E;&quot;&gt;·&lt;/span&gt;  &lt;span style=&quot;color:#6A1B9A;font-weight:bold;&quot;&gt;UQ&lt;/span&gt;" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#BFBFBF;fontColor=#000000;fontSize=10.5;align=left;verticalAlign=middle;spacingLeft=6;" parent="1" vertex="1">
+          <mxGeometry as="geometry" x="1480" y="728" width="300" height="24" />
+        </mxCell>
+        <mxCell id="r_frases_entrenamiento_origen" value="origen" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#F5F8FC;strokeColor=#BFBFBF;fontColor=#000000;fontSize=10.5;align=left;verticalAlign=middle;spacingLeft=6;" parent="1" vertex="1">
+          <mxGeometry as="geometry" x="1480" y="752" width="300" height="24" />
+        </mxCell>
+        <mxCell id="r_frases_entrenamiento_creado_en" value="creado_en" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#BFBFBF;fontColor=#000000;fontSize=10.5;align=left;verticalAlign=middle;spacingLeft=6;" parent="1" vertex="1">
+          <mxGeometry as="geometry" x="1480" y="776" width="300" height="24" />
+        </mxCell>
+        <mxCell id="frame_frases_entrenamiento" value="" style="rounded=0;whiteSpace=wrap;html=1;fillColor=none;strokeColor=#000000;strokeWidth=1.5;pointerEvents=0;" parent="1" vertex="1">
+          <mxGeometry as="geometry" x="1480" y="648" width="300" height="152" />
+        </mxCell>
+        <mxCell id="h_modelos_ia" value="MODELOS_IA" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#6FA8DC;strokeColor=#000000;fontColor=#FFFFFF;fontStyle=1;fontSize=13;align=center;verticalAlign=middle;" parent="1" vertex="1">
+          <mxGeometry as="geometry" x="1480" y="860" width="300" height="32" />
+        </mxCell>
+        <mxCell id="r_modelos_ia_id" value="&lt;b&gt;&lt;u&gt;id&lt;/u&gt;&lt;/b&gt;  &lt;span style=&quot;color:#9E9E9E;&quot;&gt;·&lt;/span&gt;  &lt;span style=&quot;color:#1565C0;font-weight:bold;&quot;&gt;PK&lt;/span&gt;" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#BFBFBF;fontColor=#000000;fontSize=10.5;align=left;verticalAlign=middle;spacingLeft=6;" parent="1" vertex="1">
+          <mxGeometry as="geometry" x="1480" y="892" width="300" height="24" />
+        </mxCell>
+        <mxCell id="r_modelos_ia_nombre" value="nombre  &lt;span style=&quot;color:#9E9E9E;&quot;&gt;·&lt;/span&gt;  &lt;span style=&quot;color:#6A1B9A;font-weight:bold;&quot;&gt;UQ&lt;/span&gt;" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#F5F8FC;strokeColor=#BFBFBF;fontColor=#000000;fontSize=10.5;align=left;verticalAlign=middle;spacingLeft=6;" parent="1" vertex="1">
+          <mxGeometry as="geometry" x="1480" y="916" width="300" height="24" />
+        </mxCell>
+        <mxCell id="r_modelos_ia_version" value="version  &lt;span style=&quot;color:#9E9E9E;&quot;&gt;·&lt;/span&gt;  &lt;span style=&quot;color:#6A1B9A;font-weight:bold;&quot;&gt;UQ&lt;/span&gt;" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#BFBFBF;fontColor=#000000;fontSize=10.5;align=left;verticalAlign=middle;spacingLeft=6;" parent="1" vertex="1">
+          <mxGeometry as="geometry" x="1480" y="940" width="300" height="24" />
+        </mxCell>
+        <mxCell id="r_modelos_ia_tipo" value="tipo" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#F5F8FC;strokeColor=#BFBFBF;fontColor=#000000;fontSize=10.5;align=left;verticalAlign=middle;spacingLeft=6;" parent="1" vertex="1">
+          <mxGeometry as="geometry" x="1480" y="964" width="300" height="24" />
+        </mxCell>
+        <mxCell id="r_modelos_ia_metricas" value="metricas" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#BFBFBF;fontColor=#000000;fontSize=10.5;align=left;verticalAlign=middle;spacingLeft=6;" parent="1" vertex="1">
+          <mxGeometry as="geometry" x="1480" y="988" width="300" height="24" />
+        </mxCell>
+        <mxCell id="r_modelos_ia_activo" value="activo" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#F5F8FC;strokeColor=#BFBFBF;fontColor=#000000;fontSize=10.5;align=left;verticalAlign=middle;spacingLeft=6;" parent="1" vertex="1">
+          <mxGeometry as="geometry" x="1480" y="1012" width="300" height="24" />
+        </mxCell>
+        <mxCell id="r_modelos_ia_entrenado_en" value="entrenado_en" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#BFBFBF;fontColor=#000000;fontSize=10.5;align=left;verticalAlign=middle;spacingLeft=6;" parent="1" vertex="1">
+          <mxGeometry as="geometry" x="1480" y="1036" width="300" height="24" />
+        </mxCell>
+        <mxCell id="frame_modelos_ia" value="" style="rounded=0;whiteSpace=wrap;html=1;fillColor=none;strokeColor=#000000;strokeWidth=1.5;pointerEvents=0;" parent="1" vertex="1">
+          <mxGeometry as="geometry" x="1480" y="860" width="300" height="200" />
+        </mxCell>
+        <mxCell id="h_conversaciones" value="CONVERSACIONES" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#6FA8DC;strokeColor=#000000;fontColor=#FFFFFF;fontStyle=1;fontSize=13;align=center;verticalAlign=middle;" parent="1" vertex="1">
+          <mxGeometry as="geometry" x="1480" y="1120" width="300" height="32" />
+        </mxCell>
+        <mxCell id="r_conversaciones_id" value="&lt;b&gt;&lt;u&gt;id&lt;/u&gt;&lt;/b&gt;  &lt;span style=&quot;color:#9E9E9E;&quot;&gt;·&lt;/span&gt;  &lt;span style=&quot;color:#1565C0;font-weight:bold;&quot;&gt;PK&lt;/span&gt;" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#BFBFBF;fontColor=#000000;fontSize=10.5;align=left;verticalAlign=middle;spacingLeft=6;" parent="1" vertex="1">
+          <mxGeometry as="geometry" x="1480" y="1152" width="300" height="24" />
+        </mxCell>
+        <mxCell id="r_conversaciones_usuario_id" value="usuario_id  &lt;span style=&quot;color:#9E9E9E;&quot;&gt;·&lt;/span&gt;  &lt;span style=&quot;color:#1565C0;font-weight:bold;&quot;&gt;FK&lt;/span&gt;" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#F5F8FC;strokeColor=#BFBFBF;fontColor=#000000;fontSize=10.5;align=left;verticalAlign=middle;spacingLeft=6;" parent="1" vertex="1">
+          <mxGeometry as="geometry" x="1480" y="1176" width="300" height="24" />
+        </mxCell>
+        <mxCell id="r_conversaciones_estado_dialogo" value="estado_dialogo" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#BFBFBF;fontColor=#000000;fontSize=10.5;align=left;verticalAlign=middle;spacingLeft=6;" parent="1" vertex="1">
+          <mxGeometry as="geometry" x="1480" y="1200" width="300" height="24" />
+        </mxCell>
+        <mxCell id="r_conversaciones_intencion_activa" value="intencion_activa" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#F5F8FC;strokeColor=#BFBFBF;fontColor=#000000;fontSize=10.5;align=left;verticalAlign=middle;spacingLeft=6;" parent="1" vertex="1">
+          <mxGeometry as="geometry" x="1480" y="1224" width="300" height="24" />
+        </mxCell>
+        <mxCell id="r_conversaciones_cerrada" value="cerrada" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#BFBFBF;fontColor=#000000;fontSize=10.5;align=left;verticalAlign=middle;spacingLeft=6;" parent="1" vertex="1">
+          <mxGeometry as="geometry" x="1480" y="1248" width="300" height="24" />
+        </mxCell>
+        <mxCell id="r_conversaciones_iniciada_en" value="iniciada_en" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#F5F8FC;strokeColor=#BFBFBF;fontColor=#000000;fontSize=10.5;align=left;verticalAlign=middle;spacingLeft=6;" parent="1" vertex="1">
+          <mxGeometry as="geometry" x="1480" y="1272" width="300" height="24" />
+        </mxCell>
+        <mxCell id="r_conversaciones_ultima_actividad" value="ultima_actividad" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#BFBFBF;fontColor=#000000;fontSize=10.5;align=left;verticalAlign=middle;spacingLeft=6;" parent="1" vertex="1">
+          <mxGeometry as="geometry" x="1480" y="1296" width="300" height="24" />
+        </mxCell>
+        <mxCell id="frame_conversaciones" value="" style="rounded=0;whiteSpace=wrap;html=1;fillColor=none;strokeColor=#000000;strokeWidth=1.5;pointerEvents=0;" parent="1" vertex="1">
+          <mxGeometry as="geometry" x="1480" y="1120" width="300" height="200" />
+        </mxCell>
+        <mxCell id="h_mensajes" value="MENSAJES" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#6FA8DC;strokeColor=#000000;fontColor=#FFFFFF;fontStyle=1;fontSize=13;align=center;verticalAlign=middle;" parent="1" vertex="1">
+          <mxGeometry as="geometry" x="1480" y="1380" width="300" height="32" />
+        </mxCell>
+        <mxCell id="r_mensajes_id" value="&lt;b&gt;&lt;u&gt;id&lt;/u&gt;&lt;/b&gt;  &lt;span style=&quot;color:#9E9E9E;&quot;&gt;·&lt;/span&gt;  &lt;span style=&quot;color:#1565C0;font-weight:bold;&quot;&gt;PK&lt;/span&gt;" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#BFBFBF;fontColor=#000000;fontSize=10.5;align=left;verticalAlign=middle;spacingLeft=6;" parent="1" vertex="1">
+          <mxGeometry as="geometry" x="1480" y="1412" width="300" height="24" />
+        </mxCell>
+        <mxCell id="r_mensajes_conversacion_id" value="conversacion_id  &lt;span style=&quot;color:#9E9E9E;&quot;&gt;·&lt;/span&gt;  &lt;span style=&quot;color:#1565C0;font-weight:bold;&quot;&gt;FK&lt;/span&gt;" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#F5F8FC;strokeColor=#BFBFBF;fontColor=#000000;fontSize=10.5;align=left;verticalAlign=middle;spacingLeft=6;" parent="1" vertex="1">
+          <mxGeometry as="geometry" x="1480" y="1436" width="300" height="24" />
+        </mxCell>
+        <mxCell id="r_mensajes_intencion_id" value="intencion_id  &lt;span style=&quot;color:#9E9E9E;&quot;&gt;·&lt;/span&gt;  &lt;span style=&quot;color:#1565C0;font-weight:bold;&quot;&gt;FK&lt;/span&gt;" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#BFBFBF;fontColor=#000000;fontSize=10.5;align=left;verticalAlign=middle;spacingLeft=6;" parent="1" vertex="1">
+          <mxGeometry as="geometry" x="1480" y="1460" width="300" height="24" />
+        </mxCell>
+        <mxCell id="r_mensajes_modelo_id" value="modelo_id  &lt;span style=&quot;color:#9E9E9E;&quot;&gt;·&lt;/span&gt;  &lt;span style=&quot;color:#1565C0;font-weight:bold;&quot;&gt;FK&lt;/span&gt;" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#F5F8FC;strokeColor=#BFBFBF;fontColor=#000000;fontSize=10.5;align=left;verticalAlign=middle;spacingLeft=6;" parent="1" vertex="1">
+          <mxGeometry as="geometry" x="1480" y="1484" width="300" height="24" />
+        </mxCell>
+        <mxCell id="r_mensajes_emisor" value="emisor" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#BFBFBF;fontColor=#000000;fontSize=10.5;align=left;verticalAlign=middle;spacingLeft=6;" parent="1" vertex="1">
+          <mxGeometry as="geometry" x="1480" y="1508" width="300" height="24" />
+        </mxCell>
+        <mxCell id="r_mensajes_texto" value="texto" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#F5F8FC;strokeColor=#BFBFBF;fontColor=#000000;fontSize=10.5;align=left;verticalAlign=middle;spacingLeft=6;" parent="1" vertex="1">
+          <mxGeometry as="geometry" x="1480" y="1532" width="300" height="24" />
+        </mxCell>
+        <mxCell id="r_mensajes_confianza" value="confianza" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#BFBFBF;fontColor=#000000;fontSize=10.5;align=left;verticalAlign=middle;spacingLeft=6;" parent="1" vertex="1">
+          <mxGeometry as="geometry" x="1480" y="1556" width="300" height="24" />
+        </mxCell>
+        <mxCell id="r_mensajes_entidades" value="entidades" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#F5F8FC;strokeColor=#BFBFBF;fontColor=#000000;fontSize=10.5;align=left;verticalAlign=middle;spacingLeft=6;" parent="1" vertex="1">
+          <mxGeometry as="geometry" x="1480" y="1580" width="300" height="24" />
+        </mxCell>
+        <mxCell id="r_mensajes_creado_en" value="creado_en" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#BFBFBF;fontColor=#000000;fontSize=10.5;align=left;verticalAlign=middle;spacingLeft=6;" parent="1" vertex="1">
+          <mxGeometry as="geometry" x="1480" y="1604" width="300" height="24" />
+        </mxCell>
+        <mxCell id="frame_mensajes" value="" style="rounded=0;whiteSpace=wrap;html=1;fillColor=none;strokeColor=#000000;strokeWidth=1.5;pointerEvents=0;" parent="1" vertex="1">
+          <mxGeometry as="geometry" x="1480" y="1380" width="300" height="248" />
+        </mxCell>
+        <mxCell id="h_recomendaciones" value="RECOMENDACIONES" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#6FA8DC;strokeColor=#000000;fontColor=#FFFFFF;fontStyle=1;fontSize=13;align=center;verticalAlign=middle;" parent="1" vertex="1">
+          <mxGeometry as="geometry" x="1480" y="1688" width="300" height="32" />
+        </mxCell>
+        <mxCell id="r_recomendaciones_id" value="&lt;b&gt;&lt;u&gt;id&lt;/u&gt;&lt;/b&gt;  &lt;span style=&quot;color:#9E9E9E;&quot;&gt;·&lt;/span&gt;  &lt;span style=&quot;color:#1565C0;font-weight:bold;&quot;&gt;PK&lt;/span&gt;" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#BFBFBF;fontColor=#000000;fontSize=10.5;align=left;verticalAlign=middle;spacingLeft=6;" parent="1" vertex="1">
+          <mxGeometry as="geometry" x="1480" y="1720" width="300" height="24" />
+        </mxCell>
+        <mxCell id="r_recomendaciones_cliente_id" value="cliente_id  &lt;span style=&quot;color:#9E9E9E;&quot;&gt;·&lt;/span&gt;  &lt;span style=&quot;color:#1565C0;font-weight:bold;&quot;&gt;FK&lt;/span&gt;" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#F5F8FC;strokeColor=#BFBFBF;fontColor=#000000;fontSize=10.5;align=left;verticalAlign=middle;spacingLeft=6;" parent="1" vertex="1">
+          <mxGeometry as="geometry" x="1480" y="1744" width="300" height="24" />
+        </mxCell>
+        <mxCell id="r_recomendaciones_modelo_id" value="modelo_id  &lt;span style=&quot;color:#9E9E9E;&quot;&gt;·&lt;/span&gt;  &lt;span style=&quot;color:#1565C0;font-weight:bold;&quot;&gt;FK&lt;/span&gt;" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#BFBFBF;fontColor=#000000;fontSize=10.5;align=left;verticalAlign=middle;spacingLeft=6;" parent="1" vertex="1">
+          <mxGeometry as="geometry" x="1480" y="1768" width="300" height="24" />
+        </mxCell>
+        <mxCell id="r_recomendaciones_paquete_id" value="paquete_id  &lt;span style=&quot;color:#9E9E9E;&quot;&gt;·&lt;/span&gt;  &lt;span style=&quot;color:#1565C0;font-weight:bold;&quot;&gt;FK&lt;/span&gt;" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#F5F8FC;strokeColor=#BFBFBF;fontColor=#000000;fontSize=10.5;align=left;verticalAlign=middle;spacingLeft=6;" parent="1" vertex="1">
+          <mxGeometry as="geometry" x="1480" y="1792" width="300" height="24" />
+        </mxCell>
+        <mxCell id="r_recomendaciones_puntaje" value="puntaje" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#BFBFBF;fontColor=#000000;fontSize=10.5;align=left;verticalAlign=middle;spacingLeft=6;" parent="1" vertex="1">
+          <mxGeometry as="geometry" x="1480" y="1816" width="300" height="24" />
+        </mxCell>
+        <mxCell id="r_recomendaciones_mostrada" value="mostrada" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#F5F8FC;strokeColor=#BFBFBF;fontColor=#000000;fontSize=10.5;align=left;verticalAlign=middle;spacingLeft=6;" parent="1" vertex="1">
+          <mxGeometry as="geometry" x="1480" y="1840" width="300" height="24" />
+        </mxCell>
+        <mxCell id="r_recomendaciones_aceptada" value="aceptada" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#BFBFBF;fontColor=#000000;fontSize=10.5;align=left;verticalAlign=middle;spacingLeft=6;" parent="1" vertex="1">
+          <mxGeometry as="geometry" x="1480" y="1864" width="300" height="24" />
+        </mxCell>
+        <mxCell id="r_recomendaciones_generada_en" value="generada_en" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#F5F8FC;strokeColor=#BFBFBF;fontColor=#000000;fontSize=10.5;align=left;verticalAlign=middle;spacingLeft=6;" parent="1" vertex="1">
+          <mxGeometry as="geometry" x="1480" y="1888" width="300" height="24" />
+        </mxCell>
+        <mxCell id="r_recomendaciones_lote" value="lote" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#BFBFBF;fontColor=#000000;fontSize=10.5;align=left;verticalAlign=middle;spacingLeft=6;" parent="1" vertex="1">
+          <mxGeometry as="geometry" x="1480" y="1912" width="300" height="24" />
+        </mxCell>
+        <mxCell id="frame_recomendaciones" value="" style="rounded=0;whiteSpace=wrap;html=1;fillColor=none;strokeColor=#000000;strokeWidth=1.5;pointerEvents=0;" parent="1" vertex="1">
+          <mxGeometry as="geometry" x="1480" y="1688" width="300" height="248" />
+        </mxCell>
+        <mxCell id="fk_aeropuertos_destino_id_81db1114_fk_destinos_id_lbl_p" value="1" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];fontSize=11;fontStyle=1;fontColor=#1A237E;" parent="fk_aeropuertos_destino_id_81db1114_fk_destinos_id" vertex="1" connectable="0">
+          <mxGeometry as="geometry" relative="1" x="-0.82" />
+        </mxCell>
+        <mxCell id="fk_aeropuertos_destino_id_81db1114_fk_destinos_id_lbl_c" value="M" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];fontSize=11;fontStyle=1;fontColor=#1A237E;" parent="fk_aeropuertos_destino_id_81db1114_fk_destinos_id" vertex="1" connectable="0">
+          <mxGeometry as="geometry" relative="1" x="0.82" />
+        </mxCell>
+        <mxCell id="fk_auditoria_usuario_id_5e766294_fk_usuarios_id_lbl_p" value="1" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];fontSize=11;fontStyle=1;fontColor=#1A237E;" parent="fk_auditoria_usuario_id_5e766294_fk_usuarios_id" vertex="1" connectable="0">
+          <mxGeometry as="geometry" relative="1" x="-0.82" />
+        </mxCell>
+        <mxCell id="fk_auditoria_usuario_id_5e766294_fk_usuarios_id_lbl_c" value="M" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];fontSize=11;fontStyle=1;fontColor=#1A237E;" parent="fk_auditoria_usuario_id_5e766294_fk_usuarios_id" vertex="1" connectable="0">
+          <mxGeometry as="geometry" relative="1" x="0.82" />
+        </mxCell>
+        <mxCell id="fk_cliente_preferencias_cliente_id_187bff48_fk_clientes_id_lbl_p" value="1" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];fontSize=11;fontStyle=1;fontColor=#1A237E;" parent="fk_cliente_preferencias_cliente_id_187bff48_fk_clientes_id" vertex="1" connectable="0">
+          <mxGeometry as="geometry" relative="1" x="-0.82" />
+        </mxCell>
+        <mxCell id="fk_cliente_preferencias_cliente_id_187bff48_fk_clientes_id_lbl_c" value="1" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];fontSize=11;fontStyle=1;fontColor=#1A237E;" parent="fk_cliente_preferencias_cliente_id_187bff48_fk_clientes_id" vertex="1" connectable="0">
+          <mxGeometry as="geometry" relative="1" x="0.82" />
+        </mxCell>
+        <mxCell id="fk_clientes_usuario_id_07f7990e_fk_usuarios_id_lbl_p" value="1" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];fontSize=11;fontStyle=1;fontColor=#1A237E;" parent="fk_clientes_usuario_id_07f7990e_fk_usuarios_id" vertex="1" connectable="0">
+          <mxGeometry as="geometry" relative="1" x="-0.82" />
+        </mxCell>
+        <mxCell id="fk_clientes_usuario_id_07f7990e_fk_usuarios_id_lbl_c" value="1" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];fontSize=11;fontStyle=1;fontColor=#1A237E;" parent="fk_clientes_usuario_id_07f7990e_fk_usuarios_id" vertex="1" connectable="0">
+          <mxGeometry as="geometry" relative="1" x="0.82" />
+        </mxCell>
+        <mxCell id="fk_conversaciones_usuario_id_ad9321ef_fk_usuarios_id_lbl_p" value="1" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];fontSize=11;fontStyle=1;fontColor=#1A237E;" parent="fk_conversaciones_usuario_id_ad9321ef_fk_usuarios_id" vertex="1" connectable="0">
+          <mxGeometry as="geometry" relative="1" x="-0.82" />
+        </mxCell>
+        <mxCell id="fk_conversaciones_usuario_id_ad9321ef_fk_usuarios_id_lbl_c" value="M" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];fontSize=11;fontStyle=1;fontColor=#1A237E;" parent="fk_conversaciones_usuario_id_ad9321ef_fk_usuarios_id" vertex="1" connectable="0">
+          <mxGeometry as="geometry" relative="1" x="0.82" />
+        </mxCell>
+        <mxCell id="fk_frases_entrenamiento_intencion_id_20d432ba_fk_intenciones_id_lbl_p" value="1" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];fontSize=11;fontStyle=1;fontColor=#1A237E;" parent="fk_frases_entrenamiento_intencion_id_20d432ba_fk_intenciones_id" vertex="1" connectable="0">
+          <mxGeometry as="geometry" relative="1" x="-0.82" />
+        </mxCell>
+        <mxCell id="fk_frases_entrenamiento_intencion_id_20d432ba_fk_intenciones_id_lbl_c" value="M" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];fontSize=11;fontStyle=1;fontColor=#1A237E;" parent="fk_frases_entrenamiento_intencion_id_20d432ba_fk_intenciones_id" vertex="1" connectable="0">
+          <mxGeometry as="geometry" relative="1" x="0.82" />
+        </mxCell>
+        <mxCell id="fk_habitaciones_hotel_id_ecf1ac8f_fk_hoteles_id_lbl_p" value="1" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];fontSize=11;fontStyle=1;fontColor=#1A237E;" parent="fk_habitaciones_hotel_id_ecf1ac8f_fk_hoteles_id" vertex="1" connectable="0">
+          <mxGeometry as="geometry" relative="1" x="-0.82" />
+        </mxCell>
+        <mxCell id="fk_habitaciones_hotel_id_ecf1ac8f_fk_hoteles_id_lbl_c" value="M" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];fontSize=11;fontStyle=1;fontColor=#1A237E;" parent="fk_habitaciones_hotel_id_ecf1ac8f_fk_hoteles_id" vertex="1" connectable="0">
+          <mxGeometry as="geometry" relative="1" x="0.82" />
+        </mxCell>
+        <mxCell id="fk_hoteles_destino_id_90d64807_fk_destinos_id_lbl_p" value="1" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];fontSize=11;fontStyle=1;fontColor=#1A237E;" parent="fk_hoteles_destino_id_90d64807_fk_destinos_id" vertex="1" connectable="0">
+          <mxGeometry as="geometry" relative="1" x="-0.82" />
+        </mxCell>
+        <mxCell id="fk_hoteles_destino_id_90d64807_fk_destinos_id_lbl_c" value="M" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];fontSize=11;fontStyle=1;fontColor=#1A237E;" parent="fk_hoteles_destino_id_90d64807_fk_destinos_id" vertex="1" connectable="0">
+          <mxGeometry as="geometry" relative="1" x="0.82" />
+        </mxCell>
+        <mxCell id="fk_hoteles_proveedor_id_1a390c8b_fk_proveedores_id_lbl_p" value="1" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];fontSize=11;fontStyle=1;fontColor=#1A237E;" parent="fk_hoteles_proveedor_id_1a390c8b_fk_proveedores_id" vertex="1" connectable="0">
+          <mxGeometry as="geometry" relative="1" x="-0.82" />
+        </mxCell>
+        <mxCell id="fk_hoteles_proveedor_id_1a390c8b_fk_proveedores_id_lbl_c" value="M" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];fontSize=11;fontStyle=1;fontColor=#1A237E;" parent="fk_hoteles_proveedor_id_1a390c8b_fk_proveedores_id" vertex="1" connectable="0">
+          <mxGeometry as="geometry" relative="1" x="0.82" />
+        </mxCell>
+        <mxCell id="fk_itinerario_dias_destino_id_bc602c7c_fk_destinos_id_lbl_p" value="1" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];fontSize=11;fontStyle=1;fontColor=#1A237E;" parent="fk_itinerario_dias_destino_id_bc602c7c_fk_destinos_id" vertex="1" connectable="0">
+          <mxGeometry as="geometry" relative="1" x="-0.82" />
+        </mxCell>
+        <mxCell id="fk_itinerario_dias_destino_id_bc602c7c_fk_destinos_id_lbl_c" value="M" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];fontSize=11;fontStyle=1;fontColor=#1A237E;" parent="fk_itinerario_dias_destino_id_bc602c7c_fk_destinos_id" vertex="1" connectable="0">
+          <mxGeometry as="geometry" relative="1" x="0.82" />
+        </mxCell>
+        <mxCell id="fk_itinerario_items_itinerario_id_443fbd60_fk_itinerarios_id_lbl_p" value="1" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];fontSize=11;fontStyle=1;fontColor=#1A237E;" parent="fk_itinerario_items_itinerario_id_443fbd60_fk_itinerarios_id" vertex="1" connectable="0">
+          <mxGeometry as="geometry" relative="1" x="-0.82" />
+        </mxCell>
+        <mxCell id="fk_itinerario_items_itinerario_id_443fbd60_fk_itinerarios_id_lbl_c" value="M" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];fontSize=11;fontStyle=1;fontColor=#1A237E;" parent="fk_itinerario_items_itinerario_id_443fbd60_fk_itinerarios_id" vertex="1" connectable="0">
+          <mxGeometry as="geometry" relative="1" x="0.82" />
+        </mxCell>
+        <mxCell id="fk_itinerarios_reserva_id_15f1b552_fk_reservas_id_lbl_p" value="1" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];fontSize=11;fontStyle=1;fontColor=#1A237E;" parent="fk_itinerarios_reserva_id_15f1b552_fk_reservas_id" vertex="1" connectable="0">
+          <mxGeometry as="geometry" relative="1" x="-0.82" />
+        </mxCell>
+        <mxCell id="fk_itinerarios_reserva_id_15f1b552_fk_reservas_id_lbl_c" value="1" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];fontSize=11;fontStyle=1;fontColor=#1A237E;" parent="fk_itinerarios_reserva_id_15f1b552_fk_reservas_id" vertex="1" connectable="0">
+          <mxGeometry as="geometry" relative="1" x="0.82" />
+        </mxCell>
+        <mxCell id="fk_mensajes_intencion_id_97ac816a_fk_intenciones_id_lbl_p" value="1" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];fontSize=11;fontStyle=1;fontColor=#1A237E;" parent="fk_mensajes_intencion_id_97ac816a_fk_intenciones_id" vertex="1" connectable="0">
+          <mxGeometry as="geometry" relative="1" x="-0.82" />
+        </mxCell>
+        <mxCell id="fk_mensajes_intencion_id_97ac816a_fk_intenciones_id_lbl_c" value="M" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];fontSize=11;fontStyle=1;fontColor=#1A237E;" parent="fk_mensajes_intencion_id_97ac816a_fk_intenciones_id" vertex="1" connectable="0">
+          <mxGeometry as="geometry" relative="1" x="0.82" />
+        </mxCell>
+        <mxCell id="fk_mensajes_conversacion_id_8ecb8683_fk_conversaciones_id_lbl_p" value="1" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];fontSize=11;fontStyle=1;fontColor=#1A237E;" parent="fk_mensajes_conversacion_id_8ecb8683_fk_conversaciones_id" vertex="1" connectable="0">
+          <mxGeometry as="geometry" relative="1" x="-0.82" />
+        </mxCell>
+        <mxCell id="fk_mensajes_conversacion_id_8ecb8683_fk_conversaciones_id_lbl_c" value="M" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];fontSize=11;fontStyle=1;fontColor=#1A237E;" parent="fk_mensajes_conversacion_id_8ecb8683_fk_conversaciones_id" vertex="1" connectable="0">
+          <mxGeometry as="geometry" relative="1" x="0.82" />
+        </mxCell>
+        <mxCell id="fk_mensajes_modelo_id_666bd88c_fk_modelos_ia_id_lbl_p" value="1" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];fontSize=11;fontStyle=1;fontColor=#1A237E;" parent="fk_mensajes_modelo_id_666bd88c_fk_modelos_ia_id" vertex="1" connectable="0">
+          <mxGeometry as="geometry" relative="1" x="-0.82" />
+        </mxCell>
+        <mxCell id="fk_mensajes_modelo_id_666bd88c_fk_modelos_ia_id_lbl_c" value="M" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];fontSize=11;fontStyle=1;fontColor=#1A237E;" parent="fk_mensajes_modelo_id_666bd88c_fk_modelos_ia_id" vertex="1" connectable="0">
+          <mxGeometry as="geometry" relative="1" x="0.82" />
+        </mxCell>
+        <mxCell id="fk_notificaciones_usuario_id_a75f5971_fk_usuarios_id_lbl_p" value="1" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];fontSize=11;fontStyle=1;fontColor=#1A237E;" parent="fk_notificaciones_usuario_id_a75f5971_fk_usuarios_id" vertex="1" connectable="0">
+          <mxGeometry as="geometry" relative="1" x="-0.82" />
+        </mxCell>
+        <mxCell id="fk_notificaciones_usuario_id_a75f5971_fk_usuarios_id_lbl_c" value="M" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];fontSize=11;fontStyle=1;fontColor=#1A237E;" parent="fk_notificaciones_usuario_id_a75f5971_fk_usuarios_id" vertex="1" connectable="0">
+          <mxGeometry as="geometry" relative="1" x="0.82" />
+        </mxCell>
+        <mxCell id="fk_notificaciones_reserva_id_a139e2bc_fk_reservas_id_lbl_p" value="1" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];fontSize=11;fontStyle=1;fontColor=#1A237E;" parent="fk_notificaciones_reserva_id_a139e2bc_fk_reservas_id" vertex="1" connectable="0">
+          <mxGeometry as="geometry" relative="1" x="-0.82" />
+        </mxCell>
+        <mxCell id="fk_notificaciones_reserva_id_a139e2bc_fk_reservas_id_lbl_c" value="M" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];fontSize=11;fontStyle=1;fontColor=#1A237E;" parent="fk_notificaciones_reserva_id_a139e2bc_fk_reservas_id" vertex="1" connectable="0">
+          <mxGeometry as="geometry" relative="1" x="0.82" />
+        </mxCell>
+        <mxCell id="fk_pagos_reserva_id_0aa8e127_fk_reservas_id_lbl_p" value="1" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];fontSize=11;fontStyle=1;fontColor=#1A237E;" parent="fk_pagos_reserva_id_0aa8e127_fk_reservas_id" vertex="1" connectable="0">
+          <mxGeometry as="geometry" relative="1" x="-0.82" />
+        </mxCell>
+        <mxCell id="fk_pagos_reserva_id_0aa8e127_fk_reservas_id_lbl_c" value="M" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];fontSize=11;fontStyle=1;fontColor=#1A237E;" parent="fk_pagos_reserva_id_0aa8e127_fk_reservas_id" vertex="1" connectable="0">
+          <mxGeometry as="geometry" relative="1" x="0.82" />
+        </mxCell>
+        <mxCell id="fk_paquete_salidas_vuelo_vuelta_id_745d7434_fk_vuelos_id_lbl_p" value="1" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];fontSize=11;fontStyle=1;fontColor=#1A237E;" parent="fk_paquete_salidas_vuelo_vuelta_id_745d7434_fk_vuelos_id" vertex="1" connectable="0">
+          <mxGeometry as="geometry" relative="1" x="-0.82" />
+        </mxCell>
+        <mxCell id="fk_paquete_salidas_vuelo_vuelta_id_745d7434_fk_vuelos_id_lbl_c" value="M" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];fontSize=11;fontStyle=1;fontColor=#1A237E;" parent="fk_paquete_salidas_vuelo_vuelta_id_745d7434_fk_vuelos_id" vertex="1" connectable="0">
+          <mxGeometry as="geometry" relative="1" x="0.82" />
+        </mxCell>
+        <mxCell id="fk_paquete_salidas_vuelo_ida_id_c723f5ea_fk_vuelos_id_lbl_p" value="1" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];fontSize=11;fontStyle=1;fontColor=#1A237E;" parent="fk_paquete_salidas_vuelo_ida_id_c723f5ea_fk_vuelos_id" vertex="1" connectable="0">
+          <mxGeometry as="geometry" relative="1" x="-0.82" />
+        </mxCell>
+        <mxCell id="fk_paquete_salidas_vuelo_ida_id_c723f5ea_fk_vuelos_id_lbl_c" value="M" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];fontSize=11;fontStyle=1;fontColor=#1A237E;" parent="fk_paquete_salidas_vuelo_ida_id_c723f5ea_fk_vuelos_id" vertex="1" connectable="0">
+          <mxGeometry as="geometry" relative="1" x="0.82" />
+        </mxCell>
+        <mxCell id="fk_paquete_salidas_paquete_id_3ac761b2_fk_paquetes_id_lbl_p" value="1" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];fontSize=11;fontStyle=1;fontColor=#1A237E;" parent="fk_paquete_salidas_paquete_id_3ac761b2_fk_paquetes_id" vertex="1" connectable="0">
+          <mxGeometry as="geometry" relative="1" x="-0.82" />
+        </mxCell>
+        <mxCell id="fk_paquete_salidas_paquete_id_3ac761b2_fk_paquetes_id_lbl_c" value="M" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];fontSize=11;fontStyle=1;fontColor=#1A237E;" parent="fk_paquete_salidas_paquete_id_3ac761b2_fk_paquetes_id" vertex="1" connectable="0">
+          <mxGeometry as="geometry" relative="1" x="0.82" />
+        </mxCell>
+        <mxCell id="fk_paquetes_destino_id_4f8a5067_fk_destinos_id_lbl_p" value="1" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];fontSize=11;fontStyle=1;fontColor=#1A237E;" parent="fk_paquetes_destino_id_4f8a5067_fk_destinos_id" vertex="1" connectable="0">
+          <mxGeometry as="geometry" relative="1" x="-0.82" />
+        </mxCell>
+        <mxCell id="fk_paquetes_destino_id_4f8a5067_fk_destinos_id_lbl_c" value="M" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];fontSize=11;fontStyle=1;fontColor=#1A237E;" parent="fk_paquetes_destino_id_4f8a5067_fk_destinos_id" vertex="1" connectable="0">
+          <mxGeometry as="geometry" relative="1" x="0.82" />
+        </mxCell>
+        <mxCell id="fk_paquetes_hotel_id_b284ac4c_fk_hoteles_id_lbl_p" value="1" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];fontSize=11;fontStyle=1;fontColor=#1A237E;" parent="fk_paquetes_hotel_id_b284ac4c_fk_hoteles_id" vertex="1" connectable="0">
+          <mxGeometry as="geometry" relative="1" x="-0.82" />
+        </mxCell>
+        <mxCell id="fk_paquetes_hotel_id_b284ac4c_fk_hoteles_id_lbl_c" value="M" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];fontSize=11;fontStyle=1;fontColor=#1A237E;" parent="fk_paquetes_hotel_id_b284ac4c_fk_hoteles_id" vertex="1" connectable="0">
+          <mxGeometry as="geometry" relative="1" x="0.82" />
+        </mxCell>
+        <mxCell id="fk_recomendaciones_modelo_id_11fabb07_fk_modelos_ia_id_lbl_p" value="1" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];fontSize=11;fontStyle=1;fontColor=#1A237E;" parent="fk_recomendaciones_modelo_id_11fabb07_fk_modelos_ia_id" vertex="1" connectable="0">
+          <mxGeometry as="geometry" relative="1" x="-0.82" />
+        </mxCell>
+        <mxCell id="fk_recomendaciones_modelo_id_11fabb07_fk_modelos_ia_id_lbl_c" value="M" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];fontSize=11;fontStyle=1;fontColor=#1A237E;" parent="fk_recomendaciones_modelo_id_11fabb07_fk_modelos_ia_id" vertex="1" connectable="0">
+          <mxGeometry as="geometry" relative="1" x="0.82" />
+        </mxCell>
+        <mxCell id="fk_recomendaciones_cliente_id_a2d32f18_fk_clientes_id_lbl_p" value="1" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];fontSize=11;fontStyle=1;fontColor=#1A237E;" parent="fk_recomendaciones_cliente_id_a2d32f18_fk_clientes_id" vertex="1" connectable="0">
+          <mxGeometry as="geometry" relative="1" x="-0.82" />
+        </mxCell>
+        <mxCell id="fk_recomendaciones_cliente_id_a2d32f18_fk_clientes_id_lbl_c" value="M" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];fontSize=11;fontStyle=1;fontColor=#1A237E;" parent="fk_recomendaciones_cliente_id_a2d32f18_fk_clientes_id" vertex="1" connectable="0">
+          <mxGeometry as="geometry" relative="1" x="0.82" />
+        </mxCell>
+        <mxCell id="fk_recomendaciones_paquete_id_228cd3a6_fk_paquetes_id_lbl_p" value="1" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];fontSize=11;fontStyle=1;fontColor=#1A237E;" parent="fk_recomendaciones_paquete_id_228cd3a6_fk_paquetes_id" vertex="1" connectable="0">
+          <mxGeometry as="geometry" relative="1" x="-0.82" />
+        </mxCell>
+        <mxCell id="fk_recomendaciones_paquete_id_228cd3a6_fk_paquetes_id_lbl_c" value="M" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];fontSize=11;fontStyle=1;fontColor=#1A237E;" parent="fk_recomendaciones_paquete_id_228cd3a6_fk_paquetes_id" vertex="1" connectable="0">
+          <mxGeometry as="geometry" relative="1" x="0.82" />
+        </mxCell>
+        <mxCell id="fk_reserva_pasajeros_reserva_id_e2da6313_fk_reservas_id_lbl_p" value="1" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];fontSize=11;fontStyle=1;fontColor=#1A237E;" parent="fk_reserva_pasajeros_reserva_id_e2da6313_fk_reservas_id" vertex="1" connectable="0">
+          <mxGeometry as="geometry" relative="1" x="-0.82" />
+        </mxCell>
+        <mxCell id="fk_reserva_pasajeros_reserva_id_e2da6313_fk_reservas_id_lbl_c" value="M" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];fontSize=11;fontStyle=1;fontColor=#1A237E;" parent="fk_reserva_pasajeros_reserva_id_e2da6313_fk_reservas_id" vertex="1" connectable="0">
+          <mxGeometry as="geometry" relative="1" x="0.82" />
+        </mxCell>
+        <mxCell id="fk_reservas_salida_id_05762a88_fk_paquete_salidas_id_lbl_p" value="1" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];fontSize=11;fontStyle=1;fontColor=#1A237E;" parent="fk_reservas_salida_id_05762a88_fk_paquete_salidas_id" vertex="1" connectable="0">
+          <mxGeometry as="geometry" relative="1" x="-0.82" />
+        </mxCell>
+        <mxCell id="fk_reservas_salida_id_05762a88_fk_paquete_salidas_id_lbl_c" value="M" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];fontSize=11;fontStyle=1;fontColor=#1A237E;" parent="fk_reservas_salida_id_05762a88_fk_paquete_salidas_id" vertex="1" connectable="0">
+          <mxGeometry as="geometry" relative="1" x="0.82" />
+        </mxCell>
+        <mxCell id="fk_reservas_cliente_id_ad6386cc_fk_clientes_id_lbl_p" value="1" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];fontSize=11;fontStyle=1;fontColor=#1A237E;" parent="fk_reservas_cliente_id_ad6386cc_fk_clientes_id" vertex="1" connectable="0">
+          <mxGeometry as="geometry" relative="1" x="-0.82" />
+        </mxCell>
+        <mxCell id="fk_reservas_cliente_id_ad6386cc_fk_clientes_id_lbl_c" value="M" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];fontSize=11;fontStyle=1;fontColor=#1A237E;" parent="fk_reservas_cliente_id_ad6386cc_fk_clientes_id" vertex="1" connectable="0">
+          <mxGeometry as="geometry" relative="1" x="0.82" />
+        </mxCell>
+        <mxCell id="fk_reservas_registrado_por_id_1b8e8013_fk_usuarios_id_lbl_p" value="1" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];fontSize=11;fontStyle=1;fontColor=#1A237E;" parent="fk_reservas_registrado_por_id_1b8e8013_fk_usuarios_id" vertex="1" connectable="0">
+          <mxGeometry as="geometry" relative="1" x="-0.82" />
+        </mxCell>
+        <mxCell id="fk_reservas_registrado_por_id_1b8e8013_fk_usuarios_id_lbl_c" value="M" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];fontSize=11;fontStyle=1;fontColor=#1A237E;" parent="fk_reservas_registrado_por_id_1b8e8013_fk_usuarios_id" vertex="1" connectable="0">
+          <mxGeometry as="geometry" relative="1" x="0.82" />
+        </mxCell>
+        <mxCell id="fk_usuarios_rol_id_fa223853_fk_roles_id_lbl_p" value="1" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];fontSize=11;fontStyle=1;fontColor=#1A237E;" parent="fk_usuarios_rol_id_fa223853_fk_roles_id" vertex="1" connectable="0">
+          <mxGeometry as="geometry" relative="1" x="-0.82" />
+        </mxCell>
+        <mxCell id="fk_usuarios_rol_id_fa223853_fk_roles_id_lbl_c" value="M" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];fontSize=11;fontStyle=1;fontColor=#1A237E;" parent="fk_usuarios_rol_id_fa223853_fk_roles_id" vertex="1" connectable="0">
+          <mxGeometry as="geometry" relative="1" x="0.82" />
+        </mxCell>
+        <mxCell id="fk_vuelos_destino_36680175_fk_aeropuertos_codigo_iata_lbl_p" value="1" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];fontSize=11;fontStyle=1;fontColor=#1A237E;" parent="fk_vuelos_destino_36680175_fk_aeropuertos_codigo_iata" vertex="1" connectable="0">
+          <mxGeometry as="geometry" relative="1" x="-0.82" />
+        </mxCell>
+        <mxCell id="fk_vuelos_destino_36680175_fk_aeropuertos_codigo_iata_lbl_c" value="M" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];fontSize=11;fontStyle=1;fontColor=#1A237E;" parent="fk_vuelos_destino_36680175_fk_aeropuertos_codigo_iata" vertex="1" connectable="0">
+          <mxGeometry as="geometry" relative="1" x="0.82" />
+        </mxCell>
+        <mxCell id="fk_vuelos_origen_6e462295_fk_aeropuertos_codigo_iata_lbl_p" value="1" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];fontSize=11;fontStyle=1;fontColor=#1A237E;" parent="fk_vuelos_origen_6e462295_fk_aeropuertos_codigo_iata" vertex="1" connectable="0">
+          <mxGeometry as="geometry" relative="1" x="-0.82" />
+        </mxCell>
+        <mxCell id="fk_vuelos_origen_6e462295_fk_aeropuertos_codigo_iata_lbl_c" value="M" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];fontSize=11;fontStyle=1;fontColor=#1A237E;" parent="fk_vuelos_origen_6e462295_fk_aeropuertos_codigo_iata" vertex="1" connectable="0">
+          <mxGeometry as="geometry" relative="1" x="0.82" />
+        </mxCell>
+        <mxCell id="fk_vuelos_proveedor_id_073e26be_fk_proveedores_id_lbl_p" value="1" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];fontSize=11;fontStyle=1;fontColor=#1A237E;" parent="fk_vuelos_proveedor_id_073e26be_fk_proveedores_id" vertex="1" connectable="0">
+          <mxGeometry as="geometry" relative="1" x="-0.82" />
+        </mxCell>
+        <mxCell id="fk_vuelos_proveedor_id_073e26be_fk_proveedores_id_lbl_c" value="M" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];fontSize=11;fontStyle=1;fontColor=#1A237E;" parent="fk_vuelos_proveedor_id_073e26be_fk_proveedores_id" vertex="1" connectable="0">
+          <mxGeometry as="geometry" relative="1" x="0.82" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>
