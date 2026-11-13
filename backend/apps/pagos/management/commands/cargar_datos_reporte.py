@@ -586,9 +586,7 @@ class Command(BaseCommand):
         self.stdout.write(
             self.style.SUCCESS("Datos de demostración para reportes cargados.")
         )
-        self.stdout.write(
-            f"Clientes con cuenta: {len(clientes)} | contraseña: {PASSWORD}"
-        )
+        self.stdout.write(f"Clientes con cuenta: {len(clientes)}")
         self.stdout.write(
             "Vuelos internacionales: "
             f"{Vuelo.objects.filter(referencia_externa__startswith='DEMO-').count()}"
