@@ -109,6 +109,8 @@ export interface RespuestaRecomendaciones {
   } | null
   recomendaciones: Recomendacion[]
   generada_en: string | null
+  /** True cuando el cliente ya tiene reservas o aceptaciones previas. */
+  usa_historial: boolean
 }
 
 export interface ResumenRecomendaciones {
@@ -130,6 +132,17 @@ export interface RecomendacionAdmin {
   generada_en: string
 }
 
+export interface HistorialRecomendador {
+  paquetes_activos: number
+  destinos_activos: number
+  reservas_historicas: number
+  clientes_con_historial: number
+  aceptaciones: number
+  total_recomendaciones: number
+  mostradas: number
+  tasa_aceptacion: number
+}
+
 export interface PanelRecomendaciones {
   resumen: ResumenRecomendaciones
   por_paquete: {
@@ -147,4 +160,7 @@ export interface PanelRecomendaciones {
     aceptadas: number
   }[]
   recientes: RecomendacionAdmin[]
+  modelo_activo: ModeloIA | null
+  modelos: ModeloIA[]
+  historial: HistorialRecomendador
 }

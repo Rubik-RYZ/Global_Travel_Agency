@@ -124,4 +124,14 @@ export const iaApi = {
     api
       .get<PanelRecomendaciones>('/ia/admin/recomendaciones/')
       .then((respuesta) => respuesta.data),
+
+  entrenarRecomendador: () =>
+    api
+      .post<PanelRecomendaciones>('/ia/admin/recomendador/entrenar/')
+      .then((respuesta) => respuesta.data),
+
+  activarModeloRecomendador: (id: number) =>
+    api
+      .post<PanelRecomendaciones>(`/ia/admin/recomendador/modelos/${id}/activar/`)
+      .then((respuesta) => respuesta.data),
 }

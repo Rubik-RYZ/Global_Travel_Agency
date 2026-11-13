@@ -107,8 +107,8 @@ Formato de cada línea:
 
 ### CU11 · Recomendaciones IA
 
-42. Mi viaje · Pensado para ti          →  RecomendacionesView.tsx          →  /mi-cuenta/recomendaciones ✅ done (content-based + aceptación)
-43. Panel · Calidad de recomendaciones  →  RecomendacionesAdminView.tsx     →  /admin/recomendaciones    ✅ done (KPIs + tablas + actividad)
+42. Mi viaje · Pensado para ti          →  RecomendacionesView.tsx          →  /mi-cuenta/recomendaciones ✅ done (híbrido contenido + historial)
+43. Panel · Calidad de recomendaciones  →  RecomendacionesAdminView.tsx     →  /admin/recomendaciones    ✅ done (KPIs + versiones del modelo + actividad)
 
 ### CU12 · Reportes
 

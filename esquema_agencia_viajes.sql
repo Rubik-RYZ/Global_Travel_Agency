@@ -367,12 +367,14 @@ CREATE TABLE recomendaciones (
     cliente_id    BIGINT NOT NULL REFERENCES clientes(id) ON DELETE CASCADE,
     paquete_id    BIGINT NOT NULL REFERENCES paquetes(id) ON DELETE CASCADE,
     modelo_id     BIGINT REFERENCES modelos_ia(id),
-    puntaje       NUMERIC(6,4) NOT NULL,          -- similitud de coseno u otro
+    lote          UUID NOT NULL,                  -- tanda de generación (el cliente ve la última)
+    puntaje       NUMERIC(6,4) NOT NULL,          -- afinidad calculada por el recomendador
     mostrada      BOOLEAN NOT NULL DEFAULT FALSE,
     aceptada      BOOLEAN,                        -- NULL = sin respuesta aún
     generada_en   TIMESTAMPTZ NOT NULL DEFAULT now()
 );
 CREATE INDEX ix_recomendaciones_cliente ON recomendaciones (cliente_id, generada_en DESC);
+CREATE INDEX ix_recomendaciones_lote ON recomendaciones (lote);
 
 -- ---------------------------------------------------------------------
 -- 7. TRIGGER: mantener 'actualizada_en' de reservas

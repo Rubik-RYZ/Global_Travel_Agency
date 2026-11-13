@@ -13,6 +13,7 @@ import {
   IconoReloj,
 } from '@/components/ui/Iconos'
 import type {
+  ModeloIA,
   PanelRecomendaciones,
   RecomendacionAdmin,
 } from '@/types/ia.types'
@@ -43,9 +44,16 @@ function Kpi({
 }
 
 /** 43. Panel · Calidad de recomendaciones → /admin/recomendaciones */
+function metricaNumero(modelo: ModeloIA, clave: string): number {
+  const valor = modelo.metricas?.[clave]
+  return typeof valor === 'number' ? valor : 0
+}
+
 export function RecomendacionesAdminView() {
   const [datos, setDatos] = useState<PanelRecomendaciones | null>(null)
   const [cargando, setCargando] = useState(true)
+  const [entrenando, setEntrenando] = useState(false)
+  const [activando, setActivando] = useState<number | null>(null)
   const [error, setError] = useState<string | null>(null)
 
   const cargar = useCallback(async () => {
@@ -63,6 +71,30 @@ export function RecomendacionesAdminView() {
   useEffect(() => {
     void cargar()
   }, [cargar])
+
+  const entrenar = async () => {
+    setEntrenando(true)
+    setError(null)
+    try {
+      setDatos(await iaApi.entrenarRecomendador())
+    } catch (e) {
+      setError(mensajeDeError(e))
+    } finally {
+      setEntrenando(false)
+    }
+  }
+
+  const activar = async (id: number) => {
+    setActivando(id)
+    setError(null)
+    try {
+      setDatos(await iaApi.activarModeloRecomendador(id))
+    } catch (e) {
+      setError(mensajeDeError(e))
+    } finally {
+      setActivando(null)
+    }
+  }
 
   if (cargando) {
     return (
@@ -134,6 +166,112 @@ export function RecomendacionesAdminView() {
           icono={<IconoDestello className="h-4 w-4" />}
         />
       </div>
+
+      <section className="mt-8 rounded-lg border border-parchment-border bg-surface-container-lowest p-5 shadow-paper">
+        <div className="flex flex-wrap items-start justify-between gap-3">
+          <div>
+            <h2 className="font-display text-lg text-on-surface">Gestión del modelo</h2>
+            <p className="mt-0.5 max-w-2xl font-sans text-xs text-on-surface-variant">
+              Cada entrenamiento crea una versión con las métricas del histórico
+              de reservas y aceptaciones. El recomendador usa el histórico del
+              cliente para personalizar la afinidad.
+            </p>
+          </div>
+          <Button
+            variante="primary"
+            tamano="sm"
+            onClick={() => void entrenar()}
+            disabled={entrenando}
+          >
+            <IconoDestello className="h-4 w-4" />
+            {entrenando ? 'Entrenando...' : 'Entrenar nueva versión'}
+          </Button>
+        </div>
+
+        <div className="mt-4 grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
+          <div className="rounded-md border border-parchment-border bg-surface-container p-3">
+            <p className="coord">Versión activa</p>
+            <p className="mt-1 font-sans text-sm text-on-surface">
+              {datos.modelo_activo ? `v${datos.modelo_activo.version}` : 'Sin modelo'}
+            </p>
+          </div>
+          <div className="rounded-md border border-parchment-border bg-surface-container p-3">
+            <p className="coord">Paquetes activos</p>
+            <p className="mt-1 font-sans text-sm text-on-surface">
+              {datos.historial.paquetes_activos}
+            </p>
+          </div>
+          <div className="rounded-md border border-parchment-border bg-surface-container p-3">
+            <p className="coord">Clientes con historial</p>
+            <p className="mt-1 font-sans text-sm text-on-surface">
+              {datos.historial.clientes_con_historial}
+            </p>
+          </div>
+          <div className="rounded-md border border-parchment-border bg-surface-container p-3">
+            <p className="coord">Reservas históricas</p>
+            <p className="mt-1 font-sans text-sm text-on-surface">
+              {datos.historial.reservas_historicas}
+            </p>
+          </div>
+        </div>
+
+        <div className="mt-5">
+          <Table<ModeloIA>
+            columnas={[
+              {
+                clave: 'version',
+                encabezado: 'Versión',
+                render: (fila) => `v${fila.version}`,
+              },
+              {
+                clave: 'estado',
+                encabezado: 'Estado',
+                render: (fila) =>
+                  fila.activo ? (
+                    <Badge color="bosque">Activa</Badge>
+                  ) : (
+                    <Badge color="neutro">Inactiva</Badge>
+                  ),
+              },
+              {
+                clave: 'sugerencias',
+                encabezado: 'Sugerencias',
+                render: (fila) => metricaNumero(fila, 'total_recomendaciones'),
+              },
+              {
+                clave: 'tasa',
+                encabezado: 'Tasa histórica',
+                render: (fila) => `${metricaNumero(fila, 'tasa_aceptacion')}%`,
+              },
+              {
+                clave: 'entrenado_en',
+                encabezado: 'Entrenado',
+                render: (fila) => formatearFechaHora(fila.entrenado_en),
+              },
+              {
+                clave: 'acciones',
+                encabezado: '',
+                render: (fila) => (
+                  <Button
+                    variante="ghost"
+                    tamano="sm"
+                    onClick={() => void activar(fila.id)}
+                    disabled={fila.activo || activando === fila.id}
+                  >
+                    {fila.activo
+                      ? 'En uso'
+                      : activando === fila.id
+                        ? 'Activando...'
+                        : 'Activar'}
+                  </Button>
+                ),
+              },
+            ]}
+            datos={datos.modelos}
+            vacio="Aún no se ha entrenado el recomendador."
+          />
+        </div>
+      </section>
 
       <div className="mt-8 grid gap-6 lg:grid-cols-2">
         <section className="rounded-lg border border-parchment-border bg-surface-container-lowest p-5 shadow-paper">

@@ -86,20 +86,26 @@ export function RecomendacionesView() {
           <div className="max-w-2xl">
             <span className="coord inline-flex items-center gap-2 text-terracotta">
               <IconoDestello className="h-4 w-4" />
-              Recomendador content-based
+              Recomendador híbrido
             </span>
             <h1 className="mt-3 font-display text-3xl leading-tight text-on-surface sm:text-4xl">
               Pensado para ti
             </h1>
             <p className="mt-3 font-sans text-sm leading-relaxed text-on-surface-variant">
-              Cruzamos sus intereses, su presupuesto y la disponibilidad de salidas
-              para proponerle una selección de travesías.
+              {datos?.usa_historial
+                ? 'Cruzamos sus intereses, su presupuesto, la disponibilidad de salidas y su historial de viajes para proponerle una selección de travesías.'
+                : 'Cruzamos sus intereses, su presupuesto y la disponibilidad de salidas para proponerle una selección de travesías.'}
             </p>
           </div>
           <div className="flex flex-wrap gap-2">
             {datos?.modelo && (
               <span className="rounded-full border border-gold/40 bg-gold/10 px-3 py-1.5 font-sans text-[10px] uppercase tracking-wider text-tertiary">
                 Modelo {datos.modelo.version}
+              </span>
+            )}
+            {datos?.usa_historial && (
+              <span className="rounded-full border border-secondary/30 bg-secondary/10 px-3 py-1.5 font-sans text-[10px] uppercase tracking-wider text-secondary">
+                Con historial
               </span>
             )}
             <Button

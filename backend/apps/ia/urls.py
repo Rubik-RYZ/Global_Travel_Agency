@@ -3,9 +3,11 @@ from django.urls import path
 from rest_framework.routers import DefaultRouter
 
 from apps.ia.views import (
+    ActivarModeloRecomendadorView,
     AceptarRecomendacionView,
     ChatView,
     ConversacionViewSet,
+    EntrenarRecomendadorView,
     FraseEntrenamientoViewSet,
     IntencionViewSet,
     PanelEntrenamientoView,
@@ -51,6 +53,16 @@ urlpatterns = [
         "ia/admin/recomendaciones/",
         PanelRecomendacionesView.as_view(),
         name="ia-admin-recomendaciones",
+    ),
+    path(
+        "ia/admin/recomendador/entrenar/",
+        EntrenarRecomendadorView.as_view(),
+        name="ia-admin-recomendador-entrenar",
+    ),
+    path(
+        "ia/admin/recomendador/modelos/<int:pk>/activar/",
+        ActivarModeloRecomendadorView.as_view(),
+        name="ia-admin-recomendador-activar",
     ),
     *router.urls,
 ]

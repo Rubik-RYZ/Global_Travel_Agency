@@ -1,21 +1,47 @@
 """Endpoints del recomendador de paquetes (CU11)."""
+from django.shortcuts import get_object_or_404
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
+from apps.ia.models import ModeloIA
 from apps.ia.serializers import (
+    ModeloIASerializer,
     RecomendacionAdminSerializer,
     RecomendacionSerializer,
     RespuestaRecomendacionesSerializer,
 )
 from apps.ia.services.recomendaciones import (
+    activar_modelo,
     aceptar_recomendacion,
+    entrenar_recomendador,
     generar_recomendaciones,
     marcar_mostradas,
     resumen_admin,
+    tiene_historial,
 )
 from apps.usuarios.models import ClientePreferencia
 from apps.usuarios.permissions import EsAdministrador, EsCliente
 from apps.usuarios.services.clientes import cliente_de_usuario
+
+
+def _panel_recomendaciones_data() -> dict:
+    """Panel administrativo: calidad, historial y versiones del recomendador."""
+    datos = resumen_admin()
+    return {
+        "resumen": datos["resumen"],
+        "por_paquete": datos["por_paquete"],
+        "por_modelo": datos["por_modelo"],
+        "recientes": RecomendacionAdminSerializer(
+            datos["recientes"], many=True
+        ).data,
+        "modelo_activo": (
+            ModeloIASerializer(datos["modelo_activo"]).data
+            if datos["modelo_activo"]
+            else None
+        ),
+        "modelos": ModeloIASerializer(datos["modelos"], many=True).data,
+        "historial": datos["historial"],
+    }
 
 
 class RecomendacionesView(APIView):
@@ -32,6 +58,7 @@ class RecomendacionesView(APIView):
                     "preferencias": None,
                     "recomendaciones": [],
                     "generada_en": None,
+                    "usa_historial": False,
                 }
             )
 
@@ -53,6 +80,7 @@ class RecomendacionesView(APIView):
                     "preferencias": preferencias,
                     "recomendaciones": recomendaciones,
                     "generada_en": generada_en,
+                    "usa_historial": tiene_historial(cliente),
                 }
             ).data
         )
@@ -77,14 +105,27 @@ class PanelRecomendacionesView(APIView):
     permission_classes = [EsAdministrador]
 
     def get(self, request):
-        datos = resumen_admin()
-        return Response(
-            {
-                "resumen": datos["resumen"],
-                "por_paquete": datos["por_paquete"],
-                "por_modelo": datos["por_modelo"],
-                "recientes": RecomendacionAdminSerializer(
-                    datos["recientes"], many=True
-                ).data,
-            }
+        return Response(_panel_recomendaciones_data())
+
+
+class EntrenarRecomendadorView(APIView):
+    """Genera una nueva versión activa del recomendador."""
+
+    permission_classes = [EsAdministrador]
+
+    def post(self, request):
+        entrenar_recomendador()
+        return Response(_panel_recomendaciones_data())
+
+
+class ActivarModeloRecomendadorView(APIView):
+    """Activa una versión anterior del recomendador."""
+
+    permission_classes = [EsAdministrador]
+
+    def post(self, request, pk: int):
+        modelo = get_object_or_404(
+            ModeloIA, pk=pk, tipo=ModeloIA.TIPO_RECOMENDADOR
         )
+        activar_modelo(modelo)
+        return Response(_panel_recomendaciones_data())

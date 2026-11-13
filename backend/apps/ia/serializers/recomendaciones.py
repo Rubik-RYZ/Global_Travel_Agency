@@ -65,6 +65,7 @@ class RespuestaRecomendacionesSerializer(serializers.Serializer):
     preferencias = ClientePreferenciaSerializer(allow_null=True)
     recomendaciones = RecomendacionSerializer(many=True)
     generada_en = serializers.DateTimeField(allow_null=True)
+    usa_historial = serializers.BooleanField()
 
 
 class RecomendacionAdminSerializer(serializers.ModelSerializer):
