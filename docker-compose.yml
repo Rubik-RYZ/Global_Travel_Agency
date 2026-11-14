@@ -21,8 +21,6 @@ services:
       context: ./backend
     container_name: agencia_backend
     command: python manage.py runserver 0.0.0.0:8000
-    volumes:
-      - ./backend:/app
     env_file:
       - .env
     depends_on:
@@ -36,9 +34,6 @@ services:
       context: ./frontend
     container_name: agencia_frontend
     command: npm run dev -- --host 0.0.0.0 --port 5173
-    volumes:
-      - ./frontend:/app
-      - /app/node_modules
     environment:
       VITE_API_URL: ${VITE_API_URL}
     depends_on:
