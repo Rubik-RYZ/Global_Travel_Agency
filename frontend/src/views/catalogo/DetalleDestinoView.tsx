@@ -28,12 +28,6 @@ import {
   precioDesde,
 } from '@/lib/editorial'
 
-/* ── Piezas editoriales ────────────────────────────────────────────────────── */
-
-/**
- * Segunda fotografía de la ficha, sólo cuando existe un encuadre real del mismo
- * enclave. Si no la hay, la ficha muestra una sola lámina a sangre.
- */
 const IMAGEN_SECUNDARIA: Record<string, { src: string; pie: string }> = {
   'kioto-y-takayama-japon': { src: '/assets/destino-6.jpg', pie: 'Kioto · Jardín zen al amanecer' },
   'machu-picchu-peru': { src: '/assets/destino-15.jpg', pie: 'Valle Sagrado · Terrazas de piedra' },
@@ -43,12 +37,10 @@ const IMAGEN_SECUNDARIA: Record<string, { src: string; pie: string }> = {
   },
 }
 
-/** Repertorio de iconos para las inclusiones de la expedición. */
 const ICONOS_INCLUYE = [IconoMapa, IconoCasa, IconoGrupo, IconoSol, IconoBillete, IconoLibro]
 
 const pad = (n: number) => String(n).padStart(2, '0')
 
-/** Agrupa el itinerario en actos de tres etapas, como un diario de ruta. */
 function agruparActos(itinerario: ItinerarioDia[]): ItinerarioDia[][] {
   const orden = [...itinerario].sort((a, b) => a.numero_dia - b.numero_dia)
   const actos: ItinerarioDia[][] = []
@@ -61,7 +53,6 @@ interface Tramo {
   dias: string
 }
 
-/** Tramos de la ruta: cada lugar con el rango de días en que se visita. */
 function tramosRuta(itinerario: ItinerarioDia[]): Tramo[] {
   const mapa = new Map<string, number[]>()
   for (const dia of [...itinerario].sort((a, b) => a.numero_dia - b.numero_dia)) {
@@ -79,7 +70,6 @@ function tramosRuta(itinerario: ItinerarioDia[]): Tramo[] {
   }))
 }
 
-/** Separa «Marzo a mayo (Sakura)» en valor principal y detalle entre paréntesis. */
 function partirEpoca(texto: string | null): [string | null, string | null] {
   if (!texto) return [null, null]
   const i = texto.indexOf('(')
@@ -87,9 +77,6 @@ function partirEpoca(texto: string | null): [string | null, string | null] {
   return [texto.slice(0, i).trim().replace(/\s+y$/, ''), texto.slice(i).trim()]
 }
 
-/* ── Vista ─────────────────────────────────────────────────────────────────── */
-
-/** #16 Ficha de destino — /destinos/:id */
 export function DetalleDestinoView() {
   const { id } = useParams<{ id: string }>()
   const [destino, setDestino] = useState<Destino | null>(null)
@@ -156,7 +143,6 @@ export function DetalleDestinoView() {
 
   return (
     <div className="min-h-screen bg-surface">
-      {/* ── 1. Cabecera inmersiva ─────────────────────────────────────────── */}
       <section className="relative bg-surface-container-low pb-16">
         <div className="relative h-[520px] w-full overflow-hidden sm:h-[600px] lg:h-[680px]">
           <img
@@ -165,11 +151,9 @@ export function DetalleDestinoView() {
             className="h-full w-full scale-105 object-cover object-center transition-transform duration-1000 ease-out hover:scale-100"
           />
 
-          {/* Atmósfera de papel */}
           <div className="absolute inset-0 bg-gradient-to-t from-surface via-surface/72 to-transparent" />
           <div className="absolute inset-0 bg-gradient-to-r from-on-surface/20 via-transparent to-transparent" />
 
-          {/* Marcas cartográficas y sello de autor */}
           <div className="absolute inset-x-0 top-6 z-10">
             <div className="mx-auto flex max-w-7xl items-start justify-between px-6 lg:px-12">
               <div className="flex items-center gap-2 rounded-full bg-surface/90 px-4 py-1.5 shadow-sm backdrop-blur-md">
@@ -197,7 +181,6 @@ export function DetalleDestinoView() {
             </div>
           </div>
 
-          {/* Título editorial */}
           <div className="absolute inset-x-0 bottom-0 z-10">
             <div className="mx-auto max-w-7xl px-6 pb-20 lg:px-12 lg:pb-24">
               <motion.div
@@ -231,10 +214,8 @@ export function DetalleDestinoView() {
           </div>
         </div>
 
-        {/* ── 2. Franja de datos esenciales ─────────────────────────────────── */}
         <div className="relative z-20 mx-auto -mt-12 max-w-7xl px-6 lg:px-12">
           <div className="grid grid-cols-1 items-center gap-5 rounded-xl bg-surface-container-lowest p-6 shadow-xl sm:grid-cols-2 lg:grid-cols-5 lg:p-8">
-            {/* Mejor época */}
             <div className="flex flex-col gap-1 p-1">
               <span className="coord flex items-center gap-1 uppercase tracking-widest text-tertiary">
                 <IconoCalendario className="h-3.5 w-3.5" />
@@ -248,7 +229,6 @@ export function DetalleDestinoView() {
               )}
             </div>
 
-            {/* Duración */}
             <div className="flex flex-col gap-1 p-1">
               <span className="coord flex items-center gap-1 uppercase tracking-widest text-tertiary">
                 <IconoReloj className="h-3.5 w-3.5" />
@@ -264,7 +244,6 @@ export function DetalleDestinoView() {
               <span className="coord uppercase text-on-surface-variant">Ritmo sosegado</span>
             </div>
 
-            {/* Carácter */}
             <div className="flex flex-col gap-1 p-1">
               <span className="coord flex items-center gap-1 uppercase tracking-widest text-tertiary">
                 <IconoLibro className="h-3.5 w-3.5" />
@@ -278,7 +257,6 @@ export function DetalleDestinoView() {
               </span>
             </div>
 
-            {/* Inversión */}
             <div className="flex flex-col gap-1 p-1">
               <span className="coord flex items-center gap-1 uppercase tracking-widest text-tertiary">
                 <IconoBillete className="h-3.5 w-3.5" />
@@ -292,7 +270,6 @@ export function DetalleDestinoView() {
               </span>
             </div>
 
-            {/* CTA */}
             <div className="flex pt-2 sm:col-span-2 lg:col-span-1 lg:justify-end lg:pt-0">
               <a
                 href="#concierge"
@@ -306,12 +283,9 @@ export function DetalleDestinoView() {
         </div>
       </section>
 
-      {/* ── 3. Cuerpo editorial ───────────────────────────────────────────── */}
       <section className="mx-auto w-full max-w-7xl px-6 py-16 lg:px-12">
         <div className="grid grid-cols-1 gap-12 lg:grid-cols-12 lg:gap-16">
-          {/* Columna principal */}
           <div className="flex flex-col gap-12 lg:col-span-8">
-            {/* Introducción */}
             <div className="flex flex-col gap-3">
               <div className="flex items-center gap-2 font-sans text-[11px] font-semibold uppercase tracking-widest text-primary">
                 <IconoLibro className="h-4 w-4" />
@@ -326,7 +300,6 @@ export function DetalleDestinoView() {
               </p>
             </div>
 
-            {/* Mosaico fotográfico */}
             <div className={secundaria ? 'grid grid-cols-1 gap-5 sm:grid-cols-2' : ''}>
               <figure className="group relative h-80 overflow-hidden rounded-lg bg-surface-container shadow-sm">
                 <img
@@ -355,7 +328,6 @@ export function DetalleDestinoView() {
               )}
             </div>
 
-            {/* Itinerario */}
             {actos.length > 0 && (
               <div className="flex flex-col gap-6">
                 <div className="flex flex-wrap items-baseline justify-between gap-3">
@@ -422,7 +394,6 @@ export function DetalleDestinoView() {
               </div>
             )}
 
-            {/* Privilegios / inclusiones */}
             {incluye.length > 0 && (
               <div className="flex flex-col gap-6 rounded-2xl bg-surface-container p-6 lg:p-8">
                 <div className="flex flex-col gap-1">
@@ -459,9 +430,7 @@ export function DetalleDestinoView() {
             )}
           </div>
 
-          {/* Barra lateral */}
           <aside className="flex flex-col gap-6 lg:col-span-4">
-            {/* Cartografía */}
             <div className="flex flex-col gap-4 rounded-2xl bg-surface-container-low p-5 shadow-sm">
               <div className="flex items-center justify-between">
                 <span className="coord font-medium uppercase tracking-wider text-on-surface-variant">
@@ -514,7 +483,6 @@ export function DetalleDestinoView() {
               )}
             </div>
 
-            {/* Transparencia */}
             {noIncluye.length > 0 && (
               <div className="flex flex-col gap-4 rounded-2xl bg-surface-container-low p-6 shadow-sm">
                 <h4 className="flex items-center gap-2 font-display text-lg font-medium text-on-surface">
@@ -538,7 +506,6 @@ export function DetalleDestinoView() {
               </div>
             )}
 
-            {/* Curaduría */}
             <div className="flex flex-col gap-4 rounded-2xl bg-surface-container p-6 shadow-sm">
               <div className="flex items-center gap-4">
                 <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-full bg-primary/10 text-primary shadow-sm">
@@ -570,7 +537,6 @@ export function DetalleDestinoView() {
         </div>
       </section>
 
-      {/* ── 4. Concierge ──────────────────────────────────────────────────── */}
       <section id="concierge" className="w-full scroll-mt-24 bg-surface-container py-16">
         <div className="mx-auto flex max-w-4xl flex-col items-center gap-4 px-6 text-center">
           <div className="flex h-12 w-12 items-center justify-center rounded-full bg-primary/10 text-primary">

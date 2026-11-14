@@ -1,10 +1,8 @@
-"""Tests de la API de CU1 (endpoints de acceso, equipo y auditoría)."""
 from rest_framework import status
 from rest_framework.test import APITestCase
 
 from apps.usuarios.constants import ROL_ADMINISTRADOR, ROL_CLIENTE
 from apps.usuarios.models import Auditoria, Cliente, ClientePreferencia, Rol, Usuario
-
 
 class BaseAPITest(APITestCase):
     def setUp(self):
@@ -33,7 +31,6 @@ class BaseAPITest(APITestCase):
             format="json",
         )
         return respuesta.data["access"]
-
 
 class AccesoAPITest(BaseAPITest):
     def test_login_ok_devuelve_tokens_y_usuario(self):
@@ -103,7 +100,6 @@ class AccesoAPITest(BaseAPITest):
         )
         self.assertEqual(posterior.status_code, status.HTTP_401_UNAUTHORIZED)
 
-
 class RolesEquipoAuditoriaAPITest(BaseAPITest):
     def test_roles_admin_ok(self):
         token = self.autenticar_admin()
@@ -146,17 +142,13 @@ class RolesEquipoAuditoriaAPITest(BaseAPITest):
         )
         self.assertEqual(respuesta.status_code, status.HTTP_403_FORBIDDEN)
 
-
 class ClientesPreferenciasAPITest(BaseAPITest):
-    """CU2 · directorio de viajeros (panel) y área privada del viajero."""
-
     def setUp(self):
         super().setUp()
         self.ficha = Cliente.objects.create(
             usuario=self.cliente, nombres="Ana", apellidos="Quispe Mamani"
         )
 
-    # --- Panel: /clientes ---
     def test_directorio_prohibido_para_cliente(self):
         token = self.autenticar_cliente()
         respuesta = self.client.get(
@@ -214,7 +206,6 @@ class ClientesPreferenciasAPITest(BaseAPITest):
         self.assertEqual(respuesta.status_code, status.HTTP_204_NO_CONTENT)
         self.assertFalse(Cliente.objects.filter(id=self.ficha.id).exists())
 
-    # --- Área privada: /me/perfil y /me/preferencias ---
     def test_admin_no_accede_al_area_del_viajero(self):
         token = self.autenticar_admin()
         respuesta = self.client.get(
@@ -284,7 +275,6 @@ class ClientesPreferenciasAPITest(BaseAPITest):
         )
         self.assertTrue(Auditoria.objects.filter(accion="perfil_actualizado").exists())
 
-    # --- Retrato propio: /me/foto ---
     def test_me_foto_requiere_autenticacion(self):
         respuesta = self.client.patch(
             "/api/v1/me/foto", {"foto_url": "https://x/f.jpg"}, format="json"

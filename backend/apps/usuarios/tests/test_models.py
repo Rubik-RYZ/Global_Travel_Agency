@@ -1,16 +1,13 @@
-"""Tests de modelos de CU1 (usuarios, roles, clientes, auditoría)."""
 from django.db import IntegrityError, transaction
 from django.test import TestCase
 
 from apps.usuarios.constants import ROL_CLIENTE
 from apps.usuarios.models import Auditoria, Cliente, Rol, Usuario
 
-
 class RolModelTest(TestCase):
     def test_str_devuelve_nombre(self):
         rol = Rol.objects.create(id=9, nombre="observador")
         self.assertEqual(str(rol), "observador")
-
 
 class UsuarioModelTest(TestCase):
     def setUp(self):
@@ -64,12 +61,10 @@ class UsuarioModelTest(TestCase):
         usuario.refresh_from_db()
         self.assertIsNotNone(usuario.ultimo_acceso)
 
-
 class ClienteModelTest(TestCase):
     def test_nombre_completo(self):
         cliente = Cliente.objects.create(nombres="Ana", apellidos="Quispe")
         self.assertEqual(cliente.nombre_completo, "Ana Quispe")
-
 
 class AuditoriaModelTest(TestCase):
     def test_str_contiene_accion(self):

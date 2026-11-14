@@ -32,11 +32,6 @@ interface Props {
   onNavegar?: () => void
 }
 
-/**
- * Mega-menú "Cuaderno de Destinos" (#13): tres columnas — por región, por
- * carácter de viaje y un destino destacado del mes. Alimentado con el catálogo
- * real (`/api/v1/destinos/`).
- */
 export function MenuCuaderno({ onNavegar }: Props) {
   const destinos = useCuadernoDestinos()
   const regiones = agruparRegiones(destinos)
@@ -44,14 +39,12 @@ export function MenuCuaderno({ onNavegar }: Props) {
 
   return (
     <div className="pointer-events-auto w-full overflow-hidden rounded-xl border border-parchment-border/70 bg-surface/95 p-5 shadow-paper-lg backdrop-blur-2xl lg:p-8">
-      {/* Coordenadas de archivo en la esquina */}
       <div className="mb-4 flex items-center justify-end gap-1.5 text-stamp-sepia">
         <IconoGlobo className="h-3.5 w-3.5 text-primary" />
         <span className="coord">Cuaderno N.º XII · Archivo de rutas</span>
       </div>
 
       <div className="grid grid-cols-1 gap-6 lg:grid-cols-12 lg:gap-8">
-        {/* ── Columna 1: por región ─────────────────────────────────────── */}
         <div className="flex flex-col gap-3 lg:col-span-4">
           <div className="flex items-center gap-2 border-b border-surface-container-high pb-2">
             <span className="h-1.5 w-1.5 rounded-full bg-primary" />
@@ -85,7 +78,6 @@ export function MenuCuaderno({ onNavegar }: Props) {
           </ul>
         </div>
 
-        {/* ── Columna 2: por experiencia ────────────────────────────────── */}
         <div className="flex flex-col gap-3 lg:col-span-4">
           <div className="flex items-center gap-2 border-b border-surface-container-high pb-2">
             <span className="h-1.5 w-1.5 rounded-full bg-secondary-container" />
@@ -122,7 +114,6 @@ export function MenuCuaderno({ onNavegar }: Props) {
           </div>
         </div>
 
-        {/* ── Columna 3: destino destacado del mes ──────────────────────── */}
         <div className="lg:col-span-4">
           {destacado ? (
             <div className="group flex h-full flex-col justify-between overflow-hidden rounded-xl bg-surface-container p-4">
@@ -209,7 +200,6 @@ export function MenuCuaderno({ onNavegar }: Props) {
   )
 }
 
-/** 13.163141 → 13°10′S */
 function formatearCoordenada(valor: string | null, negativo: string, positivo: string) {
   if (!valor) return '—'
   const n = parseFloat(valor)

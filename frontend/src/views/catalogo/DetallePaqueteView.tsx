@@ -9,6 +9,7 @@ import {
   IconoFlechaDerecha,
   IconoUbicacion,
 } from '@/components/ui/Iconos'
+import { useAuthStore } from '@/store/authStore'
 import { useReservaStore } from '@/store/reservaStore'
 import { mensajeDeError } from '@/utils/validators'
 
@@ -22,6 +23,7 @@ export function DetallePaqueteView() {
   const [error, setError] = useState<string | null>(null)
 
   const setPaqueteStore = useReservaStore((s) => s.setPaquete)
+  const usuario = useAuthStore((s) => s.usuario)
 
   useEffect(() => {
     if (!id) return
@@ -79,7 +81,6 @@ export function DetallePaqueteView() {
   return (
     <div className="min-h-screen bg-[#faf5eb] py-12 px-4 sm:px-6 lg:px-8">
       <div className="mx-auto max-w-6xl space-y-10">
-        {/* Enlace de regreso */}
         <div>
           <Link
             to="/viajes"
@@ -89,7 +90,6 @@ export function DetallePaqueteView() {
           </Link>
         </div>
 
-        {/* Cabecera del Paquete */}
         <div className="grid grid-cols-1 gap-8 lg:grid-cols-3">
           <div className="lg:col-span-2 space-y-4">
             <div className="flex items-center gap-2 text-xs font-bold uppercase tracking-widest text-[#792609]">
@@ -125,7 +125,6 @@ export function DetallePaqueteView() {
             )}
           </div>
 
-          {/* Tarjeta Lateral de Salidas y Reserva */}
           <div className="rounded-2xl border border-[#231a13]/10 bg-white p-6 shadow-sm space-y-6">
             <div>
               <div className="text-xs uppercase tracking-wider text-[#231a13]/60">Tarifa por persona</div>
@@ -182,14 +181,25 @@ export function DetallePaqueteView() {
               )}
             </div>
 
-            <Button
-              onClick={iniciarReserva}
-              disabled={salidas.length === 0 || !salidaSeleccionada}
-              className="w-full flex items-center justify-center gap-2 rounded-full bg-[#792609] py-3 text-sm font-semibold text-white shadow-sm hover:bg-[#983d1f] disabled:opacity-50"
-            >
-              <span>Reservar Mi Viaje</span>
-              <IconoFlechaDerecha className="h-4 w-4" />
-            </Button>
+            {usuario ? (
+              <Button
+                onClick={iniciarReserva}
+                disabled={salidas.length === 0 || !salidaSeleccionada}
+                className="w-full flex items-center justify-center gap-2 rounded-full bg-[#792609] py-3 text-sm font-semibold text-white shadow-sm hover:bg-[#983d1f] disabled:opacity-50"
+              >
+                <span>Reservar Mi Viaje</span>
+                <IconoFlechaDerecha className="h-4 w-4" />
+              </Button>
+            ) : (
+              <Link
+                to="/login"
+                state={{ desde: `/viajes/${paquete.id}` }}
+                className="w-full flex items-center justify-center gap-2 rounded-full border border-[#792609] py-3 text-sm font-semibold text-[#792609] hover:bg-[#792609]/5"
+              >
+                <span>Inicia sesión para comprar</span>
+                <IconoFlechaDerecha className="h-4 w-4" />
+              </Link>
+            )}
           </div>
         </div>
       </div>

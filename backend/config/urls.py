@@ -1,4 +1,3 @@
-"""Rutas raíz del proyecto (prefijo API: /api/v1/)."""
 from django.conf import settings
 from django.conf.urls.static import static
 from django.contrib import admin
@@ -13,6 +12,9 @@ urlpatterns = [
     path("api/v1/", include("apps.catalogo.urls")),
     path("api/v1/", include("apps.almacen.urls")),
     path("api/v1/", include("apps.reservas.urls")),
+    path("api/v1/", include("apps.pagos.urls")),
+    path("api/v1/", include("apps.ia.urls")),
+    path("api/v1/", include("apps.reportes.urls")),
 ]
 
 if settings.DEBUG:

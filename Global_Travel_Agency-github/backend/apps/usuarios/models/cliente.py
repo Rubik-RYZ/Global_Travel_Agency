@@ -1,13 +1,9 @@
-"""Cliente (viajero) y sus preferencias (CU2)."""
 from django.contrib.postgres.fields import ArrayField
 from django.db import models
 
 from apps.usuarios.constants import DOCUMENTO_TIPOS, MONEDAS
 
-
 class Cliente(models.Model):
-    """Cliente (viajero). Puede existir sin usuario de sistema (alta presencial)."""
-
     usuario = models.OneToOneField(
         "usuarios.Usuario",
         on_delete=models.SET_NULL,
@@ -24,8 +20,7 @@ class Cliente(models.Model):
     telefono = models.TextField(null=True, blank=True)
     fecha_nacimiento = models.DateField(null=True, blank=True)
     pais_origen = models.TextField(null=True, blank=True)
-    # Documentos de viaje digitalizados. Se guardan la URL pública y
-    # el identificador del almacén para poder reemplazarlos o borrarlos.
+
     pasaporte_url = models.TextField(null=True, blank=True)
     pasaporte_public_id = models.TextField(null=True, blank=True)
     carnet_url = models.TextField(null=True, blank=True)
@@ -44,10 +39,7 @@ class Cliente(models.Model):
     def nombre_completo(self):
         return f"{self.nombres} {self.apellidos}".strip()
 
-
 class ClientePreferencia(models.Model):
-    """Preferencias del cliente (alimentan al recomendador — CU11)."""
-
     cliente = models.OneToOneField(
         "usuarios.Cliente",
         on_delete=models.CASCADE,

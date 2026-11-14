@@ -1,12 +1,8 @@
-"""Managers del dominio de usuarios."""
 from django.contrib.auth.base_user import BaseUserManager
 
 from apps.usuarios.constants import ROL_ADMINISTRADOR, ROL_CLIENTE
 
-
 class UsuarioManager(BaseUserManager):
-    """Manager de `Usuario` con login por email (case-insensitive)."""
-
     use_in_migrations = True
 
     def _create_user(self, email, password, **extra_fields):

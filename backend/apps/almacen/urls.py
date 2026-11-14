@@ -1,4 +1,3 @@
-"""Rutas del almacén externo de archivos."""
 from django.urls import path
 
 from apps.almacen.views import (

@@ -1,4 +1,3 @@
-/** Schemas Zod de los formularios de CU1 (validación de entrada). */
 import { z } from 'zod'
 
 const email = z

@@ -15,8 +15,6 @@ import { NOTA_MANO, coordenadas, precioDesde } from '@/lib/editorial'
 
 const CAPITULOS = ['Capítulo I', 'Capítulo II', 'Capítulo III']
 
-/* ── Ilustraciones de línea (flora de cuaderno de campo) ───────────────────── */
-
 function RamaBotanica({ className = '' }: { className?: string }) {
   return (
     <svg viewBox="0 0 40 24" fill="none" stroke="currentColor" strokeWidth="1.3" className={className}>
@@ -49,8 +47,6 @@ function SelloPostal({ texto, className = '' }: { texto: string; className?: str
   )
 }
 
-/* ── Buscador de expediciones (pergamino) ──────────────────────────────────── */
-
 function BuscadorExpediciones() {
   const navigate = useNavigate()
   const [texto, setTexto] = useState('')
@@ -74,7 +70,6 @@ function BuscadorExpediciones() {
       onSubmit={enviar}
       className="mx-auto my-10 flex max-w-5xl flex-col items-stretch gap-3 rounded-2xl border border-parchment-border bg-surface-bright/95 p-3 shadow-paper md:flex-row md:items-center md:rounded-full md:p-4"
     >
-      {/* Destino */}
       <label className="flex w-full cursor-text items-center gap-3.5 border-b border-surface-container-highest px-4 py-2 md:w-1/3 md:border-b-0 md:border-r">
         <IconoUbicacion className="h-5 w-5 shrink-0 text-primary" />
         <span className="w-full">
@@ -91,7 +86,6 @@ function BuscadorExpediciones() {
         </span>
       </label>
 
-      {/* Región */}
       <label className="flex w-full items-center gap-3.5 border-b border-surface-container-highest px-4 py-2 md:w-1/4 md:border-b-0 md:border-r">
         <RosaVientos className="h-5 w-5 shrink-0 text-primary" />
         <span className="w-full">
@@ -113,7 +107,6 @@ function BuscadorExpediciones() {
         </span>
       </label>
 
-      {/* Carácter */}
       <label className="flex w-full items-center gap-3.5 px-4 py-2 md:w-1/4">
         <IconoLupa className="h-5 w-5 shrink-0 text-primary" />
         <span className="w-full">
@@ -145,8 +138,6 @@ function BuscadorExpediciones() {
     </form>
   )
 }
-
-/* ── Lámina de destino (tarjeta orgánica) ──────────────────────────────────── */
 
 function LaminaDestino({ destino, indice }: { destino: DestinoResumen; indice: number }) {
   const precio = precioDesde(destino.precio_desde, destino.moneda)
@@ -236,9 +227,6 @@ function LaminaDestino({ destino, indice }: { destino: DestinoResumen; indice: n
   )
 }
 
-/* ── Vista principal ───────────────────────────────────────────────────────── */
-
-/** #14 Landing pública — / */
 export function HomeView() {
   const [destacados, setDestacados] = useState<DestinoResumen[]>([])
 
@@ -258,23 +246,20 @@ export function HomeView() {
   const principal = destacados[0]
   const heroImg = principal?.imagen_principal ?? '/assets/hero-andes.jpg'
   const heroCoords = principal ? coordenadas(principal.latitud, principal.longitud) : null
-  // Orden curado por «capítulo» (id del catálogo), estable entre cargas.
+
   const tarjetas = [...destacados].sort((a, b) => a.id - b.id).slice(0, 3)
 
   return (
     <>
-      {/* ── Hero a sangre bajo la cabecera fija ───────────────────────────── */}
       <section id="expediciones" className="relative min-h-[100svh] w-full overflow-hidden bg-secondary">
         <div
           className="absolute inset-0 bg-cover bg-center"
           style={{ backgroundImage: `url('${heroImg}')`, backgroundPosition: 'center top' }}
           aria-hidden
         />
-        {/* Viñetas naturalistas */}
         <div className="pointer-events-none absolute inset-0 bg-gradient-to-r from-secondary/90 via-secondary/55 to-transparent" />
         <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-secondary-container via-transparent to-secondary/70" />
 
-        {/* Marca de agua botánica (arriba a la izquierda) */}
         <div aria-hidden className="pointer-events-none absolute left-4 top-24 hidden select-none text-emerald-200/20 lg:left-12 lg:block">
           <svg viewBox="0 0 200 200" fill="none" stroke="currentColor" strokeWidth="1.2" className="h-64 w-64">
             <path d="M10 190 Q60 140 100 80 T180 20" strokeLinecap="round" />
@@ -292,7 +277,6 @@ export function HomeView() {
             transition={{ duration: 0.6, ease: 'easeOut' }}
             className="max-w-2xl text-left"
           >
-            {/* Distintivo */}
             <div className="mb-6 inline-flex items-center gap-3 rounded-full border border-gold/30 bg-black/25 px-3.5 py-1.5 backdrop-blur-md">
               <RosaVientos className="h-3.5 w-3.5 text-gold" />
               <span className="font-sans text-[10px] font-medium uppercase tracking-[0.25em] text-gold/90">
@@ -321,16 +305,15 @@ export function HomeView() {
                 Abrir cuaderno de expedición
                 <span className="text-base leading-none">→</span>
               </Link>
-              <a
-                href="#atelier"
+              <Link
+                to="/diseña-tu-viaje"
                 className="inline-flex items-center gap-2 rounded-full border border-white/40 bg-white/5 px-6 py-3.5 font-sans text-xs font-medium uppercase tracking-wider text-white backdrop-blur-sm transition-all hover:bg-white/15"
               >
                 Diseñar a medida
-              </a>
+              </Link>
             </div>
           </motion.div>
 
-          {/* Crónica visual & coordenadas */}
           {principal && (
             <motion.div
               initial={{ opacity: 0 }}
@@ -360,9 +343,7 @@ export function HomeView() {
         </div>
       </section>
 
-      {/* ── Pergamino de expedición ───────────────────────────────────────── */}
       <div className="papel-expedicion relative z-20 -mt-16 rounded-t-[2.5rem] border-t border-outline-variant pb-28 text-on-surface shadow-paper-lg md:rounded-t-[3.5rem] lg:-mt-24">
-        {/* Grabado botánico de esquina */}
         <div aria-hidden className="pointer-events-none absolute left-8 top-6 hidden select-none text-stamp-sepia/30 lg:block">
           <svg viewBox="0 0 100 100" fill="none" stroke="currentColor" strokeWidth="1.2" className="h-28 w-28">
             <path d="M10 90 Q30 50 70 30 T90 10" />
@@ -372,7 +353,6 @@ export function HomeView() {
           </svg>
         </div>
 
-        {/* Encabezado manuscrito */}
         <div className="relative mx-auto flex max-w-7xl flex-col gap-3 px-6 pb-2 pt-8 sm:flex-row sm:items-center sm:justify-between lg:px-12">
           <div className="flex items-center gap-2 font-sans text-xs font-semibold uppercase tracking-widest text-stamp-sepia">
             <span className="inline-block h-2 w-2 rounded-full bg-primary" />
@@ -390,7 +370,6 @@ export function HomeView() {
           <BuscadorExpediciones />
         </div>
 
-        {/* ── Expediciones destacadas ─────────────────────────────────────── */}
         <section id="destinos" className="mx-auto mb-28 max-w-7xl px-6 pt-8 lg:px-12">
           <div className="mb-16 max-w-2xl">
             <div className="mb-3 flex items-center gap-3">
@@ -429,7 +408,6 @@ export function HomeView() {
           )}
         </section>
 
-        {/* ── Atelier de expediciones ─────────────────────────────────────── */}
         <section id="atelier" className="mx-auto mb-28 max-w-7xl scroll-mt-24 px-6 lg:px-12">
           <div className="relative overflow-hidden rounded-3xl border border-white/10 bg-secondary-container p-8 text-on-secondary shadow-paper-lg md:p-14">
             <div aria-hidden className="pointer-events-none absolute -bottom-10 -right-10 select-none text-emerald-100/15">
@@ -474,7 +452,6 @@ export function HomeView() {
           </div>
         </section>
 
-        {/* ── Manifiesto de la casa ───────────────────────────────────────── */}
         <section id="manifiesto" className="mx-auto mb-20 max-w-7xl scroll-mt-24 px-6 lg:px-12">
           <div className="grid grid-cols-1 items-center gap-10 lg:grid-cols-12">
             <div className="lg:col-span-6">

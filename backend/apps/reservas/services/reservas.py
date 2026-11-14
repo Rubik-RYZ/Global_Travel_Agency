@@ -1,4 +1,3 @@
-"""Capa de negocio del dominio de reservas (CU7)."""
 from __future__ import annotations
 
 from datetime import datetime
@@ -6,14 +5,13 @@ from decimal import Decimal
 from django.core.exceptions import ValidationError
 from django.db import connection, transaction
 from django.db.models import Q, QuerySet
+from django.utils import timezone
 
 from apps.catalogo.models import PaqueteSalida
 from apps.reservas.models import Reserva, ReservaPasajero
 from apps.usuarios.models import Cliente
 
-
 def generar_codigo_reserva() -> str:
-    """Genera código correlativo formato RES-YYYY-NNNNNN."""
     anio = datetime.now().year
     try:
         with connection.cursor() as cursor:
@@ -21,10 +19,9 @@ def generar_codigo_reserva() -> str:
             num = cursor.fetchone()[0]
         return f"RES-{anio}-{int(num):06d}"
     except Exception:
-        # Fallback de seguridad en caso de SQLite o entorno sin secuencia
+
         total = Reserva.objects.filter(codigo__startswith=f"RES-{anio}-").count() + 1
         return f"RES-{anio}-{total:06d}"
-
 
 def listar_reservas(
     *,
@@ -54,7 +51,6 @@ def listar_reservas(
         )
     return qs.order_by("-creada_en")
 
-
 def obtener_reserva(reserva_id: int) -> Reserva:
     try:
         return (
@@ -65,7 +61,6 @@ def obtener_reserva(reserva_id: int) -> Reserva:
     except Reserva.DoesNotExist:
         raise ValidationError({"reserva_id": "Reserva no encontrada."})
 
-
 @transaction.atomic
 def crear_reserva(
     *,
@@ -75,8 +70,9 @@ def crear_reserva(
     pasajeros_datos: list[dict],
     canal: str = "web",
     conversacion_id=None,
+    registrado_por=None,
 ) -> Reserva:
-    """Crea una reserva de forma atómica descontando cupos con bloqueo concurrente."""
+
     if num_personas <= 0:
         raise ValidationError({"num_personas": "El número de personas debe ser mayor a 0."})
 
@@ -90,7 +86,6 @@ def crear_reserva(
     except Cliente.DoesNotExist:
         raise ValidationError({"cliente_id": "El cliente indicado no existe."})
 
-    # Bloqueo pesimista concurrente sobre la salida programada
     try:
         salida = PaqueteSalida.objects.select_for_update().select_related("paquete", "paquete__destino").get(pk=salida_id)
     except PaqueteSalida.DoesNotExist:
@@ -101,7 +96,6 @@ def crear_reserva(
             "cupos": f"No hay suficientes cupos disponibles. Solicitados: {num_personas}, disponibles: {salida.cupos_disponibles}."
         })
 
-    # Descuento atómico de cupos
     salida.cupos_disponibles -= num_personas
     salida.save(update_fields=["cupos_disponibles"])
 
@@ -118,9 +112,9 @@ def crear_reserva(
         moneda=salida.paquete.moneda,
         canal=canal,
         conversacion_id=conversacion_id,
+        registrado_por=registrado_por,
     )
 
-    # Registrar pasajeros
     for p in pasajeros_datos:
         ReservaPasajero.objects.create(
             reserva=reserva,
@@ -131,26 +125,83 @@ def crear_reserva(
             fecha_nacimiento=p.get("fecha_nacimiento"),
         )
 
-    # CU8: Generación automática del itinerario
     from apps.reservas.services.itinerarios import generar_itinerario_automatico
     from apps.reservas.services.notificaciones import registrar_notificacion_reserva
 
     generar_itinerario_automatico(reserva)
 
-    # CU8: Notificación y correo
     registrar_notificacion_reserva(reserva)
 
     return reserva
 
+@transaction.atomic
+def modificar_salida_reserva(reserva_id: int, nueva_salida_id: int) -> Reserva:
+    try:
+        reserva = (
+            Reserva.objects.select_for_update()
+            .select_related("salida", "salida__paquete")
+            .get(pk=reserva_id)
+        )
+    except Reserva.DoesNotExist:
+        raise ValidationError({"reserva_id": "Reserva no encontrada."})
+
+    if reserva.estado not in (Reserva.ESTADO_PENDIENTE, Reserva.ESTADO_CONFIRMADA):
+        raise ValidationError(
+            {"reserva": "Solo se pueden modificar reservas pendientes o confirmadas."}
+        )
+    if reserva.salida_id == nueva_salida_id:
+        return reserva
+
+    try:
+        nueva = (
+            PaqueteSalida.objects.select_for_update()
+            .select_related("paquete")
+            .get(pk=nueva_salida_id)
+        )
+    except PaqueteSalida.DoesNotExist:
+        raise ValidationError({"salida_id": "La salida indicada no existe."})
+
+    if nueva.paquete_id != reserva.salida.paquete_id:
+        raise ValidationError(
+            {"salida_id": "La nueva salida debe pertenecer al mismo paquete."}
+        )
+    if nueva.fecha_salida < timezone.localdate():
+        raise ValidationError({"salida_id": "La nueva salida ya pasó."})
+    if nueva.cupos_disponibles < reserva.num_personas:
+        raise ValidationError(
+            {
+                "cupos": (
+                    f"No hay cupos suficientes. Requeridos: {reserva.num_personas}, "
+                    f"disponibles: {nueva.cupos_disponibles}."
+                )
+            }
+        )
+
+    anterior = PaqueteSalida.objects.select_for_update().get(pk=reserva.salida_id)
+    anterior.cupos_disponibles = min(
+        anterior.cupos_totales, anterior.cupos_disponibles + reserva.num_personas
+    )
+    anterior.save(update_fields=["cupos_disponibles"])
+
+    nueva.cupos_disponibles -= reserva.num_personas
+    nueva.save(update_fields=["cupos_disponibles"])
+
+    reserva.salida = nueva
+    reserva.total = Decimal(str(nueva.paquete.precio_base)) * Decimal(
+        str(reserva.num_personas)
+    )
+    reserva.moneda = nueva.paquete.moneda
+    reserva.save(
+        update_fields=["salida", "total", "moneda", "actualizada_en"]
+    )
+    return reserva
 
 @transaction.atomic
 def cancelar_reserva(reserva_id: int) -> Reserva:
-    """Cancela una reserva y reintegra los cupos a la salida con select_for_update()."""
     reserva = obtener_reserva(reserva_id)
     if reserva.estado == Reserva.ESTADO_CANCELADA:
         return reserva
 
-    # Reintegrar cupos bloqueando la salida
     salida = PaqueteSalida.objects.select_for_update().get(pk=reserva.salida_id)
     salida.cupos_disponibles = min(salida.cupos_totales, salida.cupos_disponibles + reserva.num_personas)
     salida.save(update_fields=["cupos_disponibles"])
@@ -158,4 +209,3 @@ def cancelar_reserva(reserva_id: int) -> Reserva:
     reserva.estado = Reserva.ESTADO_CANCELADA
     reserva.save(update_fields=["estado", "actualizada_en"])
     return reserva
-

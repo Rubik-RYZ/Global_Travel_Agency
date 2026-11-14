@@ -18,30 +18,22 @@ import { useAuthStore } from '@/store/authStore'
 interface EnlaceNav {
   a: string
   texto: string
-  /** Marca el enlace como activo sólo en coincidencia exacta (rutas raíz). */
+
   fin?: boolean
-  /** Ancla a una sección de la home: nunca se resalta como «activo». */
+
   ancla?: boolean
 }
 
-/** Enlaces permanentes de la barra. Los que apuntan a la home usan hash. */
 const ENLACES: EnlaceNav[] = [
   { a: '/destinos', texto: 'Expediciones' },
   { a: '/viajes', texto: 'Paquetes Turísticos' },
+  { a: '/diseña-tu-viaje', texto: 'Diseña tu viaje' },
   { a: '/#itinerarios', texto: 'Itinerarios de autor', ancla: true },
   { a: '/#manifiesto', texto: 'Manifiesto', ancla: true },
 ]
 
 type Panel = 'cuaderno' | 'buscar' | null
 
-/**
- * Cabecera pública.
- *
- * `fixed`: sobre la home flota transparente encima del hero (texto marfil) y
- * se vuelve sólida al hacer scroll o al abrir un panel; en el resto de rutas
- * nace sólida. Aloja el mega-menú «Cuaderno de Destinos» (#13), un buscador
- * de catálogo y el menú de sesión.
- */
 export function Navbar() {
   const usuario = useAuthStore((s) => s.usuario)
   const { pathname } = useLocation()
@@ -56,7 +48,6 @@ export function Navbar() {
   const esHome = pathname === '/'
   const transparente = esHome && !desplazado && !panel && !drawer
 
-  // Sólida en cuanto el hero queda atrás.
   useEffect(() => {
     const alScroll = () => setDesplazado(window.scrollY > 24)
     alScroll()
@@ -64,14 +55,12 @@ export function Navbar() {
     return () => window.removeEventListener('scroll', alScroll)
   }, [])
 
-  // Cerrar al cambiar de ruta.
   useEffect(() => {
     setPanel(null)
     setDrawer(false)
     setConsulta('')
   }, [pathname])
 
-  // Escape cierra cualquier capa; bloquea el scroll con el drawer abierto.
   useEffect(() => {
     const alTeclear = (e: KeyboardEvent) => {
       if (e.key === 'Escape') {
@@ -115,7 +104,6 @@ export function Navbar() {
     >
       <div className="mx-auto max-w-7xl px-5 lg:px-8">
         <nav className="relative flex items-center justify-between gap-4 py-4">
-          {/* ── Marca ─────────────────────────────────────────────────────── */}
           <Link to="/" className="group flex items-center gap-3.5">
             <span
               className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-full border transition-colors ${
@@ -144,7 +132,6 @@ export function Navbar() {
             </span>
           </Link>
 
-          {/* ── Navegación principal ──────────────────────────────────────── */}
           <div
             className={`hidden items-center gap-8 text-[13px] font-medium tracking-wide md:flex ${
               transparente ? 'text-white/90' : 'text-on-surface-variant'
@@ -198,7 +185,6 @@ export function Navbar() {
             )}
           </div>
 
-          {/* ── Acciones ──────────────────────────────────────────────────── */}
           <div className="flex items-center gap-2 sm:gap-3">
             <button
               type="button"
@@ -249,7 +235,6 @@ export function Navbar() {
             </button>
           </div>
 
-          {/* ── Panel «Cuaderno de Destinos» (#13) ────────────────────────── */}
           <AnimatePresence>
             {panel === 'cuaderno' && (
               <motion.div
@@ -265,7 +250,6 @@ export function Navbar() {
             )}
           </AnimatePresence>
 
-          {/* ── Panel de búsqueda ─────────────────────────────────────────── */}
           <AnimatePresence>
             {panel === 'buscar' && (
               <motion.div
@@ -313,7 +297,6 @@ export function Navbar() {
         </nav>
       </div>
 
-      {/* ── Cajón móvil ───────────────────────────────────────────────────── */}
       <AnimatePresence>
         {drawer && (
           <motion.div

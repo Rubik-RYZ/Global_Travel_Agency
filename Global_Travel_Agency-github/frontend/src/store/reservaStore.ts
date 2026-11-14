@@ -1,4 +1,3 @@
-/** Estado del flujo multi-paso de reserva (se implementa en el Sprint 4). */
 import { create } from 'zustand'
 
 interface ReservaFlowState {

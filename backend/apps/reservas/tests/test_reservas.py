@@ -1,4 +1,3 @@
-"""Tests completos para el módulo de reservas (CU7) e itinerarios/notificaciones (CU8)."""
 from datetime import date, timedelta
 from decimal import Decimal
 import pytest
@@ -19,7 +18,6 @@ from apps.usuarios.constants import ROL_ADMINISTRADOR, ROL_CLIENTE
 from apps.usuarios.models import Cliente, Rol, Usuario
 
 ROL_AGENTE = 2
-
 
 @pytest.fixture
 def setup_reservas(db):
@@ -66,13 +64,11 @@ def setup_reservas(db):
         "paquete": paquete,
     }
 
-
 @pytest.mark.django_db
 def test_codigo_reserva_formato():
     codigo = generar_codigo_reserva()
     assert codigo.startswith(f"RES-{date.today().year}-")
-    assert len(codigo) == 15  # RES-YYYY-XXXXXX
-
+    assert len(codigo) == 15
 
 @pytest.mark.django_db
 def test_crear_reserva_descuento_cupos_e_itinerario_automatico(setup_reservas):
@@ -96,20 +92,16 @@ def test_crear_reserva_descuento_cupos_e_itinerario_automatico(setup_reservas):
     assert reserva.num_personas == 2
     assert reserva.pasajeros.count() == 2
 
-    # Verificar que los cupos se descontaron
     d["salida"].refresh_from_db()
     assert d["salida"].cupos_disponibles == 8
 
-    # Verificar CU8: Itinerario generado automáticamente
     itinerario = obtener_itinerario_por_reserva(reserva.id)
     assert itinerario is not None
     assert itinerario.items.count() >= 2
 
-    # Verificar CU8: Notificación registrada
     notif = Notificacion.objects.filter(reserva=reserva).first()
     assert notif is not None
     assert notif.tipo == Notificacion.TIPO_CONFIRMACION
-
 
 @pytest.mark.django_db
 def test_prevencion_sobreventa_cupos_insuficientes(setup_reservas):
@@ -120,14 +112,12 @@ def test_prevencion_sobreventa_cupos_insuficientes(setup_reservas):
         crear_reserva(
             cliente_id=d["cliente"].id,
             salida_id=d["salida"].id,
-            num_personas=12,  # Salida solo tiene 10 cupos
+            num_personas=12,
             pasajeros_datos=pasajeros,
         )
 
-    # Los cupos deben mantenerse intactos
     d["salida"].refresh_from_db()
     assert d["salida"].cupos_disponibles == 10
-
 
 @pytest.mark.django_db
 def test_cancelar_reserva_reversion_cupos(setup_reservas):
@@ -142,15 +132,12 @@ def test_cancelar_reserva_reversion_cupos(setup_reservas):
     d["salida"].refresh_from_db()
     assert d["salida"].cupos_disponibles == 9
 
-    # Cancelar reserva
     cancelar_reserva(reserva.id)
     reserva.refresh_from_db()
     assert reserva.estado == Reserva.ESTADO_CANCELADA
 
-    # Los cupos deben ser reintegrados
     d["salida"].refresh_from_db()
     assert d["salida"].cupos_disponibles == 10
-
 
 @pytest.mark.django_db
 def test_api_reservas_creacion_y_permisos(setup_reservas):
@@ -177,7 +164,6 @@ def test_api_reservas_creacion_y_permisos(setup_reservas):
     assert res.data["codigo"].startswith("RES-")
     assert res.data["estado"] == "pendiente"
 
-    # Listado por cliente: ve su reserva
     res_list = client.get("/api/v1/reservas/")
     assert res_list.status_code == status.HTTP_200_OK
     assert len(res_list.data["results"]) == 1

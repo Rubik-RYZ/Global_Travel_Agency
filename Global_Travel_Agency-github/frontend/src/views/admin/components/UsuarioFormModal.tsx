@@ -20,7 +20,6 @@ interface Props {
   onGuardado: () => void
 }
 
-/** Retrato del miembro del equipo (URL + identificador en el almacén). */
 interface Foto {
   url: string
   publicId: string

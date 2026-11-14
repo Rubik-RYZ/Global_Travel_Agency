@@ -1,15 +1,3 @@
-"""Subida y borrado de archivos en el almacén externo (Cloudinary).
-
-Reglas de la casa:
-
-* Si el entorno no tiene credenciales, el sistema **sigue funcionando**: las
-  imágenes que ya están guardadas por URL se ven igual. Sólo la subida queda
-  deshabilitada y se avisa con un mensaje claro (`AlmacenNoConfigurado`), nunca
-  con un error 500.
-* La URL y el `public_id` viajan siempre juntos: sin el `public_id` no se puede
-  reemplazar ni borrar el archivo viejo cuando el usuario sube uno nuevo.
-* La firma (API secret) vive **sólo en el servidor**; el navegador nunca la ve.
-"""
 from __future__ import annotations
 
 import logging
@@ -22,26 +10,19 @@ from django.core.exceptions import ValidationError
 
 logger = logging.getLogger(__name__)
 
-MAX_BYTES = 8 * 1024 * 1024  # 8 MB
+MAX_BYTES = 8 * 1024 * 1024
 FORMATOS_IMAGEN = {"jpg", "jpeg", "png", "webp", "avif"}
 TIPOS_IMAGEN = {"image/jpeg", "image/png", "image/webp", "image/avif", "image/jpg"}
 
-
 class AlmacenNoConfigurado(RuntimeError):
-    """El entorno no tiene credenciales del almacén externo."""
+    pass
 
-
-# --------------------------------------------------------------------------
-# Estado
-# --------------------------------------------------------------------------
 def almacen_configurado() -> bool:
-    """¿Están las tres credenciales del almacén en el entorno?"""
     return bool(
         getattr(settings, "CLOUDINARY_CLOUD_NAME", "")
         and getattr(settings, "CLOUDINARY_API_KEY", "")
         and getattr(settings, "CLOUDINARY_API_SECRET", "")
     )
-
 
 def _configurar() -> None:
     if not almacen_configurado():
@@ -56,12 +37,7 @@ def _configurar() -> None:
         overwrite=True,
     )
 
-
-# --------------------------------------------------------------------------
-# Validación
-# --------------------------------------------------------------------------
 def _validar_imagen(archivo) -> None:
-    """Valida tamaño, extensión y tipo MIME antes de gastar cuota."""
     if archivo is None:
         raise ValidationError({"archivo": "Adjunte un archivo."})
     if not archivo.size:
@@ -80,16 +56,7 @@ def _validar_imagen(archivo) -> None:
             {"archivo": "Formato no admitido. Use JPG, PNG, WEBP o AVIF."}
         )
 
-
-# --------------------------------------------------------------------------
-# Subida / borrado
-# --------------------------------------------------------------------------
 def subir_imagen(archivo, *, carpeta: str, public_id: str | None = None) -> dict:
-    """Sube una imagen al almacén y devuelve `{url, public_id, ...}`.
-
-    Lanza `ValidationError` si el archivo no es válido y `AlmacenNoConfigurado`
-    si faltan credenciales (la vista las traduce a respuestas HTTP limpias).
-    """
     _validar_imagen(archivo)
     _configurar()
 
@@ -104,7 +71,7 @@ def subir_imagen(archivo, *, carpeta: str, public_id: str | None = None) -> dict
             use_filename=True,
             unique_filename=True,
         )
-    except CloudinaryError as exc:  # credenciales inválidas, cuota, red...
+    except CloudinaryError as exc:
         logger.warning("Falló la subida al almacén: %s", exc)
         raise ValidationError(
             {"archivo": "No se pudo subir el archivo al almacén. Intente de nuevo."}
@@ -120,9 +87,7 @@ def subir_imagen(archivo, *, carpeta: str, public_id: str | None = None) -> dict
         "carpeta": carpeta,
     }
 
-
 def eliminar_archivo(public_id: str | None) -> bool:
-    """Borra un archivo del almacén. Nunca interrumpe el flujo del llamador."""
     if not public_id or not almacen_configurado():
         return False
     try:

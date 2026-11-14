@@ -1,1 +1,3 @@
-"""Capa de presentación del dominio 'reportes' (se implementa en su sprint)."""
+from apps.reportes.views.reportes import ReporteOcupacionView, ReporteVentasView
+
+__all__ = ["ReporteVentasView", "ReporteOcupacionView"]

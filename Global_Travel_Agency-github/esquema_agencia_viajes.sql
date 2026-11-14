@@ -1,13 +1,3 @@
--- =====================================================================
--- Esquema PostgreSQL: Sistema Web Inteligente para Agencia de Viajes
--- Convenciones: nombres en español, snake_case, tablas en plural.
--- Contraseñas: se guarda SOLO el hash bcrypt (nunca texto plano).
--- Pagos: NUNCA se guardan datos de tarjeta; Stripe entrega un token/ID.
--- =====================================================================
-
--- ---------------------------------------------------------------------
--- 1. SEGURIDAD Y USUARIOS
--- ---------------------------------------------------------------------
 CREATE TABLE roles (
     id      SMALLINT PRIMARY KEY,
     nombre  TEXT NOT NULL UNIQUE
@@ -17,19 +7,19 @@ CREATE TABLE usuarios (
     id             BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
     rol_id         SMALLINT NOT NULL REFERENCES roles(id),
     email          TEXT NOT NULL,
-    password_hash  TEXT NOT NULL,                 -- bcrypt
+    password_hash  TEXT NOT NULL,
     activo         BOOLEAN NOT NULL DEFAULT TRUE,
     creado_en      TIMESTAMPTZ NOT NULL DEFAULT now(),
     ultimo_acceso  TIMESTAMPTZ,
-    foto_url       TEXT,                              -- retrato en el almacén
-    foto_public_id TEXT                               -- id del recurso para reemplazarlo
+    foto_url       TEXT,
+    foto_public_id TEXT
 );
 CREATE UNIQUE INDEX ux_usuarios_email ON usuarios (lower(email));
 
 CREATE TABLE auditoria (
     id          BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
     usuario_id  BIGINT REFERENCES usuarios(id) ON DELETE SET NULL,
-    accion      TEXT NOT NULL,                    -- ej: 'login', 'crear_reserva'
+    accion      TEXT NOT NULL,
     entidad     TEXT,
     entidad_id  TEXT,
     detalle     JSONB,
@@ -38,9 +28,6 @@ CREATE TABLE auditoria (
 );
 CREATE INDEX ix_auditoria_usuario ON auditoria (usuario_id, creado_en DESC);
 
--- ---------------------------------------------------------------------
--- 2. CLIENTES Y PREFERENCIAS (alimentan al recomendador)
--- ---------------------------------------------------------------------
 CREATE TABLE clientes (
     id                BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
     usuario_id        BIGINT UNIQUE REFERENCES usuarios(id) ON DELETE SET NULL,
@@ -51,7 +38,7 @@ CREATE TABLE clientes (
     telefono          TEXT,
     fecha_nacimiento  DATE,
     pais_origen       TEXT,
-    pasaporte_url       TEXT,                          -- documento digitalizado
+    pasaporte_url       TEXT,
     pasaporte_public_id TEXT,
     carnet_url          TEXT,
     carnet_public_id    TEXT,
@@ -62,39 +49,36 @@ CREATE TABLE cliente_preferencias (
     cliente_id       BIGINT PRIMARY KEY REFERENCES clientes(id) ON DELETE CASCADE,
     presupuesto_max  NUMERIC(12,2) CHECK (presupuesto_max >= 0),
     moneda           CHAR(3) NOT NULL DEFAULT 'USD' CHECK (moneda IN ('BOB','USD','EUR')),
-    intereses        TEXT[] NOT NULL DEFAULT '{}',  -- ej: {'playa','cultural','aventura'}
+    intereses        TEXT[] NOT NULL DEFAULT '{}',
     actualizado_en   TIMESTAMPTZ NOT NULL DEFAULT now()
 );
 
--- ---------------------------------------------------------------------
--- 3. CATÁLOGO TURÍSTICO
--- ---------------------------------------------------------------------
 CREATE TABLE destinos (
     id                BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
     nombre            TEXT NOT NULL,
     pais              TEXT NOT NULL,
-    pais_codigo       CHAR(2) CHECK (pais_codigo ~ '^[A-Z]{2}$'),  -- ISO 3166-1 alfa-2
-    slug              VARCHAR(140) UNIQUE,            -- URL amigable (/destinos/machu-picchu-peru)
+    pais_codigo       CHAR(2) CHECK (pais_codigo ~ '^[A-Z]{2}$'),
+    slug              VARCHAR(140) UNIQUE,
     region            TEXT CHECK (region IN ('america_del_sur','america_del_norte',
                                              'europa','asia','africa','oceania')),
-    resumen           TEXT,                           -- sinopsis corta para tarjetas
-    lema              TEXT,                           -- titular editorial de la ficha
+    resumen           TEXT,
+    lema              TEXT,
     descripcion       TEXT,
-    latitud           NUMERIC(9,6) CHECK (latitud BETWEEN -90 AND 90),     -- Leaflet
+    latitud           NUMERIC(9,6) CHECK (latitud BETWEEN -90 AND 90),
     longitud          NUMERIC(9,6) CHECK (longitud BETWEEN -180 AND 180),
     duracion_dias     SMALLINT CHECK (duracion_dias > 0),
     duracion_noches   SMALLINT CHECK (duracion_noches >= 0),
-    precio_desde      NUMERIC(10,2) CHECK (precio_desde >= 0),  -- "desde" por persona
+    precio_desde      NUMERIC(10,2) CHECK (precio_desde >= 0),
     moneda            CHAR(3) NOT NULL DEFAULT 'USD' CHECK (moneda IN ('BOB','USD','EUR')),
-    mejor_epoca       TEXT,                           -- ventana de viaje sugerida
+    mejor_epoca       TEXT,
     caracter          TEXT CHECK (caracter IN ('arqueologico','cultural','naturaleza',
                                               'aventura','gastronomico','descanso')),
-    imagen_principal  TEXT,                           -- ruta local o URL del almacén
-    imagen_public_id  TEXT,                           -- id del recurso para reemplazarlo
+    imagen_principal  TEXT,
+    imagen_public_id  TEXT,
     incluye           TEXT[] NOT NULL DEFAULT '{}',
     no_incluye        TEXT[] NOT NULL DEFAULT '{}',
-    etiquetas         TEXT[] NOT NULL DEFAULT '{}',   -- mismas etiquetas que 'intereses'
-    destacado         BOOLEAN NOT NULL DEFAULT FALSE, -- aparece en portada y mega-menú
+    etiquetas         TEXT[] NOT NULL DEFAULT '{}',
+    destacado         BOOLEAN NOT NULL DEFAULT FALSE,
     activo            BOOLEAN NOT NULL DEFAULT TRUE,
     UNIQUE (nombre, pais)
 );
@@ -103,20 +87,19 @@ CREATE INDEX ix_destinos_region ON destinos (region);
 CREATE INDEX ix_destinos_caracter ON destinos (caracter);
 CREATE INDEX ix_destinos_destacado ON destinos (destacado);
 
--- Diario de ruta: un registro por día del itinerario de cada destino.
 CREATE TABLE itinerario_dias (
     id           BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
     destino_id   BIGINT NOT NULL REFERENCES destinos(id) ON DELETE CASCADE,
     numero_dia   SMALLINT NOT NULL CHECK (numero_dia > 0),
     titulo       TEXT NOT NULL,
     descripcion  TEXT,
-    ubicacion    TEXT,                                -- lugar donde transcurre el día
+    ubicacion    TEXT,
     UNIQUE (destino_id, numero_dia)
 );
 CREATE INDEX ix_itinerario_dias_destino ON itinerario_dias (destino_id, numero_dia);
 
 CREATE TABLE aeropuertos (
-    codigo_iata  CHAR(3) PRIMARY KEY,            -- mismo código que usa Amadeus
+    codigo_iata  CHAR(3) PRIMARY KEY,
     nombre       TEXT NOT NULL,
     destino_id   BIGINT NOT NULL REFERENCES destinos(id)
 );
@@ -131,8 +114,8 @@ CREATE TABLE proveedores (
     email      TEXT,
     telefono   TEXT,
     notas      TEXT,
-    logo_url       TEXT,                              -- lámina del prestador
-    logo_public_id TEXT,                              -- id del recurso para reemplazarlo
+    logo_url       TEXT,
+    logo_public_id TEXT,
     activo     BOOLEAN NOT NULL DEFAULT TRUE
 );
 
@@ -148,7 +131,7 @@ CREATE TABLE vuelos (
     moneda             CHAR(3) NOT NULL DEFAULT 'USD' CHECK (moneda IN ('BOB','USD','EUR')),
     cupos_totales      INT NOT NULL CHECK (cupos_totales >= 0),
     cupos_disponibles  INT NOT NULL CHECK (cupos_disponibles >= 0),
-    referencia_externa TEXT,                      -- id en Amadeus, si viene de la API
+    referencia_externa TEXT,
     CHECK (origen <> destino),
     CHECK (llegada > salida),
     CHECK (cupos_disponibles <= cupos_totales),
@@ -173,13 +156,12 @@ CREATE INDEX ix_hoteles_destino ON hoteles (destino_id);
 CREATE TABLE habitaciones (
     id           BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
     hotel_id     BIGINT NOT NULL REFERENCES hoteles(id) ON DELETE CASCADE,
-    tipo         TEXT NOT NULL,                   -- simple, doble, suite...
+    tipo         TEXT NOT NULL,
     capacidad    SMALLINT NOT NULL CHECK (capacidad > 0),
     precio_noche NUMERIC(12,2) NOT NULL CHECK (precio_noche >= 0),
     moneda       CHAR(3) NOT NULL DEFAULT 'USD' CHECK (moneda IN ('BOB','USD','EUR'))
 );
 
--- Un paquete es la "oferta"; cada salida es una fecha concreta con cupos.
 CREATE TABLE paquetes (
     id             BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
     destino_id     BIGINT NOT NULL REFERENCES destinos(id),
@@ -187,7 +169,7 @@ CREATE TABLE paquetes (
     nombre         TEXT NOT NULL,
     descripcion    TEXT,
     duracion_dias  SMALLINT NOT NULL CHECK (duracion_dias > 0),
-    precio_base    NUMERIC(12,2) NOT NULL CHECK (precio_base >= 0),  -- por persona
+    precio_base    NUMERIC(12,2) NOT NULL CHECK (precio_base >= 0),
     moneda         CHAR(3) NOT NULL DEFAULT 'USD' CHECK (moneda IN ('BOB','USD','EUR')),
     etiquetas      TEXT[] NOT NULL DEFAULT '{}',
     activo         BOOLEAN NOT NULL DEFAULT TRUE
@@ -208,14 +190,9 @@ CREATE TABLE paquete_salidas (
 );
 CREATE INDEX ix_salidas_fecha ON paquete_salidas (fecha_salida);
 
--- ---------------------------------------------------------------------
--- 4. AGENTE CONVERSACIONAL (historial, intenciones y modelos)
---    Se define antes de 'reservas' para poder rastrear qué reservas
---    fueron creadas desde el chat.
--- ---------------------------------------------------------------------
 CREATE TABLE intenciones (
     id           SMALLINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
-    nombre       TEXT NOT NULL UNIQUE,            -- ej: 'consultar_paquetes'
+    nombre       TEXT NOT NULL UNIQUE,
     descripcion  TEXT,
     activa       BOOLEAN NOT NULL DEFAULT TRUE
 );
@@ -229,22 +206,21 @@ CREATE TABLE frases_entrenamiento (
     UNIQUE (intencion_id, texto)
 );
 
--- Versiones de los modelos de IA y sus métricas (precisión, F1, etc.)
 CREATE TABLE modelos_ia (
     id           BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
     nombre       TEXT NOT NULL,
     version      TEXT NOT NULL,
     tipo         TEXT NOT NULL CHECK (tipo IN ('clasificador_intenciones','recomendador')),
-    metricas     JSONB,                           -- ej: {"accuracy":0.91,"f1_macro":0.88}
+    metricas     JSONB,
     activo       BOOLEAN NOT NULL DEFAULT FALSE,
     entrenado_en TIMESTAMPTZ NOT NULL DEFAULT now(),
     UNIQUE (nombre, version)
 );
 
 CREATE TABLE conversaciones (
-    id                UUID PRIMARY KEY DEFAULT gen_random_uuid(),   -- no adivinable
+    id                UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     usuario_id        BIGINT NOT NULL REFERENCES usuarios(id),
-    estado_dialogo    JSONB NOT NULL DEFAULT '{}'::jsonb,  -- slots: paquete, fecha, personas...
+    estado_dialogo    JSONB NOT NULL DEFAULT '{}'::jsonb,
     intencion_activa  TEXT,
     cerrada           BOOLEAN NOT NULL DEFAULT FALSE,
     iniciada_en       TIMESTAMPTZ NOT NULL DEFAULT now(),
@@ -259,16 +235,13 @@ CREATE TABLE mensajes (
     texto            TEXT NOT NULL,
     intencion_id     SMALLINT REFERENCES intenciones(id),
     confianza        NUMERIC(4,3) CHECK (confianza BETWEEN 0 AND 1),
-    entidades        JSONB,                       -- ej: {"destino":"Cusco","personas":2}
+    entidades        JSONB,
     modelo_id        BIGINT REFERENCES modelos_ia(id),
     creado_en        TIMESTAMPTZ NOT NULL DEFAULT now()
 );
 CREATE INDEX ix_mensajes_conversacion ON mensajes (conversacion_id, creado_en);
 CREATE INDEX ix_mensajes_intencion ON mensajes (intencion_id);
 
--- ---------------------------------------------------------------------
--- 5. RESERVAS, PASAJEROS, PAGOS, ITINERARIOS
--- ---------------------------------------------------------------------
 CREATE SEQUENCE seq_codigo_reserva START 1;
 
 CREATE TABLE reservas (
@@ -284,7 +257,7 @@ CREATE TABLE reservas (
     total            NUMERIC(12,2) NOT NULL CHECK (total >= 0),
     moneda           CHAR(3) NOT NULL CHECK (moneda IN ('BOB','USD','EUR')),
     canal            TEXT NOT NULL DEFAULT 'web' CHECK (canal IN ('web','agente','personal')),
-    conversacion_id  UUID REFERENCES conversaciones(id),  -- si la creó el agente
+    conversacion_id  UUID REFERENCES conversaciones(id),
     creada_en        TIMESTAMPTZ NOT NULL DEFAULT now(),
     actualizada_en   TIMESTAMPTZ NOT NULL DEFAULT now()
 );
@@ -308,7 +281,7 @@ CREATE TABLE tipos_cambio (
     moneda_origen    CHAR(3) NOT NULL CHECK (moneda_origen IN ('BOB','USD','EUR')),
     moneda_destino   CHAR(3) NOT NULL CHECK (moneda_destino IN ('BOB','USD','EUR')),
     tasa             NUMERIC(14,6) NOT NULL CHECK (tasa > 0),
-    PRIMARY KEY (fecha, moneda_origen, moneda_destino)    -- caché de ExchangeRate-API
+    PRIMARY KEY (fecha, moneda_origen, moneda_destino)
 );
 
 CREATE TABLE pagos (
@@ -317,11 +290,11 @@ CREATE TABLE pagos (
     monto               NUMERIC(12,2) NOT NULL CHECK (monto > 0),
     moneda              CHAR(3) NOT NULL CHECK (moneda IN ('BOB','USD','EUR')),
     tipo_cambio_a_bob   NUMERIC(14,6) NOT NULL DEFAULT 1 CHECK (tipo_cambio_a_bob > 0),
-    monto_bob           NUMERIC(14,2) NOT NULL CHECK (monto_bob > 0),  -- para reportes
+    monto_bob           NUMERIC(14,2) NOT NULL CHECK (monto_bob > 0),
     metodo              TEXT NOT NULL DEFAULT 'tarjeta',
     estado              TEXT NOT NULL DEFAULT 'pendiente'
                         CHECK (estado IN ('pendiente','aprobado','fallido','reembolsado')),
-    stripe_payment_id   TEXT UNIQUE,              -- solo el ID, nunca datos de tarjeta
+    stripe_payment_id   TEXT UNIQUE,
     creado_en           TIMESTAMPTZ NOT NULL DEFAULT now()
 );
 CREATE INDEX ix_pagos_reserva ON pagos (reserva_id);
@@ -357,24 +330,18 @@ CREATE TABLE notificaciones (
     creado_en           TIMESTAMPTZ NOT NULL DEFAULT now()
 );
 
--- ---------------------------------------------------------------------
--- 6. RECOMENDACIONES (para medir y mejorar el recomendador)
--- ---------------------------------------------------------------------
 CREATE TABLE recomendaciones (
     id            BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
     cliente_id    BIGINT NOT NULL REFERENCES clientes(id) ON DELETE CASCADE,
     paquete_id    BIGINT NOT NULL REFERENCES paquetes(id) ON DELETE CASCADE,
     modelo_id     BIGINT REFERENCES modelos_ia(id),
-    puntaje       NUMERIC(6,4) NOT NULL,          -- similitud de coseno u otro
+    puntaje       NUMERIC(6,4) NOT NULL,
     mostrada      BOOLEAN NOT NULL DEFAULT FALSE,
-    aceptada      BOOLEAN,                        -- NULL = sin respuesta aún
+    aceptada      BOOLEAN,
     generada_en   TIMESTAMPTZ NOT NULL DEFAULT now()
 );
 CREATE INDEX ix_recomendaciones_cliente ON recomendaciones (cliente_id, generada_en DESC);
 
--- ---------------------------------------------------------------------
--- 7. TRIGGER: mantener 'actualizada_en' de reservas
--- ---------------------------------------------------------------------
 CREATE FUNCTION fn_actualizar_fecha() RETURNS trigger AS $$
 BEGIN
     NEW.actualizada_en := now();
@@ -386,9 +353,6 @@ CREATE TRIGGER tg_reservas_actualizada
     BEFORE UPDATE ON reservas
     FOR EACH ROW EXECUTE FUNCTION fn_actualizar_fecha();
 
--- ---------------------------------------------------------------------
--- 8. VISTAS PARA REPORTES
--- ---------------------------------------------------------------------
 CREATE VIEW v_ventas_mensuales AS
 SELECT date_trunc('month', creado_en)::date AS mes,
        count(*)                              AS pagos_aprobados,
@@ -410,9 +374,6 @@ WHERE r.estado <> 'cancelada'
 GROUP BY d.nombre
 ORDER BY reservas DESC;
 
--- ---------------------------------------------------------------------
--- 9. DATOS INICIALES
--- ---------------------------------------------------------------------
 INSERT INTO roles (id, nombre) VALUES
     (1, 'administrador'), (2, 'agente'), (3, 'cliente');
 
@@ -427,16 +388,3 @@ INSERT INTO intenciones (nombre, descripcion) VALUES
     ('ayuda',                    'Pide ayuda o información general'),
     ('despedida',                'El usuario se despide'),
     ('fallback',                 'No se entendió el mensaje');
-
--- =====================================================================
--- NOTAS DE USO (para la aplicación, no para la base de datos)
--- 1) Al reservar, descontar cupos de forma atómica y dentro de una
---    transacción:
---      UPDATE paquete_salidas
---         SET cupos_disponibles = cupos_disponibles - :n
---       WHERE id = :salida AND cupos_disponibles >= :n;
---    Si no afecta ninguna fila, no hay cupos: abortar la reserva.
--- 2) Todas las consultas deben ser parametrizadas (evita inyección SQL).
--- 3) El agente usa las mismas funciones de servicio que la web y actúa
---    con la identidad (JWT) del usuario.
--- =====================================================================

@@ -47,7 +47,7 @@ Formato de cada línea:
 15. Explorar destinos                   →  ExplorarDestinosView.tsx         →  /destinos
 16. Ficha de destino                    →  DetalleDestinoView.tsx           →  /destinos/:id
 17. Panel · Atlas de destinos           →  DestinosAdminView.tsx            →  /admin/destinos
-18. Panel · Editor de destino           →  EditorDestinoAdminView.tsx       →  /admin/destinos/:id
+18. Panel · Editor de destino           →  EditorDestinoAdminView.tsx       →  /admin/destinos/:id       ✅ done (mapa Leaflet/OSM)
 19. Panel · Libreta de proveedores      →  ProveedoresAdminView.tsx         →  /admin/proveedores
 20. Panel · Ficha de proveedor          →  FichaProveedorAdminView.tsx      →  /admin/proveedores/:id
 
@@ -94,7 +94,7 @@ Formato de cada línea:
 ### CU9 · Pagos
 
 38. Reservar · Paso 3: Pago             →  ReservaPagoView.tsx              →  /reservar/pago
-39. Panel · Libro de pagos              →  PagosAdminView.tsx               →  /admin/pagos
+39. Panel · Libro de pagos              →  PagosAdminView.tsx               →  /admin/pagos              ✅ done (filtros + totales + boletas)
 
 ---
 
@@ -102,13 +102,13 @@ Formato de cada línea:
 
 ### CU10 · Asistente Conversacional
 
-40. Diseña tu viaje (asistente)         →  DiseñaTuViajeView.tsx            →  /diseña-tu-viaje
-41. Panel · Entrenamiento del asistente →  AsistenteIAAdminView.tsx         →  /admin/asistente-ia
+40. Diseña tu viaje (asistente)         →  DisenaTuViajeView.tsx            →  /diseña-tu-viaje          ✅ done (datos reales + acciones por rol)
+41. Panel · Entrenamiento del asistente →  AsistenteIAAdminView.tsx         →  /admin/asistente-ia       ✅ done (intenciones + frases + reentrenamiento)
 
 ### CU11 · Recomendaciones IA
 
-42. Mi viaje · Pensado para ti          →  RecomendacionesView.tsx          →  /mi-cuenta/recomendaciones
-43. Panel · Calidad de recomendaciones  →  RecomendacionesAdminView.tsx     →  /admin/recomendaciones
+42. Mi viaje · Pensado para ti          →  RecomendacionesView.tsx          →  /mi-cuenta/recomendaciones ✅ done (híbrido contenido + historial)
+43. Panel · Calidad de recomendaciones  →  RecomendacionesAdminView.tsx     →  /admin/recomendaciones    ✅ done (KPIs + versiones del modelo + actividad)
 
 ### CU12 · Reportes
 

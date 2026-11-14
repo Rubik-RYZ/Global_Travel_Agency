@@ -9,7 +9,6 @@ import { Input } from '@/components/ui/Input/Input'
 import { restablecerSchema, type RestablecerForm } from '@/types/auth.schemas'
 import { mensajeDeError } from '@/utils/validators'
 
-/** Restablecer contraseña → /restablecer?token=… (destino del email) */
 export function RestablecerPasswordView() {
   const [params] = useSearchParams()
   const token = params.get('token') ?? ''

@@ -1,16 +1,8 @@
-/**
- * Monograma de iniciales: pequeño «sello» circular con las iniciales del
- * viajero, al estilo de las viñetas de un pasaporte.
- *
- * Si se pasa `foto`, el sello muestra el retrato en su lugar (útil para el
- * equipo, cuyas cuentas pueden tener una fotografía asociada).
- */
-
 interface MonogramaProps {
   nombre: string
-  /** sm = 40px · md = 56px · lg = 88px */
+
   tamano?: 'sm' | 'md' | 'lg'
-  /** URL del retrato; si falta se dibujan las iniciales. */
+
   foto?: string | null
   className?: string
 }

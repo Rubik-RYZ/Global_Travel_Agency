@@ -21,7 +21,6 @@ function expediente(id: number): string {
   return String(id).padStart(5, '0')
 }
 
-/** 12. Panel · Directorio de viajeros → /admin/clientes */
 export function ClientesAdminView() {
   const usuario = useAuthStore((s) => s.usuario)
   const puedeEditar = esAdmin(usuario?.rol)
@@ -63,7 +62,6 @@ export function ClientesAdminView() {
 
   return (
     <div className="mx-auto max-w-6xl">
-      {/* --- Cabecera --- */}
       <header className="mb-8 flex flex-wrap items-start justify-between gap-4">
         <div>
           <div className="flex items-center gap-2">
@@ -83,7 +81,6 @@ export function ClientesAdminView() {
         )}
       </header>
 
-      {/* --- Cifras del padrón --- */}
       <div className="mb-6 grid gap-4 sm:grid-cols-3">
         <Cifra etiqueta="En el padrón" valor={String(total)} nota="viajeros registrados" />
         <Cifra
@@ -94,7 +91,6 @@ export function ClientesAdminView() {
         <Cifra etiqueta="Página" valor={String(pagina)} nota="del directorio" />
       </div>
 
-      {/* --- Herramientas de búsqueda --- */}
       <section className="mb-6 overflow-hidden rounded-lg border border-parchment-border bg-surface-container-lowest shadow-paper">
         <div className="grid gap-4 border-b border-parchment-border/70 bg-surface-container-low px-5 py-4 sm:grid-cols-[minmax(0,1fr)_auto] sm:items-end">
           <Input
@@ -144,7 +140,6 @@ export function ClientesAdminView() {
         </p>
       )}
 
-      {/* --- Dossiers --- */}
       {cargando ? (
         <p className="nota-manuscrita text-stamp-sepia">Abriendo el padrón de viajeros...</p>
       ) : clientes.length === 0 ? (
@@ -162,7 +157,6 @@ export function ClientesAdminView() {
         </ul>
       )}
 
-      {/* --- Paginación --- */}
       <div className="mt-8 flex items-center justify-between">
         <Button
           variante="ghost"
@@ -192,8 +186,6 @@ export function ClientesAdminView() {
     </div>
   )
 }
-
-/* -------------------------------------------------------------------------- */
 
 function Cifra({ etiqueta, valor, nota }: { etiqueta: string; valor: string; nota: string }) {
   return (

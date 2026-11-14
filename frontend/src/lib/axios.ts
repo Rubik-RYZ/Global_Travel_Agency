@@ -1,9 +1,3 @@
-/**
- * Instancia de Axios con:
- *  - baseURL desde VITE_API_URL
- *  - interceptor de request que adjunta el access token
- *  - interceptor de response que maneja el 401 (sesión expirada)
- */
 import axios from 'axios'
 
 import { tokenStorage } from '@/lib/storage'

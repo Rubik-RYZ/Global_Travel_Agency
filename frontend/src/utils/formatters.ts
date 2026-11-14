@@ -1,5 +1,3 @@
-/** Utilidades de formato: monedas BOB/USD/EUR, fechas y duración de vuelo. */
-
 const formatoMoneda: Record<string, Intl.NumberFormat> = {
   BOB: new Intl.NumberFormat('es-BO', { style: 'currency', currency: 'BOB' }),
   USD: new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }),
@@ -32,7 +30,6 @@ export function formatearFechaHora(fecha: string | Date): string {
   }).format(d)
 }
 
-/** Duración legible entre dos fechas ISO (ej. "9 h 45 min"). */
 export function formatearDuracion(salida: string, llegada: string): string {
   const ms = new Date(llegada).getTime() - new Date(salida).getTime()
   if (!Number.isFinite(ms) || ms <= 0) return '—'

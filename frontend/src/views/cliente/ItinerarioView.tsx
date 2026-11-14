@@ -48,7 +48,6 @@ export function ItinerarioView() {
     )
   }
 
-  // Agrupar actividades por día
   const itemsPorDia = (itinerario.items || []).reduce<Record<number, typeof itinerario.items>>((acc, it) => {
     if (!acc[it.dia]) acc[it.dia] = []
     acc[it.dia].push(it)
@@ -61,7 +60,6 @@ export function ItinerarioView() {
 
   return (
     <div className="space-y-8">
-      {/* Cabecera */}
       <div className="border-b border-[#231a13]/10 pb-6 flex items-center justify-between">
         <div>
           <Link to={`/mi-cuenta/viajes/${id}`} className="text-xs uppercase font-semibold text-[#792609] hover:underline block mb-2">
@@ -88,7 +86,6 @@ export function ItinerarioView() {
         <div className="space-y-8 relative before:absolute before:inset-0 before:left-3.5 before:w-0.5 before:bg-[#792609]/20">
           {diasOrdenados.map((diaNum) => (
             <div key={diaNum} className="relative pl-10 space-y-4">
-              {/* Marcador del día */}
               <div className="absolute left-0 top-0 flex h-7 w-7 items-center justify-center rounded-full bg-[#792609] font-serif font-bold text-xs text-white shadow-sm ring-4 ring-[#faf5eb]">
                 {diaNum}
               </div>
@@ -99,7 +96,6 @@ export function ItinerarioView() {
                 </h2>
               </div>
 
-              {/* Lista de actividades del día */}
               <div className="space-y-3">
                 {itemsPorDia[diaNum].map((it, idx) => (
                   <div

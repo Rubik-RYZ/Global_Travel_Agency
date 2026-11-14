@@ -23,7 +23,6 @@ import { formatearFecha, formatearMoneda } from '@/utils/formatters'
 import { mensajeDeError } from '@/utils/validators'
 import { DocumentosViajeroForm } from '@/views/cliente/components/DocumentosViajeroForm'
 
-/** 10. Mi viaje · Resumen → /mi-cuenta */
 export function PanelViajeroView() {
   const [perfil, setPerfil] = useState<PerfilViajero | null>(null)
   const [preferencias, setPreferencias] = useState<ClientePreferencia | null>(null)
@@ -62,7 +61,6 @@ export function PanelViajeroView() {
 
   return (
     <div className="relative mx-auto max-w-6xl">
-      {/* Retícula cartográfica de fondo, muy tenue */}
       <div aria-hidden className="textura-carta pointer-events-none absolute inset-0 -z-10 opacity-60" />
 
       <BannerCredencial perfil={perfil} preferencias={preferencias} />
@@ -81,10 +79,6 @@ export function PanelViajeroView() {
     </div>
   )
 }
-
-/* -------------------------------------------------------------------------- */
-/* 1. Banner de credencial (pasaporte)                                        */
-/* -------------------------------------------------------------------------- */
 
 function BannerCredencial({
   perfil,
@@ -165,10 +159,6 @@ function Metrica({
   )
 }
 
-/* -------------------------------------------------------------------------- */
-/* 2. Próxima expedición (aún sin reservas)                                   */
-/* -------------------------------------------------------------------------- */
-
 function ProximaExpedicion() {
   return (
     <section className="relative mt-8 overflow-hidden rounded-lg border border-secondary/30 bg-secondary text-on-secondary shadow-paper-lg">
@@ -226,10 +216,6 @@ function ProximaExpedicion() {
     </section>
   )
 }
-
-/* -------------------------------------------------------------------------- */
-/* 3a. Ficha del viajero (datos personales, solo lectura)                     */
-/* -------------------------------------------------------------------------- */
 
 function FichaViajero({ perfil }: { perfil: PerfilViajero }) {
   const foto = useAuthStore((s) => s.usuario?.foto_url)
@@ -319,10 +305,6 @@ function Dato({
   )
 }
 
-/* -------------------------------------------------------------------------- */
-/* 3b. Notas de cabina y preferencias                                         */
-/* -------------------------------------------------------------------------- */
-
 function NotasCabina({ preferencias }: { preferencias: ClientePreferencia }) {
   const tieneIntereses = preferencias.intereses.length > 0
 
@@ -385,10 +367,6 @@ function NotasCabina({ preferencias }: { preferencias: ClientePreferencia }) {
     </section>
   )
 }
-
-/* -------------------------------------------------------------------------- */
-/* 4. Credenciales de viaje (retrato + documentos digitalizados)              */
-/* -------------------------------------------------------------------------- */
 
 function CredencialesViajero({
   perfil,

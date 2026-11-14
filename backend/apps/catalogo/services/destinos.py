@@ -1,4 +1,3 @@
-"""Capa de negocio del catálogo — destinos (CU3)."""
 from __future__ import annotations
 
 from django.core.exceptions import ValidationError
@@ -7,7 +6,6 @@ from django.db.models import Q
 
 from apps.catalogo.models import Destino, ItinerarioDia
 
-# Campos comerciales editables de un destino (los del serializer de escritura).
 CAMPOS_DESTINO = {
     "nombre", "pais", "pais_codigo", "region", "resumen", "descripcion",
     "latitud", "longitud", "duracion_dias", "duracion_noches",
@@ -15,7 +13,6 @@ CAMPOS_DESTINO = {
     "imagen_principal", "incluye", "no_incluye", "etiquetas",
     "destacado", "activo",
 }
-
 
 def listar_destinos(
     *,
@@ -27,7 +24,7 @@ def listar_destinos(
     solo_destacados: bool = False,
     q: str | None = None,
 ) -> "QuerySet[Destino]":
-    """Devuelve destinos filtrados. Público: solo_activos=True."""
+
     qs = Destino.objects.all()
     if solo_activos:
         qs = qs.filter(activo=True)
@@ -50,13 +47,11 @@ def listar_destinos(
         )
     return qs.order_by("-destacado", "pais", "nombre")
 
-
 def obtener_destino(destino_id: int) -> Destino:
     try:
         return Destino.objects.get(pk=destino_id)
     except Destino.DoesNotExist:
         raise ValidationError({"destino_id": "Destino no encontrado."})
-
 
 @transaction.atomic
 def crear_destino(*, nombre: str, pais: str, **campos) -> Destino:
@@ -68,14 +63,13 @@ def crear_destino(*, nombre: str, pais: str, **campos) -> Destino:
     destino.save()
     return destino
 
-
 @transaction.atomic
 def actualizar_destino(destino_id: int, **kwargs) -> Destino:
     destino = obtener_destino(destino_id)
     for campo, valor in kwargs.items():
         if campo in CAMPOS_DESTINO:
             setattr(destino, campo, valor)
-    # Verificar unicidad si cambia nombre o país
+
     nombre = kwargs.get("nombre", destino.nombre)
     pais = kwargs.get("pais", destino.pais)
     if Destino.objects.filter(nombre=nombre, pais=pais).exclude(pk=destino_id).exists():
@@ -84,7 +78,6 @@ def actualizar_destino(destino_id: int, **kwargs) -> Destino:
     destino.save()
     return destino
 
-
 @transaction.atomic
 def toggle_activo_destino(destino_id: int) -> Destino:
     destino = obtener_destino(destino_id)
@@ -92,10 +85,8 @@ def toggle_activo_destino(destino_id: int) -> Destino:
     destino.save(update_fields=["activo"])
     return destino
 
-
 @transaction.atomic
 def definir_itinerario(destino_id: int, dias: list[dict]) -> list[ItinerarioDia]:
-    """Reemplaza el itinerario día a día de un destino."""
     destino = obtener_destino(destino_id)
 
     numeros = [d.get("numero_dia") for d in dias]

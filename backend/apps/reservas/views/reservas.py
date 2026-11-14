@@ -1,4 +1,3 @@
-"""Controlador de reservas (CU7)."""
 from rest_framework import permissions, status, viewsets
 from rest_framework.decorators import action
 from rest_framework.response import Response
@@ -14,17 +13,13 @@ from apps.usuarios.constants import ROL_ADMINISTRADOR
 
 ROL_AGENTE_ID = 2
 
-
 class ReservaViewSet(viewsets.ModelViewSet):
-    """ViewSet para la gestión de reservas de clientes y ventas de la agencia."""
-
     permission_classes = [permissions.IsAuthenticated]
 
     def get_queryset(self):
         user = self.request.user
         params = self.request.query_params
 
-        # Administrador y agentes ven todas las reservas
         if user.rol_id in (ROL_ADMINISTRADOR, ROL_AGENTE_ID):
             return listar_reservas(
                 cliente_id=int(params["cliente_id"]) if params.get("cliente_id") else None,
@@ -33,7 +28,6 @@ class ReservaViewSet(viewsets.ModelViewSet):
                 q=params.get("q"),
             )
 
-        # Clientes ven únicamente sus propias reservas
         cliente = getattr(user, "cliente", None)
         if not cliente:
             return Reserva.objects.none()
@@ -60,8 +54,6 @@ class ReservaViewSet(viewsets.ModelViewSet):
 
     @action(detail=True, methods=["post"])
     def cancelar(self, request, pk=None):
-        """Cancela la reserva y revierte los cupos con concurrencia controlada."""
         reserva = self.get_object()
         reserva_cancelada = cancelar_reserva(reserva.id)
         return Response(ReservaDetailSerializer(reserva_cancelada).data)
-

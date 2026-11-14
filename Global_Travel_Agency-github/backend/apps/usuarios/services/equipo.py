@@ -1,4 +1,3 @@
-"""Servicios del panel: equipo interno y accesos (CU1)."""
 from __future__ import annotations
 
 from django.contrib.auth import get_user_model
@@ -10,18 +9,14 @@ from apps.usuarios.services.auditoria import ip_desde_request, registrar_auditor
 
 Usuario = get_user_model()
 
-
 def _verificar_rol_equipo(rol_id) -> None:
-    """El equipo interno solo admite roles administrador o agente."""
     if rol_id is not None and rol_id not in ROLES_EQUIPO:
         raise ValidationError(
             {"rol_id": "Solo se admiten roles internos (administrador o agente)."}
         )
 
-
 @transaction.atomic
 def crear_usuario_equipo(*, datos: dict, actor=None, request=None):
-    """Alta de un usuario interno (administrador/agente) desde el panel."""
     email = (datos.get("email") or "").strip().lower()
     if Usuario.objects.filter(email__iexact=email).exists():
         raise ValidationError({"email": "Ya existe un usuario con este email."})
@@ -33,7 +28,7 @@ def crear_usuario_equipo(*, datos: dict, actor=None, request=None):
         rol_id=datos["rol_id"],
         activo=datos.get("activo", True),
     )
-    # Retrato del miembro del equipo (opcional).
+
     if datos.get("foto_url") is not None:
         usuario.foto_url = datos.get("foto_url")
         usuario.foto_public_id = datos.get("foto_public_id")
@@ -48,10 +43,8 @@ def crear_usuario_equipo(*, datos: dict, actor=None, request=None):
     )
     return usuario
 
-
 @transaction.atomic
 def actualizar_usuario_equipo(*, usuario, datos: dict, actor=None, request=None):
-    """Actualiza rol/estado y, opcionalmente, la contraseña de un usuario."""
     _verificar_rol_equipo(datos.get("rol_id"))
     cambios: dict = {}
     if datos.get("rol_id") is not None:
@@ -81,15 +74,8 @@ def actualizar_usuario_equipo(*, usuario, datos: dict, actor=None, request=None)
     )
     return usuario
 
-
 @transaction.atomic
 def actualizar_foto_usuario(*, usuario, datos: dict, actor=None, request=None):
-    """Guarda el retrato propio del usuario autenticado (opcional).
-
-    Lo usan el propio viajero desde «Mi viaje» y el personal desde el panel.
-    La URL y el `public_id` se aceptan tal cual: la subida al almacén ya pasó
-    por `apps.almacen`.
-    """
     cambios: dict = {}
     for campo in ("foto_url", "foto_public_id"):
         if campo in datos:
@@ -107,10 +93,8 @@ def actualizar_foto_usuario(*, usuario, datos: dict, actor=None, request=None):
     )
     return usuario
 
-
 @transaction.atomic
 def desactivar_usuario_equipo(*, usuario, actor=None, request=None) -> None:
-    """Baja lógica: conserva el histórico de auditoría (no borra la fila)."""
     usuario.activo = False
     usuario.save(update_fields=["activo"])
     registrar_auditoria(

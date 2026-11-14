@@ -1,4 +1,3 @@
-/** Guardas de ruta: exigen sesión y, opcionalmente, un rol concreto. */
 import { useEffect, useRef, useState } from 'react'
 import { Navigate, Outlet, useLocation } from 'react-router-dom'
 
@@ -11,14 +10,12 @@ function useRestaurarSesion() {
   const usuario = useAuthStore((s) => s.usuario)
   const setUsuario = useAuthStore((s) => s.setUsuario)
   const limpiar = useAuthStore((s) => s.logout)
-  // Si hay token pero aún no hay usuario restaurado, arrancamos en «cargando»
-  // para no expulsar a /login durante el primer render (recarga profunda).
+
   const [cargando, setCargando] = useState(() => !usuario && !!tokenStorage.getAccess())
   const intentado = useRef(false)
 
   useEffect(() => {
-    // Una sola restauración por montaje: el doble efecto de StrictMode no debe
-    // disparar dos `/auth/me` ni cancelar la promesa en curso.
+
     if (intentado.current) return
     if (usuario || !tokenStorage.getAccess()) return
 
@@ -60,17 +57,14 @@ export function RutaProtegida({ roles }: RutaProtegidaProps) {
   return <Outlet />
 }
 
-/** Solo administrador y agente (panel interno). */
 export function RutaPanel() {
   return <RutaProtegida roles={[ROLES.ADMINISTRADOR, ROLES.AGENTE]} />
 }
 
-/** Solo administrador. */
 export function RutaAdmin() {
   return <RutaProtegida roles={[ROLES.ADMINISTRADOR]} />
 }
 
-/** Solo cliente (área privada «Mi viaje»). */
 export function RutaCliente() {
   return <RutaProtegida roles={[ROLES.CLIENTE]} />
 }

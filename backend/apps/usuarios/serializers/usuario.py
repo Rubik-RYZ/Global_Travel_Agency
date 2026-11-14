@@ -1,19 +1,14 @@
-"""Capa de esquema — usuarios y equipo (CU1)."""
 from rest_framework import serializers
 
 from apps.usuarios.constants import ROLES_EQUIPO
 from apps.usuarios.models import Rol, Usuario
-
 
 class RolSerializer(serializers.ModelSerializer):
     class Meta:
         model = Rol
         fields = ["id", "nombre"]
 
-
 class UsuarioSerializer(serializers.ModelSerializer):
-    """Representación pública del usuario (nunca expone el hash)."""
-
     rol = serializers.CharField(source="rol.nombre", read_only=True)
     rol_id = serializers.IntegerField(read_only=True)
 
@@ -25,10 +20,7 @@ class UsuarioSerializer(serializers.ModelSerializer):
         ]
         read_only_fields = fields
 
-
 class UsuarioEquipoSerializer(serializers.ModelSerializer):
-    """Serializar y dar de alta usuarios internos desde el panel."""
-
     rol = serializers.CharField(source="rol.nombre", read_only=True)
     rol_id = serializers.IntegerField(required=False)
     password = serializers.CharField(
@@ -69,10 +61,7 @@ class UsuarioEquipoSerializer(serializers.ModelSerializer):
             )
         return datos
 
-
 class FotoUsuarioSerializer(serializers.Serializer):
-    """Retrato propio del usuario autenticado (área «Mi viaje» y panel)."""
-
     foto_url = serializers.CharField(
         required=False, allow_null=True, allow_blank=True, max_length=500
     )

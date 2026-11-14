@@ -11,10 +11,6 @@ import { mensajeDeError } from '@/utils/validators'
 import { PerfilViajeroForm } from '@/views/cliente/components/PerfilViajeroForm'
 import { PreferenciasForm } from '@/views/cliente/components/PreferenciasForm'
 
-/* -------------------------------------------------------------------------- */
-/* Piezas de página                                                           */
-/* -------------------------------------------------------------------------- */
-
 function ErrorNota({ texto }: { texto: string }) {
   return (
     <p className="mt-6 rounded-md border border-error/40 bg-error-container/50 px-4 py-2.5 font-sans text-xs text-on-error-container">
@@ -32,7 +28,6 @@ interface CapituloProps {
   children: ReactNode
 }
 
-/** Un capítulo del cuaderno: numeral romano, filete editorial y tarjeta. */
 function Capitulo({ numero, kicker, titulo, nota, icono, children }: CapituloProps) {
   return (
     <section className="mt-10">
@@ -60,11 +55,6 @@ function Capitulo({ numero, kicker, titulo, nota, icono, children }: CapituloPro
   )
 }
 
-/* -------------------------------------------------------------------------- */
-/* 11. Mi viaje · Cuaderno de preferencias                                    */
-/* -------------------------------------------------------------------------- */
-
-/** 11. Mi viaje · Perfil y preferencias → /mi-cuenta/preferencias */
 export function PreferenciasView() {
   const usuario = useAuthStore((s) => s.usuario)
   const [perfil, setPerfil] = useState<PerfilViajero | null>(null)
@@ -113,7 +103,6 @@ export function PreferenciasView() {
 
   return (
     <div className="mx-auto max-w-4xl">
-      {/* --- Portada del cuaderno --- */}
       <header className="relative overflow-hidden rounded-lg border border-parchment-border bg-surface-container-low shadow-paper">
         <div aria-hidden className="papel-grano pointer-events-none absolute inset-0" />
         <div aria-hidden className="textura-carta pointer-events-none absolute inset-0 opacity-40" />
@@ -155,7 +144,6 @@ export function PreferenciasView() {
 
       {error && <ErrorNota texto={error} />}
 
-      {/* --- Capítulo I --- */}
       <Capitulo
         numero="I"
         kicker="Capítulo I · La brújula"
@@ -166,7 +154,6 @@ export function PreferenciasView() {
         <PreferenciasForm preferencias={preferencias} onGuardado={recargarPreferencias} />
       </Capitulo>
 
-      {/* --- Capítulo II --- */}
       <Capitulo
         numero="II"
         kicker="Capítulo II · El pasaporte"

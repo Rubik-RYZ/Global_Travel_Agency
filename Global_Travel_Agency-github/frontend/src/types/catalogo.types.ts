@@ -1,4 +1,3 @@
-/** Tipos del catálogo turístico (CU3). */
 export interface Destino {
   id: number
   nombre: string

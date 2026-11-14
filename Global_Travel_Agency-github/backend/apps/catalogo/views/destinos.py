@@ -1,4 +1,3 @@
-"""Capa de presentación del catálogo — destinos (CU3)."""
 from django.core.exceptions import ValidationError as DjangoValidationError
 from rest_framework import status, viewsets
 from rest_framework.decorators import action
@@ -12,15 +11,7 @@ from apps.catalogo.serializers import (
     ItinerarioDiaSerializer,
 )
 
-
 class DestinoViewSet(viewsets.ModelViewSet):
-    """
-    CRUD de destinos.
-
-    Público (GET): listar y ver detalle, solo activos por defecto.
-    Autenticado Admin/Agente: crear, editar, activar/desactivar.
-    """
-
     serializer_class = DestinoSerializer
     permission_classes = [EsAdminOAgente]
 
@@ -28,7 +19,7 @@ class DestinoViewSet(viewsets.ModelViewSet):
         es_staff = (
             self.request.user
             and self.request.user.is_authenticated
-            and self.request.user.rol_id in (1, 2)  # administrador, agente
+            and self.request.user.rol_id in (1, 2)
         )
         params = self.request.query_params
         return services.listar_destinos(
@@ -45,7 +36,7 @@ class DestinoViewSet(viewsets.ModelViewSet):
         if self.action == "list" and not (
             self.request.user
             and self.request.user.is_authenticated
-            and self.request.user.rol_id in (1, 2)  # administrador, agente
+            and self.request.user.rol_id in (1, 2)
         ):
             return DestinoResumenSerializer
         return DestinoSerializer
@@ -80,8 +71,7 @@ class DestinoViewSet(viewsets.ModelViewSet):
 
     @action(detail=True, methods=["put"], url_path="itinerario")
     def itinerario(self, request, pk=None):
-        """Reemplaza el diario de ruta (día a día) de un destino."""
-        self.get_object()  # 404 si el destino no existe
+        self.get_object()
         ser = ItinerarioDiaSerializer(data=request.data, many=True)
         ser.is_valid(raise_exception=True)
         try:

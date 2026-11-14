@@ -2,13 +2,6 @@ import { useEffect, useState } from 'react'
 
 import { catalogoApi, type DestinoResumen } from '@/api/catalogo'
 
-/**
- * Catálogo ligero para el mega-menú público ("Cuaderno de Destinos").
- *
- * Se cachea a nivel de módulo: el menú vive en el header y se remonta en cada
- * navegación, así que solo la primera carga golpea la API. Tolerante a fallos:
- * si el backend no responde, el menú cae a la taxonomía estática.
- */
 let cache: DestinoResumen[] | null = null
 let enVuelo: Promise<DestinoResumen[]> | null = null
 
@@ -42,7 +35,6 @@ export function useCuadernoDestinos(): DestinoResumen[] {
   return destinos
 }
 
-/** Orden editorial de los continentes en el catálogo. */
 export const ORDEN_REGIONES = [
   'america_del_sur',
   'europa',
@@ -59,7 +51,6 @@ export interface GrupoRegion {
   muestra: string
 }
 
-/** Agrupa los destinos por continente para la columna "Por Región". */
 export function agruparRegiones(destinos: DestinoResumen[]): GrupoRegion[] {
   const mapa = new Map<string, DestinoResumen[]>()
   for (const d of destinos) {
@@ -85,7 +76,6 @@ export function agruparRegiones(destinos: DestinoResumen[]): GrupoRegion[] {
     }))
 }
 
-/** Carácter de viaje: taxonomía comercial que ofrece la agencia. */
 export const CARACTERES = [
   { clave: 'arqueologico', nombre: 'Arqueología y templos' },
   { clave: 'cultural', nombre: 'Cultural y patrimonial' },

@@ -1,9 +1,3 @@
-"""Tests de la capa de negocio de CU1 (services).
-
-El envío de correo se sustituye por un doble: lo que interesa aquí es que el
-flujo de negocio llame al servicio de notificaciones con los datos correctos,
-no que Resend responda.
-"""
 from unittest import mock
 
 from django.core import signing
@@ -14,7 +8,6 @@ from apps.usuarios import services
 from apps.usuarios.constants import ROL_ADMINISTRADOR, ROL_CLIENTE
 from apps.usuarios.models import Auditoria, Cliente, Rol, Usuario
 
-
 class BaseServicesTest(TestCase):
     def setUp(self):
         Rol.objects.create(id=ROL_ADMINISTRADOR, nombre="administrador")
@@ -23,7 +16,6 @@ class BaseServicesTest(TestCase):
         self.usuario = Usuario.objects.create_user(
             email="user@test.bo", password="Secreta123", rol_id=ROL_CLIENTE
         )
-
 
 class AutenticarTest(BaseServicesTest):
     def test_login_exitoso_registra_auditoria_y_acceso(self):
@@ -49,7 +41,6 @@ class AutenticarTest(BaseServicesTest):
         registro = Auditoria.objects.get(accion="login_fallido")
         self.assertIsNone(registro.usuario)
 
-
 class RegistrarClienteTest(BaseServicesTest):
     def test_registra_usuario_y_cliente(self):
         usuario, cliente = services.registrar_cliente(
@@ -71,7 +62,6 @@ class RegistrarClienteTest(BaseServicesTest):
                 nombres="X",
                 apellidos="Y",
             )
-
 
 class RecuperacionTest(BaseServicesTest):
     def test_solicitar_envia_email(self):
@@ -112,7 +102,6 @@ class RecuperacionTest(BaseServicesTest):
             with self.assertRaises(ValidationError):
                 services.restablecer_password(token=token, password="Cambiada123")
 
-
 class EquipoTest(BaseServicesTest):
     def setUp(self):
         super().setUp()
@@ -148,7 +137,6 @@ class EquipoTest(BaseServicesTest):
         self.usuario.refresh_from_db()
         self.assertFalse(self.usuario.activo)
         self.assertTrue(Usuario.objects.filter(id=self.usuario.id).exists())
-
 
 class SeedRolesTest(TestCase):
     def test_hay_roles_base(self):

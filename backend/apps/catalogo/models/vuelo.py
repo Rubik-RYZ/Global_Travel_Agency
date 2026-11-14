@@ -1,12 +1,8 @@
-"""Modelo de vuelos gestionados por la agencia (CU4)."""
 from django.core.exceptions import ValidationError
 from django.db import models
 from django.db.models import CheckConstraint, F, Q, UniqueConstraint
 
-
 class Vuelo(models.Model):
-    """Vuelo regular o chárter contratado con aerolínea asociada."""
-
     MONEDA_CHOICES = [
         ("BOB", "Bolivianos"),
         ("USD", "Dólares estadounidenses"),
@@ -96,4 +92,3 @@ class Vuelo(models.Model):
 
     def __str__(self):
         return f"{self.numero_vuelo} ({self.origen_id} → {self.destino_id}) · {self.salida.strftime('%Y-%m-%d %H:%M')}"
-

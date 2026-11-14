@@ -1,8 +1,3 @@
-"""Capa de presentación — acceso (CU1).
-
-Endpoints no-CRUD (login, refresh, logout, registro, recuperación): `APIView`
-está justificado aquí por no ser CRUD.
-"""
 from rest_framework import status
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
@@ -20,7 +15,6 @@ from apps.usuarios.serializers import (
     UsuarioSerializer,
 )
 
-
 class LoginView(APIView):
     permission_classes = [AllowAny]
 
@@ -30,7 +24,6 @@ class LoginView(APIView):
         usuario, tokens = services.autenticar(request=request, **entrada.validated_data)
         return Response({**tokens, "usuario": UsuarioSerializer(usuario).data})
 
-
 class RefreshView(APIView):
     permission_classes = [AllowAny]
 
@@ -39,10 +32,9 @@ class RefreshView(APIView):
         try:
             entrada.is_valid(raise_exception=True)
         except TokenError as exc:
-            # Token vencido, malformado o revocado (blacklist) → 401 claro.
+
             raise InvalidToken("El token de refresco no es válido o fue revocado.") from exc
         return Response(entrada.validated_data)
-
 
 class LogoutView(APIView):
     permission_classes = [IsAuthenticated]
@@ -57,13 +49,11 @@ class LogoutView(APIView):
         )
         return Response(status=status.HTTP_204_NO_CONTENT)
 
-
 class MeView(APIView):
     permission_classes = [IsAuthenticated]
 
     def get(self, request):
         return Response(UsuarioSerializer(request.user).data)
-
 
 class RegistroView(APIView):
     permission_classes = [AllowAny]
@@ -80,7 +70,6 @@ class RegistroView(APIView):
             status=status.HTTP_201_CREATED,
         )
 
-
 class RecuperarView(APIView):
     permission_classes = [AllowAny]
 
@@ -88,11 +77,10 @@ class RecuperarView(APIView):
         entrada = RecuperarSerializer(data=request.data)
         entrada.is_valid(raise_exception=True)
         services.solicitar_recuperacion(request=request, **entrada.validated_data)
-        # Respuesta genérica: no revela si el email está registrado.
+
         return Response(
             {"mensaje": "Si el email está registrado, recibirás un enlace de recuperación."}
         )
-
 
 class RestablecerView(APIView):
     permission_classes = [AllowAny]

@@ -1,15 +1,8 @@
-"""
-Configuración Django — Illimani Global Travel S.R.L.
-Sistema de Información Web para Agencia de Viajes Internacional.
-"""
 from datetime import timedelta
 from pathlib import Path
 
 import environ
 
-# ---------------------------------------------------------------------
-# Rutas base y entorno
-# ---------------------------------------------------------------------
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 env = environ.Env(
@@ -25,9 +18,6 @@ SECRET_KEY = env("DJANGO_SECRET_KEY", default="dev-insecure-change-me")
 DEBUG = env("DJANGO_DEBUG")
 ALLOWED_HOSTS = env("DJANGO_ALLOWED_HOSTS")
 
-# ---------------------------------------------------------------------
-# Aplicaciones
-# ---------------------------------------------------------------------
 DJANGO_APPS = [
     "django.contrib.admin",
     "django.contrib.auth",
@@ -47,21 +37,18 @@ THIRD_PARTY_APPS = [
 ]
 
 LOCAL_APPS = [
-    "apps.almacen",    # subida de archivos al almacén externo
-    "apps.notificaciones",  # correo transaccional
-    "apps.usuarios",   # CU1 (acceso/seguridad) + CU2 (clientes/preferencias)
-    "apps.catalogo",   # CU3 (destinos/proveedores) + CU4..CU6
-    "apps.reservas",   # CU7 (reservas) + CU8 (itinerarios/notificaciones)
-    "apps.pagos",      # CU9 (pagos/tipos de cambio)
-    "apps.ia",         # CU10 (chatbot) + CU11 (recomendaciones)
-    "apps.reportes",   # CU12 (reportes gerenciales)
+    "apps.almacen",
+    "apps.notificaciones",
+    "apps.usuarios",
+    "apps.catalogo",
+    "apps.reservas",
+    "apps.pagos",
+    "apps.ia",
+    "apps.reportes",
 ]
 
 INSTALLED_APPS = DJANGO_APPS + THIRD_PARTY_APPS + LOCAL_APPS
 
-# ---------------------------------------------------------------------
-# Middleware
-# ---------------------------------------------------------------------
 MIDDLEWARE = [
     "corsheaders.middleware.CorsMiddleware",
     "django.middleware.security.SecurityMiddleware",
@@ -94,9 +81,6 @@ TEMPLATES = [
 WSGI_APPLICATION = "config.wsgi.application"
 ASGI_APPLICATION = "config.asgi.application"
 
-# ---------------------------------------------------------------------
-# Base de datos (PostgreSQL 15)
-# ---------------------------------------------------------------------
 DATABASES = {
     "default": {
         "ENGINE": "django.db.backends.postgresql",
@@ -111,14 +95,8 @@ DATABASES = {
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
-# ---------------------------------------------------------------------
-# Autenticación (usuario custom por email + bcrypt cost 10)
-# ---------------------------------------------------------------------
 AUTH_USER_MODEL = "usuarios.Usuario"
 
-# El email es único de forma case-insensitive mediante
-# UniqueConstraint(Lower("email")) (fiel al índice ux_usuarios_email del DDL).
-# El check auth.E003 no reconoce constraints funcionales, por eso se silencia.
 SILENCED_SYSTEM_CHECKS = ["auth.E003"]
 
 AUTH_PASSWORD_VALIDATORS = [
@@ -132,9 +110,6 @@ PASSWORD_HASHERS = [
     "django.contrib.auth.hashers.PBKDF2PasswordHasher",
 ]
 
-# ---------------------------------------------------------------------
-# DRF + JWT
-# ---------------------------------------------------------------------
 REST_FRAMEWORK = {
     "DEFAULT_AUTHENTICATION_CLASSES": (
         "rest_framework_simplejwt.authentication.JWTAuthentication",
@@ -162,34 +137,20 @@ SIMPLE_JWT = {
     "USER_ID_CLAIM": "user_id",
 }
 
-# ---------------------------------------------------------------------
-# CORS
-# ---------------------------------------------------------------------
 CORS_ALLOWED_ORIGINS = env("CORS_ALLOWED_ORIGINS")
 CORS_ALLOW_CREDENTIALS = True
 
-# URL del frontend (usada para armar enlaces en emails de recuperación).
 FRONTEND_URL = env("FRONTEND_URL", default="http://localhost:5173")
 
-# ---------------------------------------------------------------------
-# Email (consola en desarrollo; SMTP/Resend en producción)
-# ---------------------------------------------------------------------
 DEFAULT_FROM_EMAIL = env("DEFAULT_FROM_EMAIL", default="no-reply@illimanitravel.bo")
 if DEBUG:
     EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"
 else:
     EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
 
-# Resend: si hay clave, los correos salen por su API HTTP; si no, el
-# sistema sigue funcionando y cada envío se imprime en el log del servidor.
 RESEND_API_KEY = env("RESEND_API_KEY", default="")
 CORREO_CONFIGURADO = bool(RESEND_API_KEY)
 
-# ---------------------------------------------------------------------
-# Almacén externo de archivos (Cloudinary)
-# ---------------------------------------------------------------------
-# Sin credenciales el sistema sigue operando: las imágenes ya guardadas por
-# URL se muestran igual y sólo queda deshabilitada la subida desde el panel.
 CLOUDINARY_CLOUD_NAME = env("CLOUDINARY_CLOUD_NAME", default="")
 CLOUDINARY_API_KEY = env("CLOUDINARY_API_KEY", default="")
 CLOUDINARY_API_SECRET = env("CLOUDINARY_API_SECRET", default="")
@@ -197,25 +158,16 @@ ALMACEN_CONFIGURADO = bool(
     CLOUDINARY_CLOUD_NAME and CLOUDINARY_API_KEY and CLOUDINARY_API_SECRET
 )
 
-# ---------------------------------------------------------------------
-# Internacionalización
-# ---------------------------------------------------------------------
 LANGUAGE_CODE = "es-bo"
 TIME_ZONE = "America/La_Paz"
 USE_I18N = True
 USE_TZ = True
 
-# ---------------------------------------------------------------------
-# Archivos estáticos y media
-# ---------------------------------------------------------------------
 STATIC_URL = "static/"
 STATIC_ROOT = BASE_DIR / "staticfiles"
 MEDIA_URL = "media/"
 MEDIA_ROOT = BASE_DIR / "media"
 
-# ---------------------------------------------------------------------
-# Logging
-# ---------------------------------------------------------------------
 LOGGING = {
     "version": 1,
     "disable_existing_loggers": False,

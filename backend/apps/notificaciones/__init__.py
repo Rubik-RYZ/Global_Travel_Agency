@@ -1,1 +1,1 @@
-"""App de notificaciones transaccionales."""
+

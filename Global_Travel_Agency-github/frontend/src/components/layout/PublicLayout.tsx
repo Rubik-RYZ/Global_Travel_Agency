@@ -6,11 +6,9 @@ import { Navbar } from '@/components/layout/Navbar'
 
 export function PublicLayout() {
   const { pathname, hash } = useLocation()
-  // La home monta su hero a sangre bajo la cabecera (`fixed`): no lleva offset.
+
   const esHome = pathname === '/'
 
-  // Navegación: al cambiar de ruta subimos al inicio; si hay ancla, saltamos
-  // a la sección correspondiente (p. ej. "/#manifiesto").
   useEffect(() => {
     if (hash) {
       const nodo = document.getElementById(hash.slice(1))

@@ -1,14 +1,10 @@
-"""Modelo de paquetes turísticos (CU6)."""
 from django.contrib.postgres.fields import ArrayField
 from django.contrib.postgres.indexes import GinIndex
 from django.core.exceptions import ValidationError
 from django.db import models
 from django.db.models import CheckConstraint, Q
 
-
 class Paquete(models.Model):
-    """Oferta paquetizada que agrupa destino, alojamiento y salidas programadas."""
-
     MONEDA_CHOICES = [
         ("BOB", "Bolivianos"),
         ("USD", "Dólares estadounidenses"),
@@ -66,4 +62,3 @@ class Paquete(models.Model):
 
     def __str__(self):
         return f"{self.nombre} ({self.duracion_dias} días) · {self.destino.nombre}"
-

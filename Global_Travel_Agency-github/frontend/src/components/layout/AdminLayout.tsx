@@ -27,7 +27,7 @@ interface Modulo {
   icono: ReactNode
   fin?: boolean
   soloAdmin?: boolean
-  /** Ruta aún no implementada (CU3): se muestra deshabilitada. */
+
   proximo?: boolean
 }
 
@@ -78,10 +78,6 @@ function coincideRuta(pathname: string, m: Modulo): boolean {
   if (m.proximo) return false
   return m.fin ? pathname === m.a : pathname === m.a || pathname.startsWith(`${m.a}/`)
 }
-
-/* -------------------------------------------------------------------------- */
-/* Selector de módulo (desplegable)                                           */
-/* -------------------------------------------------------------------------- */
 
 function SelectorModulos({ modulos, actual }: { modulos: Modulo[]; actual: Modulo }) {
   const [abierto, setAbierto] = useState(false)
@@ -208,17 +204,6 @@ function SelectorModulos({ modulos, actual }: { modulos: Modulo[]; actual: Modul
   )
 }
 
-/* -------------------------------------------------------------------------- */
-/* Marco del panel                                                            */
-/* -------------------------------------------------------------------------- */
-
-/**
- * Panel interno (administrador y agente).
- *
- * Sustituye la clásica barra lateral por una **barra superior con un menú
- * desplegable de módulos**, que además muestra el módulo activo como migas de
- * pan. La credencial de sesión vive en `PerfilMenu`.
- */
 export function AdminLayout() {
   const usuario = useAuthStore((s) => s.usuario)
   const { pathname } = useLocation()
@@ -231,7 +216,6 @@ export function AdminLayout() {
 
   return (
     <div className="flex min-h-screen flex-col bg-surface">
-      {/* Franja de contexto */}
       <div className="bg-secondary text-on-secondary">
         <div className="mx-auto flex max-w-7xl items-center justify-between gap-4 px-6 py-2">
           <span className="coord inline-flex items-center gap-2 text-gold">
@@ -244,7 +228,6 @@ export function AdminLayout() {
         </div>
       </div>
 
-      {/* Barra superior */}
       <header className="sticky top-0 z-40 border-b border-parchment-border bg-surface/90 backdrop-blur">
         <div className="mx-auto flex max-w-7xl items-center justify-between gap-4 px-6 py-3">
           <Link to="/admin" className="flex flex-col leading-none">
@@ -258,7 +241,6 @@ export function AdminLayout() {
         </div>
       </header>
 
-      {/* Migas de pan del módulo */}
       <div className="border-b border-parchment-border bg-surface-container-low">
         <div className="mx-auto flex max-w-7xl items-center gap-2 px-6 py-2.5">
           <span className="coord text-on-surface-variant">Panel de gestión</span>

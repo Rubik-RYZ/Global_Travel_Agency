@@ -1,4 +1,3 @@
-/** Tipos del dominio de reservas e itinerarios (CU7 · CU8). */
 import type { PaqueteSalida } from '@/types/catalogo.types'
 
 export type EstadoReserva = 'pendiente' | 'confirmada' | 'pagada' | 'cancelada'
@@ -51,9 +50,6 @@ export interface CrearReservaPayload {
   }[]
 }
 
-/* -------------------------------------------------------------------------- */
-/* CU8: Itinerarios y Notificaciones                                          */
-/* -------------------------------------------------------------------------- */
 export interface ItinerarioItem {
   id?: number
   dia: number

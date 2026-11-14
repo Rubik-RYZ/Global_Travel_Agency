@@ -1,4 +1,3 @@
-"""Capa de negocio de notificaciones para reservas e itinerarios (CU8)."""
 from __future__ import annotations
 
 import logging
@@ -10,14 +9,11 @@ from apps.reservas.models import Notificacion, Reserva
 
 logger = logging.getLogger(__name__)
 
-
 def listar_notificaciones(*, usuario_id: int) -> QuerySet[Notificacion]:
     return Notificacion.objects.filter(usuario_id=usuario_id).select_related("reserva").order_by("-creado_en")
 
-
 @transaction.atomic
 def registrar_notificacion_reserva(reserva: Reserva) -> Notificacion | None:
-    """Registra la notificación y despacha el correo de confirmación de reserva."""
     usuario = getattr(reserva.cliente, "usuario", None)
     if not usuario or not usuario.email:
         return None
@@ -63,10 +59,8 @@ def registrar_notificacion_reserva(reserva: Reserva) -> Notificacion | None:
     notif.save(update_fields=["estado"])
     return notif
 
-
 @transaction.atomic
 def registrar_notificacion_itinerario(reserva: Reserva) -> Notificacion | None:
-    """Envía la notificación con el itinerario detallado al cliente."""
     usuario = getattr(reserva.cliente, "usuario", None)
     if not usuario or not usuario.email:
         return None
@@ -101,4 +95,3 @@ def registrar_notificacion_itinerario(reserva: Reserva) -> Notificacion | None:
     notif.estado = Notificacion.ESTADO_ENVIADA if exito else Notificacion.ESTADO_PENDIENTE
     notif.save(update_fields=["estado"])
     return notif
-

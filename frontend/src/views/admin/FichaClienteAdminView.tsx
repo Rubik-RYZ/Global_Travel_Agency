@@ -21,7 +21,6 @@ import { esAdmin } from '@/utils/roles'
 import { mensajeDeError } from '@/utils/validators'
 import { ClienteFormModal } from '@/views/admin/components/ClienteFormModal'
 
-/** 13. Panel · Ficha del viajero → /admin/clientes/:id */
 export function FichaClienteAdminView() {
   const { id } = useParams()
   const navigate = useNavigate()
@@ -63,7 +62,6 @@ export function FichaClienteAdminView() {
 
   return (
     <div className="mx-auto max-w-5xl">
-      {/* --- Migas de pan --- */}
       <nav className="mb-6 flex items-center gap-2">
         <Link
           to="/admin/clientes"
@@ -217,8 +215,6 @@ export function FichaClienteAdminView() {
     </div>
   )
 }
-
-/* -------------------------------------------------------------------------- */
 
 function TarjetaCabecera({
   cliente,

@@ -1,4 +1,3 @@
-"""Capa de presentación — clientes y preferencias (CU2)."""
 from rest_framework import status, viewsets
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
@@ -15,10 +14,7 @@ from apps.usuarios.serializers import (
     UsuarioSerializer,
 )
 
-
 class ClienteViewSet(viewsets.ModelViewSet):
-    """Directorio de viajeros (panel): lectura para admin/agente, alta/edición/baja solo admin."""
-
     queryset = Cliente.objects.select_related("usuario").order_by("apellidos", "nombres")
     serializer_class = ClienteSerializer
     permission_classes = [EsAdministradorOLectura]
@@ -55,10 +51,7 @@ class ClienteViewSet(viewsets.ModelViewSet):
         )
         return Response(status=status.HTTP_204_NO_CONTENT)
 
-
 class MiPerfilView(APIView):
-    """Perfil del viajero autenticado (área «Mi viaje»): GET y PUT/PATCH."""
-
     permission_classes = [EsCliente]
 
     def get(self, request):
@@ -84,10 +77,7 @@ class MiPerfilView(APIView):
         )
         return Response(PerfilClienteSerializer(cliente).data)
 
-
 class MiFotoView(APIView):
-    """Retrato propio del usuario autenticado (área «Mi viaje» y panel)."""
-
     permission_classes = [IsAuthenticated]
 
     def patch(self, request):
@@ -101,10 +91,7 @@ class MiFotoView(APIView):
         )
         return Response(UsuarioSerializer(usuario).data)
 
-
 class MisPreferenciasView(APIView):
-    """Preferencias del viajero autenticado: GET y PUT/PATCH."""
-
     permission_classes = [EsCliente]
 
     def get(self, request):

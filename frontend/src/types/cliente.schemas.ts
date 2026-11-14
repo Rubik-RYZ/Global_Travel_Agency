@@ -1,4 +1,3 @@
-/** Schemas Zod de los formularios de CU2 (perfil y preferencias del viajero). */
 import { z } from 'zod'
 
 const textoOpcional = z
@@ -11,7 +10,6 @@ const documento = z
   .union([z.enum(['CI', 'PASAPORTE', 'OTRO']), z.literal('')])
   .optional()
 
-/** Datos personales del viajero (usado en «Mi viaje» y en el panel). */
 export const perfilSchema = z.object({
   nombres: z.string().min(1, 'Los nombres son obligatorios.').max(120),
   apellidos: z.string().min(1, 'Los apellidos son obligatorios.').max(120),
@@ -24,7 +22,6 @@ export const perfilSchema = z.object({
 
 export type PerfilForm = z.infer<typeof perfilSchema>
 
-/** Preferencias de viaje del viajero. */
 export const preferenciasSchema = z.object({
   presupuesto_max: z
     .string()

@@ -1,4 +1,3 @@
-/** Hook de sesión: login, registro, logout y refresco de perfil (CU1). */
 import { useCallback } from 'react'
 import { useNavigate } from 'react-router-dom'
 
@@ -36,7 +35,7 @@ export function useAuth() {
     try {
       await authApi.logout(tokenStorage.getRefresh())
     } catch {
-      // La sesión se cierra localmente aunque el token ya no sea válido.
+
     }
     limpiar()
     navigate('/login', { replace: true })

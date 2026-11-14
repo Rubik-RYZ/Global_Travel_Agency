@@ -1,4 +1,3 @@
-"""Serializadores del dominio de reservas e itinerarios (CU7 · CU8)."""
 from apps.reservas.serializers.itinerario import (
     ItinerarioDetailSerializer,
     ItinerarioItemSerializer,

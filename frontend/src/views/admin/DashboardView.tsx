@@ -9,6 +9,7 @@ import {
   IconoEscudo,
   IconoFlechaDerecha,
   IconoMaletin,
+  IconoMoneda,
   IconoPersona,
   IconoPortapapeles,
   IconoSello,
@@ -50,6 +51,12 @@ const ACCESOS: ModuloAcceso[] = [
     icono: <IconoUbicacion className="h-5 w-5" />,
   },
   {
+    titulo: 'Libro de pagos',
+    descripcion: 'Cobros, estados, métodos y boletas de los viajeros.',
+    a: '/admin/pagos',
+    icono: <IconoMoneda className="h-5 w-5" />,
+  },
+  {
     titulo: 'Proveedores',
     descripcion: 'Aerolíneas, hospedajes y operadores de la red de confianza.',
     a: '/admin/proveedores',
@@ -57,7 +64,6 @@ const ACCESOS: ModuloAcceso[] = [
   },
 ]
 
-/** 7. Panel · Inicio → /admin */
 export function DashboardView() {
   const usuario = useAuthStore((s) => s.usuario)
   const [cifras, setCifras] = useState({ equipo: 0, eventos: 0, viajeros: 0 })
@@ -80,16 +86,13 @@ export function DashboardView() {
   return (
     <div className="mx-auto max-w-6xl">
 
-      {/* ── Hero editorial ────────────────────────────────────────────── */}
       <section className="relative mb-10 overflow-hidden rounded-lg border border-secondary/40 bg-secondary shadow-paper-lg">
         <div aria-hidden className="textura-carta pointer-events-none absolute inset-0 opacity-[0.04]" />
 
-        {/* Rosa de vientos marca de agua */}
         <div aria-hidden className="pointer-events-none absolute -right-16 top-1/2 -translate-y-1/2 opacity-[0.06]">
           <RosaVientos className="h-80 w-80 text-gold" />
         </div>
 
-        {/* Cinta superior */}
         <div className="flex flex-wrap items-center justify-between gap-2 border-b border-white/10 px-6 py-2.5 sm:px-10">
           <span className="coord text-gold">Registro de Ruta · Sprint II</span>
           <span className="coord hidden text-on-secondary-container sm:inline">
@@ -98,7 +101,6 @@ export function DashboardView() {
           <span className="coord text-on-secondary-container">Estado: vigilancia activa</span>
         </div>
 
-        {/* Cuerpo */}
         <div className="relative grid gap-6 p-6 sm:p-10 lg:grid-cols-[1fr_auto]">
           <div>
             <p className="coord text-gold">Códice administrativo · {rol}</p>
@@ -113,7 +115,6 @@ export function DashboardView() {
             </p>
           </div>
 
-          {/* Métricas laterales */}
           <div className="grid gap-3 self-center sm:grid-cols-3 lg:grid-cols-1 lg:gap-4">
             <MetricaHero valor={cifras.viajeros} etiqueta="Viajeros" sub="en el padrón" />
             <MetricaHero valor={cifras.equipo} etiqueta="Custodios" sub="en servicio" />
@@ -121,14 +122,12 @@ export function DashboardView() {
           </div>
         </div>
 
-        {/* Sello decorativo */}
         <div className="flex items-center gap-3 border-t border-white/10 px-6 py-3 sm:px-10">
           <IconoSello className="h-3.5 w-3.5 text-gold" />
           <span className="coord text-gold">Illimani Global Travel S.R.L. · Panel oficial</span>
         </div>
       </section>
 
-      {/* ── Accesos rápidos ───────────────────────────────────────────── */}
       <div className="mb-3 flex items-center gap-3">
         <span className="regla-terracota" />
         <p className="etiqueta-seccion">Módulos disponibles</p>
@@ -159,8 +158,6 @@ export function DashboardView() {
     </div>
   )
 }
-
-/* -------------------------------------------------------------------------- */
 
 function MetricaHero({ valor, etiqueta, sub }: { valor: number; etiqueta: string; sub: string }) {
   return (

@@ -1,4 +1,3 @@
-"""Rutas del dominio de catálogo (CU3)."""
 from rest_framework.routers import DefaultRouter
 
 from apps.catalogo.views import AeropuertoViewSet, DestinoViewSet, ProveedorViewSet

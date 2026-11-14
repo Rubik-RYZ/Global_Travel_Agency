@@ -1,10 +1,8 @@
-"""Serializadores del dominio de reservas (CU7)."""
 from rest_framework import serializers
 
 from apps.catalogo.serializers.paquete import PaqueteSalidaSerializer
 from apps.reservas.models import Reserva, ReservaPasajero
 from apps.reservas.services.reservas import crear_reserva
-
 
 class ReservaPasajeroSerializer(serializers.ModelSerializer):
     class Meta:
@@ -17,7 +15,6 @@ class ReservaPasajeroSerializer(serializers.ModelSerializer):
             "documento_numero",
             "fecha_nacimiento",
         ]
-
 
 class ReservaListSerializer(serializers.ModelSerializer):
     cliente_nombre = serializers.CharField(source="cliente.nombre_completo", read_only=True)
@@ -43,7 +40,6 @@ class ReservaListSerializer(serializers.ModelSerializer):
             "canal",
             "creada_en",
         ]
-
 
 class ReservaDetailSerializer(serializers.ModelSerializer):
     cliente_nombre = serializers.CharField(source="cliente.nombre_completo", read_only=True)
@@ -73,14 +69,12 @@ class ReservaDetailSerializer(serializers.ModelSerializer):
             "pasajeros",
         ]
 
-
 class PasajeroInputSerializer(serializers.Serializer):
     nombres = serializers.CharField(max_length=150)
     apellidos = serializers.CharField(max_length=150)
     documento_tipo = serializers.ChoiceField(choices=["CI", "PASAPORTE", "OTRO"], required=False, allow_null=True)
     documento_numero = serializers.CharField(max_length=50, required=False, allow_null=True, allow_blank=True)
     fecha_nacimiento = serializers.DateField(required=False, allow_null=True)
-
 
 class ReservaCreateSerializer(serializers.Serializer):
     cliente_id = serializers.IntegerField(required=False)
@@ -94,7 +88,6 @@ class ReservaCreateSerializer(serializers.Serializer):
         user = self.context["request"].user
         cliente_id = validated_data.get("cliente_id")
 
-        # Si es un cliente regular, se asocia automáticamente a su registro de Cliente
         if not cliente_id:
             if hasattr(user, "cliente") and user.cliente:
                 cliente_id = user.cliente.id
@@ -109,4 +102,3 @@ class ReservaCreateSerializer(serializers.Serializer):
             canal=validated_data.get("canal", "web"),
             conversacion_id=validated_data.get("conversacion_id"),
         )
-

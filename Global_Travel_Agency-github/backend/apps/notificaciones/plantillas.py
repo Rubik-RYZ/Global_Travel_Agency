@@ -1,13 +1,3 @@
-"""Plantillas de correo de la casa.
-
-Los clientes de correo no entienden hojas de estilo externas ni fuentes web
-fiables, así que el diseño va **inline** y con tipografías de sistema que
-recuerdan a la identidad: una serif para los titulares (Playfair Display cae a
-Georgia) y una sans neutra para el cuerpo (Work Sans cae a Helvetica).
-
-Paleta: pergamino `#faf5eb`, bosque `#141d16`, terracota `#b85434`, oro `#c6a15b`.
-"""
-
 VERDE_BOSQUE = "#141d16"
 PERGAMINO = "#faf5eb"
 BORDE = "#ded2c1"
@@ -24,9 +14,7 @@ PIE_PREDETERMINADO = (
     "Av. Arce, Zona Central · La Paz, Bolivia"
 )
 
-
 def envoltura(*, titulo: str, cuerpo: str, pie: str = "") -> str:
-    """Documento HTML completo con la cabecera y el pie de la agencia."""
     return f"""<!DOCTYPE html>
 <html lang="es">
 <head>
@@ -70,13 +58,11 @@ def envoltura(*, titulo: str, cuerpo: str, pie: str = "") -> str:
 </body>
 </html>"""
 
-
 def parrafo(texto: str) -> str:
     return (
         f'<p style="margin:0 0 14px;font-size:15px;line-height:1.65;color:{TINTA};">'
         f"{texto}</p>"
     )
-
 
 def boton(*, texto: str, enlace: str) -> str:
     return (
@@ -86,14 +72,12 @@ def boton(*, texto: str, enlace: str) -> str:
         f'font-size:13px;font-weight:bold;letter-spacing:0.04em;">{texto}</a></p>'
     )
 
-
 def nota_manuscrita(texto: str) -> str:
     return (
         f'<p style="margin:18px 0 0;padding:12px 16px;background:{PERGAMINO};'
         f'border-left:3px solid {TERRACOTA};font-size:12px;font-style:italic;'
         f'line-height:1.6;color:{SEPIA};">{texto}</p>'
     )
-
 
 def enlace_crudo(enlace: str) -> str:
     return (
@@ -102,10 +86,6 @@ def enlace_crudo(enlace: str) -> str:
         f'<span style="color:{TERRACOTA};">{enlace}</span></p>'
     )
 
-
-# ---------------------------------------------------------------------
-# Plantillas por evento
-# ---------------------------------------------------------------------
 def bienvenida(*, nombres: str) -> str:
     return envoltura(
         titulo=f"Bienvenido al cuaderno, {nombres}",
@@ -126,7 +106,6 @@ def bienvenida(*, nombres: str) -> str:
         ),
     )
 
-
 def recuperacion(*, enlace: str, expira_horas: int = 2) -> str:
     return envoltura(
         titulo="Restablezca su contraseña",
@@ -141,7 +120,6 @@ def recuperacion(*, enlace: str, expira_horas: int = 2) -> str:
         ),
     )
 
-
 def password_restablecido() -> str:
     return envoltura(
         titulo="Su contraseña fue actualizada",
@@ -154,9 +132,7 @@ def password_restablecido() -> str:
         ),
     )
 
-
 def ficha_viajero_abierta(*, nombre_completo: str, numero_documento: str | None) -> str:
-    """Aviso al viajero cuando el personal abre su ficha en el panel."""
     documento = (
         f" con el documento {numero_documento}" if numero_documento else ""
     )

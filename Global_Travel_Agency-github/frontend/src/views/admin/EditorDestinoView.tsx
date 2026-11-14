@@ -94,7 +94,6 @@ const FORM_VACIO: FormDestino = {
   etiquetas: [],
 }
 
-/** Cadena → número o `null` (el API acepta nulos en los campos opcionales). */
 function numero(valor: string): number | null {
   const limpio = valor.trim()
   if (limpio === '') return null
@@ -102,14 +101,12 @@ function numero(valor: string): number | null {
   return Number.isFinite(n) ? n : null
 }
 
-/** Cadena → decimal normalizado o `null` (latitud/longitud viajan como texto). */
 function decimal(valor: string): string | null {
   const limpio = valor.trim()
   if (limpio === '') return null
   return Number.isFinite(Number(limpio)) ? limpio : null
 }
 
-/** Cadena → texto o `null`. */
 function texto(valor: string): string | null {
   const limpio = valor.trim()
   return limpio === '' ? null : limpio
@@ -119,13 +116,6 @@ function registro(id: number): string {
   return `REGISTRO N.o ${String(id).padStart(3, '0')}`
 }
 
-/**
- * 18. Panel · Editor de Enclave → /admin/destinos/:id/editar (y /nuevo)
- *
- * Manuscrito de trabajo del curador: parámetros comerciales reales, diario de
- * ruta día a día, privilegios de la expedición y clasificación del recomendador.
- * La vista lateral resume el estado de publicación y la completitud de la ficha.
- */
 export function EditorDestinoView() {
   const { id } = useParams<{ id: string }>()
   const navigate = useNavigate()
@@ -164,7 +154,6 @@ export function EditorDestinoView() {
     void cargar()
   }, [cargar])
 
-  /** Completa los campos obligatorios de la ficha, para el resumen de cierre. */
   const validacion = useMemo(() => {
     const items = [
       { texto: 'Nombre y país del enclave', ok: Boolean(form.nombre.trim() && form.pais.trim()) },
@@ -244,7 +233,6 @@ export function EditorDestinoView() {
 
   return (
     <div className="mx-auto max-w-6xl">
-      {/* ── Cabecera de despacho ───────────────────────────────────────── */}
       <div className="flex flex-col justify-between gap-6 border-b border-outline-variant/40 pb-5 md:flex-row md:items-end">
         <div className="flex flex-col gap-3">
           <div className="flex flex-wrap items-center gap-2.5">
@@ -302,7 +290,6 @@ export function EditorDestinoView() {
         </div>
       </div>
 
-      {/* ── Pestañas editoriales ───────────────────────────────────────── */}
       <div className="mt-6 flex items-center gap-1 overflow-x-auto border-b border-outline-variant/30 pb-1">
         {(
           [
@@ -343,7 +330,6 @@ export function EditorDestinoView() {
         </p>
       )}
 
-      {/* ── Espacio de trabajo (8 / 4) ─────────────────────────────────── */}
       <div className="mt-8 grid items-start gap-8 lg:grid-cols-12">
         <div className="flex flex-col gap-8 lg:col-span-8">
           {pestana === 'geografia' && (
@@ -651,7 +637,6 @@ export function EditorDestinoView() {
           )}
         </div>
 
-        {/* ── Columna lateral (conservaduría y cartograma) ─────────────── */}
         <aside className="flex flex-col gap-6 lg:col-span-4">
           <div className="flex flex-col gap-4 rounded-lg border border-outline-variant/30 bg-surface-container-lowest p-5 shadow-paper">
             <div className="flex items-center justify-between border-b border-outline-variant/30 pb-2">
@@ -728,7 +713,6 @@ export function EditorDestinoView() {
         </aside>
       </div>
 
-      {/* ── Barra de cierre editorial ──────────────────────────────────── */}
       <div className="mt-10 flex flex-col items-center justify-between gap-5 rounded-lg border border-outline-variant/40 bg-surface-container-low p-5 md:flex-row">
         <div className="flex items-center gap-4">
           <div
@@ -777,10 +761,6 @@ export function EditorDestinoView() {
     </div>
   )
 }
-
-/* -------------------------------------------------------------------------- */
-/* Piezas                                                                     */
-/* -------------------------------------------------------------------------- */
 
 function mapearDestino(d: Destino): FormDestino {
   return {

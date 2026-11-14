@@ -1,4 +1,3 @@
-/** Tipos del catálogo turístico (CU3, CU4, CU5, CU6). */
 export interface Destino {
   id: number
   nombre: string
@@ -32,9 +31,6 @@ export interface Proveedor {
   activo: boolean
 }
 
-/* -------------------------------------------------------------------------- */
-/* CU4: Vuelos                                                                */
-/* -------------------------------------------------------------------------- */
 export interface Vuelo {
   id: number
   proveedor: number
@@ -69,9 +65,6 @@ export interface CrearVueloPayload {
   referencia_externa?: string
 }
 
-/* -------------------------------------------------------------------------- */
-/* CU5: Hoteles y Habitaciones                                                */
-/* -------------------------------------------------------------------------- */
 export interface Habitacion {
   id: number
   hotel: number
@@ -117,9 +110,6 @@ export interface CrearHabitacionPayload {
   moneda?: 'BOB' | 'USD' | 'EUR'
 }
 
-/* -------------------------------------------------------------------------- */
-/* CU6: Paquetes y Salidas Programadas                                        */
-/* -------------------------------------------------------------------------- */
 export interface PaqueteSalida {
   id: number
   paquete: number

@@ -1,6 +1,5 @@
 import { Link } from 'react-router-dom'
 
-/** 4. Sesión expirada → /sesion-expirada */
 export function SesionExpiradaView() {
   return (
     <div className="flex min-h-screen flex-col items-center justify-center bg-surface px-6 text-center">

@@ -87,7 +87,6 @@ export function ReservaPasajerosView() {
   return (
     <div className="min-h-screen bg-[#faf5eb] py-12 px-4 sm:px-6 lg:px-8">
       <div className="mx-auto max-w-3xl space-y-8">
-        {/* Pasos */}
         <div className="flex items-center justify-center gap-4 text-xs uppercase tracking-wider font-semibold">
           <Link to={`/reservar/${paqueteId}`} className="text-[#231a13]/60 hover:text-[#792609]">
             1. Salida y Plazas

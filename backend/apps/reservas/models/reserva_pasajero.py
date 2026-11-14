@@ -1,10 +1,6 @@
-"""Modelo de pasajeros por reserva (CU7)."""
 from django.db import models
 
-
 class ReservaPasajero(models.Model):
-    """Pasajero registrado para una reserva de viaje."""
-
     DOCUMENTO_CHOICES = [
         ("CI", "Cédula de Identidad"),
         ("PASAPORTE", "Pasaporte"),
@@ -33,4 +29,3 @@ class ReservaPasajero(models.Model):
 
     def __str__(self):
         return f"{self.nombres} {self.apellidos} ({self.reserva.codigo})"
-

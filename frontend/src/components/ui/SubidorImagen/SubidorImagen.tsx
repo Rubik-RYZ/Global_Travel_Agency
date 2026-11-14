@@ -5,32 +5,22 @@ import { IconoCerrar, IconoSubir } from '@/components/ui/Iconos'
 import { mensajeDeError } from '@/utils/validators'
 
 export interface SubidorImagenProps {
-  /** URL o ruta actual del recurso. */
+
   valor: string
-  /** Identificador en el almacén del recurso actual (para retirarlo al reemplazar). */
+
   publicId?: string | null
-  /**
-   * Se dispara al subir o al pegar un enlace. Devuelve la URL y el `public_id`
-   * (`null` si se escribió a mano).
-   */
+
   onChange: (url: string, publicId: string | null) => void
-  /** Carpeta del almacén: `destinos`, `proveedores`, `pasaportes`, `carnets`, `equipo`. */
+
   carpeta: string
   etiqueta?: string
   ayuda?: string
-  /** Proporción de la vista previa. */
+
   forma?: 'lamina' | 'documento'
-  /** Bloquea la edición (p. ej. agente sin permiso de publicación). */
+
   deshabilitado?: boolean
 }
 
-/**
- * Selector de archivo con vista previa que sube al almacén externo.
- *
- * Si el entorno no tiene credenciales la subida aparece deshabilitada con un
- * mensaje explícito —el sistema sigue funcionando y las imágenes ya guardadas
- * se ven igual—, pero siempre queda la opción de pegar una ruta o URL a mano.
- */
 export function SubidorImagen({
   valor,
   publicId,
@@ -74,7 +64,7 @@ export function SubidorImagen({
     setSubiendo(true)
     try {
       const subido = await almacenApi.subir(archivo, carpeta)
-      // La lámina reemplazada se retira del almacén para no dejar huérfanos.
+
       if (publicId && publicId !== subido.public_id) {
         void almacenApi.eliminar(publicId).catch(() => undefined)
       }

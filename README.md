@@ -26,6 +26,13 @@ cp .env.example .env      # (Windows: copy .env.example .env)
 # 2. Levantar los servicios
 docker compose up --build
 
+
+
+# levantar  sin destruir
+docker compose stop
+docker compose start
+
+
 # 3. En otra terminal: migrar y poblar datos
 docker compose exec backend python manage.py migrate
 docker compose exec backend python manage.py seed_data

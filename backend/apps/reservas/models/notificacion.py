@@ -1,10 +1,6 @@
-"""Modelo de notificaciones al cliente (CU8)."""
 from django.db import models
 
-
 class Notificacion(models.Model):
-    """Registro de notificaciones y avisos transaccionales por viajero."""
-
     TIPO_CONFIRMACION = "confirmacion_reserva"
     TIPO_PAGO = "comprobante_pago"
     TIPO_ITINERARIO = "itinerario"
@@ -52,4 +48,3 @@ class Notificacion(models.Model):
 
     def __str__(self):
         return f"{self.tipo} ({self.estado}) para {self.usuario.email}"
-

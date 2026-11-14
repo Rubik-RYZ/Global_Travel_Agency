@@ -13,7 +13,6 @@ interface Props {
   onGuardado: () => void
 }
 
-/** Documento digitalizado (URL + identificador en el almacén). */
 interface Documento {
   url: string
   publicId: string
@@ -21,14 +20,6 @@ interface Documento {
 
 const DOC_VACIO: Documento = { url: '', publicId: '' }
 
-/**
- * Cuerpo del capítulo «Credenciales de viaje» del Resumen de «Mi viaje»:
- * el propio viajero sube su retrato y digitaliza su pasaporte y su carnet.
- *
- * Las láminas se alojan en el almacén del proyecto (vía `/almacen/subir/`);
- * si el entorno no tiene credenciales la subida aparece deshabilitada y el
- * resto de la ficha sigue funcionando con normalidad.
- */
 export function DocumentosViajeroForm({ perfil, onGuardado }: Props) {
   const usuario = useAuthStore((s) => s.usuario)
   const setUsuario = useAuthStore((s) => s.setUsuario)
@@ -72,7 +63,7 @@ export function DocumentosViajeroForm({ perfil, onGuardado }: Props) {
           foto_public_id: foto.publicId || null,
         }),
       ])
-      // El avatar del menú superior se refresca al instante.
+
       if (usuario) setUsuario(conRetrato)
       onGuardado()
       setOk(true)
@@ -87,7 +78,6 @@ export function DocumentosViajeroForm({ perfil, onGuardado }: Props) {
   return (
     <div className="flex flex-col gap-6">
       <div className="grid gap-6 lg:grid-cols-12">
-        {/* Retrato del viajero */}
         <div className="lg:col-span-5">
           <div className="flex h-full flex-col gap-3 rounded-md border border-parchment-border bg-surface-container-low p-4">
             <div className="flex items-center gap-2">
@@ -112,7 +102,6 @@ export function DocumentosViajeroForm({ perfil, onGuardado }: Props) {
           </div>
         </div>
 
-        {/* Documentos digitalizados */}
         <div className="lg:col-span-7">
           <div className="flex h-full flex-col gap-4 rounded-md border border-parchment-border bg-surface-container-low p-4">
             <div className="flex items-start justify-between gap-3">

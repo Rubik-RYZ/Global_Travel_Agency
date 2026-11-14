@@ -1,4 +1,3 @@
-"""Capa de presentación — panel: roles, equipo y bitácora (CU1)."""
 from rest_framework import status, viewsets
 from rest_framework.response import Response
 
@@ -12,21 +11,13 @@ from apps.usuarios.serializers import (
     UsuarioEquipoSerializer,
 )
 
-
 class RolViewSet(viewsets.ReadOnlyModelViewSet):
     queryset = Rol.objects.all().order_by("id")
     serializer_class = RolSerializer
     permission_classes = [EsPanel]
     pagination_class = None
 
-
 class UsuarioViewSet(viewsets.ModelViewSet):
-    """Cuentas del equipo interno (administrador y agente).
-
-    Solo el administrador gestiona esta sección; el rol `cliente` no aparece
-    aquí (sus cuentas se crean por registro y sus fichas viven en «Viajeros»).
-    """
-
     queryset = (
         Usuario.objects.filter(rol_id__in=ROLES_EQUIPO)
         .select_related("rol")
@@ -63,7 +54,6 @@ class UsuarioViewSet(viewsets.ModelViewSet):
             usuario=self.get_object(), actor=request.user, request=request
         )
         return Response(status=status.HTTP_204_NO_CONTENT)
-
 
 class AuditoriaViewSet(viewsets.ReadOnlyModelViewSet):
     queryset = Auditoria.objects.select_related("usuario").order_by("-creado_en")

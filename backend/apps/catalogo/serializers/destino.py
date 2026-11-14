@@ -1,16 +1,13 @@
-"""Capa de esquema del catálogo — destinos (CU3)."""
 from rest_framework import serializers
 
 from apps.catalogo.constants import MONEDAS
 from apps.catalogo.models import Destino, ItinerarioDia
-
 
 class ItinerarioDiaSerializer(serializers.ModelSerializer):
     class Meta:
         model = ItinerarioDia
         fields = ["id", "numero_dia", "titulo", "descripcion", "ubicacion"]
         read_only_fields = ["id"]
-
 
 class DestinoSerializer(serializers.ModelSerializer):
     etiquetas = serializers.ListField(
@@ -69,10 +66,7 @@ class DestinoSerializer(serializers.ModelSerializer):
             )
         return valor
 
-
 class DestinoResumenSerializer(serializers.ModelSerializer):
-    """Versión compacta para listados públicos (tarjetas del catálogo)."""
-
     region_display = serializers.SerializerMethodField()
     caracter_display = serializers.SerializerMethodField()
 

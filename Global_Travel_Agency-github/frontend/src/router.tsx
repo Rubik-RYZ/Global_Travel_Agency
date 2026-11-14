@@ -26,13 +26,6 @@ import { PanelViajeroView } from '@/views/cliente/PanelViajeroView'
 import { PreferenciasView } from '@/views/cliente/PreferenciasView'
 import { HomeView } from '@/views/home/HomeView'
 
-/**
- * Router principal.
- *
- * CU1: acceso (público), panel protegido por rol.
- * CU2: área privada del viajero (/mi-cuenta) y directorio de viajeros del panel.
- * CU3 agregará /destinos, el resto del panel y la landing definitiva.
- */
 export const router = createBrowserRouter([
   {
     element: <PublicLayout />,

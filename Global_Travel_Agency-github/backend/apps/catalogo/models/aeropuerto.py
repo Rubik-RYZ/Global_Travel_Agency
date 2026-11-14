@@ -1,10 +1,6 @@
-"""Aeropuerto asociado a un destino (CU3)."""
 from django.db import models
 
-
 class Aeropuerto(models.Model):
-    """Aeropuerto identificado por su código IATA."""
-
     codigo_iata = models.CharField(max_length=3, primary_key=True)
     nombre = models.TextField()
     destino = models.ForeignKey(

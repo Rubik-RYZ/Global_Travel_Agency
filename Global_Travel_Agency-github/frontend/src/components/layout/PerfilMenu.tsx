@@ -15,11 +15,6 @@ interface EnlaceMenu {
   icono: ReactNode
 }
 
-/**
- * Credencial de sesión: muestra al usuario y despliega un menú con su rol,
- * el acceso a su área y el cierre de sesión. Animado con framer-motion y
- * cerrable con clic fuera o tecla Escape.
- */
 export function PerfilMenu() {
   const usuario = useAuthStore((s) => s.usuario)
   const { cerrarSesion } = useAuth()

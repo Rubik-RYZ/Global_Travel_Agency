@@ -56,7 +56,6 @@ export function ReservasAdminView() {
 
   return (
     <div className="space-y-8">
-      {/* Encabezado */}
       <header className="border-b border-[#231a13]/10 pb-6">
         <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
           <div>
@@ -82,7 +81,6 @@ export function ReservasAdminView() {
         </div>
       </header>
 
-      {/* Avisos */}
       {aviso && (
         <div className="flex items-center justify-between rounded-lg border border-[#1b261d]/20 bg-[#1b261d]/5 px-4 py-3 text-sm text-[#141d16]">
           <span>{aviso}</span>
@@ -98,7 +96,6 @@ export function ReservasAdminView() {
         </div>
       )}
 
-      {/* Filtros */}
       <div className="grid grid-cols-1 gap-3 rounded-xl border border-[#231a13]/10 bg-[#faf5eb] p-4 sm:grid-cols-3">
         <div>
           <label className="text-xs font-semibold uppercase text-[#231a13]/70">Estado</label>
@@ -144,7 +141,6 @@ export function ReservasAdminView() {
         </div>
       </div>
 
-      {/* Tabla de reservas */}
       <div className="overflow-hidden rounded-xl border border-[#231a13]/10 bg-white shadow-sm">
         <table className="min-w-full divide-y divide-[#231a13]/10 text-left text-sm">
           <thead className="bg-[#faf5eb] font-serif text-xs uppercase tracking-wider text-[#231a13]/70">

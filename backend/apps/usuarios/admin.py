@@ -1,4 +1,3 @@
-"""Registro de modelos en el admin de Django."""
 from django import forms
 from django.contrib import admin
 
@@ -10,10 +9,7 @@ from apps.usuarios.models import (
     Usuario,
 )
 
-
 class UsuarioAdminForm(forms.ModelForm):
-    """Formulario de admin con hashing de contraseña."""
-
     password = forms.CharField(
         widget=forms.PasswordInput,
         required=False,
@@ -34,12 +30,10 @@ class UsuarioAdminForm(forms.ModelForm):
             usuario.save()
         return usuario
 
-
 @admin.register(Rol)
 class RolAdmin(admin.ModelAdmin):
     list_display = ("id", "nombre")
     search_fields = ("nombre",)
-
 
 @admin.register(Usuario)
 class UsuarioAdmin(admin.ModelAdmin):
@@ -49,7 +43,6 @@ class UsuarioAdmin(admin.ModelAdmin):
     search_fields = ("email",)
     ordering = ("email",)
     readonly_fields = ("creado_en", "last_login")
-
 
 @admin.register(Auditoria)
 class AuditoriaAdmin(admin.ModelAdmin):
@@ -67,11 +60,9 @@ class AuditoriaAdmin(admin.ModelAdmin):
         "creado_en",
     )
 
-
 class ClientePreferenciaInline(admin.StackedInline):
     model = ClientePreferencia
     extra = 0
-
 
 @admin.register(Cliente)
 class ClienteAdmin(admin.ModelAdmin):

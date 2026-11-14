@@ -1,10 +1,9 @@
-/** @type {import('tailwindcss').Config} */
 export default {
   content: ['./index.html', './src/**/*.{ts,tsx}'],
   theme: {
     extend: {
       colors: {
-        // --- Superficies / pergamino (design.md) ---
+
         surface: '#faf5eb',
         'surface-dim': '#e9d7cb',
         'surface-bright': '#fff8f5',
@@ -24,31 +23,26 @@ export default {
         'outline-variant': '#ddc0b9',
         'surface-tint': '#9e4223',
 
-        // --- Primario: terracota / lacre ---
         primary: '#792609',
         'primary-container': '#983d1f',
         'on-primary': '#ffffff',
         'on-primary-container': '#ffc4b2',
         terracotta: '#b85434',
 
-        // --- Secundario: verde bosque ---
         secondary: '#141d16',
         'secondary-container': '#1b261d',
         'on-secondary': '#faf5eb',
         'on-secondary-container': '#a4b3a6',
 
-        // --- Terciario: dorado botánico ---
         tertiary: '#583e00',
         'tertiary-container': '#725516',
         'gold': '#c6a15b',
 
-        // --- Error ---
         error: '#ba1a1a',
         'on-error': '#ffffff',
         'error-container': '#ffdad6',
         'on-error-container': '#93000a',
 
-        // --- Extras de marca ---
         parchment: '#faf5eb',
         'parchment-border': '#ded2c1',
         'forest-night': '#141d16',

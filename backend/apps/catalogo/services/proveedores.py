@@ -1,4 +1,3 @@
-"""Capa de negocio del catálogo — proveedores (CU3)."""
 from __future__ import annotations
 
 from django.core.exceptions import ValidationError
@@ -6,7 +5,6 @@ from django.db import transaction
 from django.db.models import Q
 
 from apps.catalogo.models import Proveedor
-
 
 def listar_proveedores(
     *,
@@ -31,13 +29,11 @@ def listar_proveedores(
         )
     return qs.order_by("tipo", "nombre")
 
-
 def obtener_proveedor(proveedor_id: int) -> Proveedor:
     try:
         return Proveedor.objects.get(pk=proveedor_id)
     except Proveedor.DoesNotExist:
         raise ValidationError({"proveedor_id": "Proveedor no encontrado."})
-
 
 @transaction.atomic
 def crear_proveedor(*, nombre: str, tipo: str, pais: str | None = None,
@@ -53,7 +49,6 @@ def crear_proveedor(*, nombre: str, tipo: str, pais: str | None = None,
         contacto=contacto, email=email, telefono=telefono, notas=notas,
         logo_url=logo_url, logo_public_id=logo_public_id,
     )
-
 
 @transaction.atomic
 def actualizar_proveedor(proveedor_id: int, **kwargs) -> Proveedor:
@@ -71,7 +66,6 @@ def actualizar_proveedor(proveedor_id: int, **kwargs) -> Proveedor:
         raise ValidationError({"nombre": "Ya existe un proveedor con ese nombre."})
     proveedor.save()
     return proveedor
-
 
 @transaction.atomic
 def toggle_activo_proveedor(proveedor_id: int) -> Proveedor:

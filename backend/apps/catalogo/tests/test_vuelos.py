@@ -1,4 +1,3 @@
-"""Tests para el módulo de gestión de vuelos (CU4)."""
 from datetime import timedelta
 from decimal import Decimal
 import pytest
@@ -13,7 +12,6 @@ from apps.usuarios.constants import ROL_ADMINISTRADOR, ROL_CLIENTE
 from apps.usuarios.models import Rol, Usuario
 
 ROL_AGENTE = 2
-
 
 @pytest.fixture
 def setup_datos(db):
@@ -40,7 +38,6 @@ def setup_datos(db):
         "aerolinea": aerolinea,
     }
 
-
 @pytest.mark.django_db
 def test_creacion_vuelo_servicio_exitoso(setup_datos):
     d = setup_datos
@@ -65,7 +62,6 @@ def test_creacion_vuelo_servicio_exitoso(setup_datos):
     assert vuelo.cupos_disponibles == 50
     assert vuelo.origen == d["aero_orig"]
 
-
 @pytest.mark.django_db
 def test_validacion_origen_igual_destino(setup_datos):
     d = setup_datos
@@ -82,7 +78,6 @@ def test_validacion_origen_igual_destino(setup_datos):
             cupos_totales=30,
         )
 
-
 @pytest.mark.django_db
 def test_validacion_llegada_anterior_salida(setup_datos):
     d = setup_datos
@@ -98,7 +93,6 @@ def test_validacion_llegada_anterior_salida(setup_datos):
             precio=Decimal("100.00"),
             cupos_totales=30,
         )
-
 
 @pytest.mark.django_db
 def test_api_vuelos_crud_permisos(setup_datos):
@@ -123,17 +117,13 @@ def test_api_vuelos_crud_permisos(setup_datos):
         "cupos_disponibles": 60,
     }
 
-    # Cliente no puede crear
     res_cli = client_cli.post("/api/v1/vuelos/", payload, format="json")
     assert res_cli.status_code == status.HTTP_403_FORBIDDEN
 
-    # Admin sí puede crear
     res_admin = client_admin.post("/api/v1/vuelos/", payload, format="json")
     assert res_admin.status_code == status.HTTP_201_CREATED
     vuelo_id = res_admin.data["id"]
 
-    # Listado público / accesible
     res_list = client_cli.get("/api/v1/vuelos/")
     assert res_list.status_code == status.HTTP_200_OK
     assert len(res_list.data["results"]) >= 1
-

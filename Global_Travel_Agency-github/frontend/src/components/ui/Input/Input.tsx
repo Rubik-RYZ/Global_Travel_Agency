@@ -4,7 +4,7 @@ import type { InputHTMLAttributes, ReactNode } from 'react'
 interface InputProps extends InputHTMLAttributes<HTMLInputElement> {
   label?: string
   error?: string
-  /** Icono de línea que se dibuja dentro del campo, a la izquierda. */
+
   icono?: ReactNode
 }
 

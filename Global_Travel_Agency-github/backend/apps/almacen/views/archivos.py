@@ -1,4 +1,3 @@
-"""Endpoints del almacén externo de archivos."""
 from django.core.exceptions import ValidationError as DjangoValidationError
 from rest_framework import status
 from rest_framework.parsers import FormParser, MultiPartParser
@@ -16,14 +15,7 @@ from apps.almacen.constants import (
 from apps.catalogo.permissions import EsAdminOAgente
 from apps.usuarios.constants import ROL_ADMINISTRADOR, ROL_AGENTE, ROL_CLIENTE
 
-
 class EstadoAlmacenView(APIView):
-    """GET /api/v1/almacen/estado/
-
-    Permite al panel saber de antemano si la subida está disponible, para
-    desactivar el botón y explicarlo en vez de fallar al intentarlo.
-    """
-
     permission_classes = [EsAdminOAgente]
 
     def get(self, request):
@@ -39,17 +31,7 @@ class EstadoAlmacenView(APIView):
             }
         )
 
-
 class SubidaArchivoView(APIView):
-    """POST /api/v1/almacen/subir/  (multipart: `archivo`, `carpeta`)
-
-    Devuelve la URL pública y el `public_id` del recurso. Lo usan tanto el
-    panel (destinos, proveedores, equipo) como el propio viajero con sus
-    láminas personales (`perfiles`, `pasaportes`, `carnets`), por eso basta
-    con estar autenticado. Si el entorno no tiene credenciales responde 503
-    con un mensaje explícito, nunca un 500.
-    """
-
     permission_classes = [IsAuthenticated]
     parser_classes = [MultiPartParser, FormParser]
 
@@ -107,16 +89,7 @@ class SubidaArchivoView(APIView):
             status=status.HTTP_201_CREATED,
         )
 
-
 class EliminarArchivoView(APIView):
-    """POST /api/v1/almacen/eliminar/  (JSON: `public_id`)
-
-    Permite retirar del almacén la lámina que se reemplaza, de modo que la
-    Media Library no acumule archivos huérfanos. Sólo se aceptan recursos del
-    propio proyecto (prefijo `illimani/`) y, si quien pide no es del panel, la
-    lámina debe estar en una de las carpetas personales del viajero.
-    """
-
     permission_classes = [IsAuthenticated]
 
     def post(self, request):

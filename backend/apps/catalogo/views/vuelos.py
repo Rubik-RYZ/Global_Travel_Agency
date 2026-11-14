@@ -1,4 +1,3 @@
-"""Controlador de vuelos (CU4)."""
 from rest_framework import status, viewsets
 from rest_framework.response import Response
 
@@ -10,10 +9,7 @@ from apps.catalogo.serializers.vuelo import (
 )
 from apps.catalogo.services.vuelos import eliminar_vuelo, listar_vuelos, obtener_vuelo
 
-
 class VueloViewSet(viewsets.ModelViewSet):
-    """ViewSet CRUD para la gestión de vuelos e inventario de asientos."""
-
     permission_classes = [EsAdminOAgente]
 
     def get_queryset(self):
@@ -38,4 +34,3 @@ class VueloViewSet(viewsets.ModelViewSet):
         vuelo_id = int(kwargs["pk"])
         eliminar_vuelo(vuelo_id)
         return Response(status=status.HTTP_204_NO_CONTENT)
-

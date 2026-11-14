@@ -1,15 +1,9 @@
 interface RosaVientosProps {
   className?: string
-  /** Color de las puntas; por defecto hereda del texto. */
+
   tono?: string
 }
 
-/**
- * Rosa de los vientos de ocho puntas — sello de la agencia.
- *
- * Se dibuja en SVG para poder usarla nítida en cualquier tamaño (logotipo,
- * marcas de agua, sellos postales) sin depender de imágenes externas.
- */
 export function RosaVientos({ className = 'h-8 w-8', tono = 'currentColor' }: RosaVientosProps) {
   return (
     <svg

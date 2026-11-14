@@ -9,7 +9,6 @@ import { Input } from '@/components/ui/Input/Input'
 import { recuperarSchema, type RecuperarForm } from '@/types/auth.schemas'
 import { mensajeDeError } from '@/utils/validators'
 
-/** 3. Recuperar contraseña → /recuperar */
 export function RecuperarPasswordView() {
   const [enviado, setEnviado] = useState(false)
   const [error, setError] = useState<string | null>(null)

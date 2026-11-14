@@ -1,6 +1,4 @@
-"""Configuración de la app de almacenamiento externo."""
 from django.apps import AppConfig
-
 
 class AlmacenConfig(AppConfig):
     default_auto_field = "django.db.models.BigAutoField"

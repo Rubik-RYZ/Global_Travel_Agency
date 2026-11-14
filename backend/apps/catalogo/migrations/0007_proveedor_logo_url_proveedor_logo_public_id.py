@@ -1,8 +1,6 @@
 from django.db import migrations, models
 
-
 class Migration(migrations.Migration):
-
     dependencies = [
         ('catalogo', '0006_destino_imagen_public_id'),
     ]

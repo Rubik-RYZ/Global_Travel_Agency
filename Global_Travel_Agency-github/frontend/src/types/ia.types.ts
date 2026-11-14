@@ -1,4 +1,3 @@
-/** Tipos del dominio de IA (CU10/CU11) — se amplían en el Sprint 5. */
 export interface MensajeChat {
   id: number
   emisor: 'usuario' | 'agente'

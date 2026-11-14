@@ -1,9 +1,7 @@
-"""Capa de esquema del catálogo — proveedores (CU3)."""
 from rest_framework import serializers
 
 from apps.catalogo.constants import TIPOS_PROVEEDOR
 from apps.catalogo.models import Proveedor
-
 
 class ProveedorSerializer(serializers.ModelSerializer):
     tipo_display = serializers.SerializerMethodField()

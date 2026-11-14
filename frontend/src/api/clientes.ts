@@ -1,4 +1,3 @@
-/** Cliente HTTP del dominio de clientes y preferencias (CU2). */
 import { api } from '@/lib/axios'
 import type { Paginated } from '@/types/api.types'
 import type { Usuario } from '@/types/auth.types'
@@ -26,18 +25,15 @@ export const clientesApi = {
   eliminar: (id: number) => api.delete(`/clientes/${id}/`).then((r) => r.data),
 }
 
-/** Área privada del viajero autenticado. */
 export const perfilApi = {
   obtener: () => api.get<PerfilViajero>('/me/perfil').then((r) => r.data),
 
   actualizar: (payload: PerfilPayload) =>
     api.put<PerfilViajero>('/me/perfil', payload).then((r) => r.data),
 
-  /** Cambios puntuales (p. ej. sólo las láminas) sin reenviar toda la ficha. */
   actualizarParcial: (payload: Partial<PerfilPayload>) =>
     api.patch<PerfilViajero>('/me/perfil', payload).then((r) => r.data),
 
-  /** Retrato propio del usuario (avatar del menú y de «Mi viaje»). */
   guardarFoto: (payload: { foto_url: string | null; foto_public_id: string | null }) =>
     api.patch<Usuario>('/me/foto', payload).then((r) => r.data),
 

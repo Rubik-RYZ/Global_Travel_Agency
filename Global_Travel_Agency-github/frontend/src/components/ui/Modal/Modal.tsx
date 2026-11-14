@@ -6,7 +6,7 @@ interface ModalProps {
   onCerrar: () => void
   titulo?: string
   children: ReactNode
-  /** Ancho del panel; por defecto `md` (max-w-lg). */
+
   ancho?: 'sm' | 'md' | 'lg' | 'xl'
 }
 

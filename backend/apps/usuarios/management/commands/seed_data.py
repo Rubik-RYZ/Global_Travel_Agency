@@ -1,17 +1,3 @@
-"""Comando `seed_data`: puebla datos iniciales realistas.
-
-Fase 0: roles + usuarios de prueba (administrador y cliente).
-Fase 3: destinos internacionales (con atributos comerciales e itinerario
-día a día) + proveedores de servicio.
-
-El comando es idempotente: usa `update_or_create`, de modo que volver a
-ejecutarlo refresca la ficha comercial de cada destino sin duplicar filas.
-
-Las láminas viven en `frontend/public/assets/` (viajan en el repositorio). Si
-además existe `backend/apps/catalogo/media_catalogo.json` —con los enlaces del
-almacén externo— el seed usa esas URLs, de modo que quien clone el repositorio
-ve las imágenes sin credenciales.
-"""
 import json
 from pathlib import Path
 
@@ -21,6 +7,7 @@ from django.db import transaction
 from apps.catalogo.models import Destino, ItinerarioDia, Proveedor
 from apps.usuarios.constants import (
     ROL_ADMINISTRADOR,
+    ROL_AGENTE,
     ROL_CLIENTE,
     ROLES_INICIALES,
 )
@@ -30,19 +17,12 @@ RUTA_MEDIA_CATALOGO = (
     Path(__file__).resolve().parents[3] / "catalogo" / "media_catalogo.json"
 )
 
-
 def cargar_media_catalogo() -> dict[str, dict]:
-    """Enlaces de las láminas ya subidas al almacén externo.
-
-    Devuelve un diccionario vacío si el archivo todavía no se ha generado, de
-    forma que el seed use siempre las rutas locales de `frontend/public/assets/`.
-    """
     try:
         with RUTA_MEDIA_CATALOGO.open(encoding="utf-8") as archivo:
             return json.load(archivo)
     except (OSError, ValueError):
         return {}
-
 
 DESTINOS_INICIALES = [
     {
@@ -392,7 +372,6 @@ PROVEEDORES_INICIALES = [
     },
 ]
 
-
 class Command(BaseCommand):
     help = "Puebla la BD con datos iniciales: roles, usuarios, destinos y proveedores."
 
@@ -400,7 +379,9 @@ class Command(BaseCommand):
     def handle(self, *args, **options):
         self._seed_roles()
         self._seed_admin()
+        self._seed_soporte()
         self._seed_cliente()
+        self._seed_ventanilla()
         self._seed_destinos()
         self._seed_proveedores()
         self.stdout.write(self.style.SUCCESS("seed_data completado."))
@@ -408,7 +389,7 @@ class Command(BaseCommand):
     def _seed_roles(self):
         for rol_id, nombre in ROLES_INICIALES:
             Rol.objects.update_or_create(id=rol_id, defaults={"nombre": nombre})
-        # Agente no esta en ROLES_INICIALES — asegurar que exista
+
         Rol.objects.get_or_create(id=2, defaults={"nombre": "agente"})
         self.stdout.write("  roles listos (administrador, agente, cliente)")
 
@@ -424,6 +405,28 @@ class Command(BaseCommand):
             self.stdout.write(f"  admin creado: {email} / Admin12345")
         else:
             self.stdout.write(f"  admin ya existia: {email}")
+
+    def _seed_soporte(self):
+        email = "soporte@illimanitravel.bo"
+        usuario, creado = Usuario.objects.get_or_create(
+            email=email,
+            defaults={"rol_id": ROL_ADMINISTRADOR, "activo": True},
+        )
+        if creado:
+            usuario.set_password("Soporte12345")
+            usuario.save(update_fields=["password"])
+            self.stdout.write(f"  soporte creado: {email} / Soporte12345")
+        else:
+            cambios = []
+            if usuario.rol_id != ROL_ADMINISTRADOR:
+                usuario.rol_id = ROL_ADMINISTRADOR
+                cambios.append("rol")
+            if not usuario.activo:
+                usuario.activo = True
+                cambios.append("activo")
+            if cambios:
+                usuario.save(update_fields=cambios)
+            self.stdout.write(f"  soporte ya existia: {email}")
 
     def _seed_cliente(self):
         email = "cliente@illimanitravel.bo"
@@ -450,14 +453,29 @@ class Command(BaseCommand):
         else:
             self.stdout.write(f"  cliente ya existia: {email}")
 
+    def _seed_ventanilla(self):
+        for numero in (1, 2):
+            email = f"ventanilla{numero}@illimanitravel.bo"
+            usuario, creado = Usuario.objects.get_or_create(
+                email=email,
+                defaults={"rol_id": ROL_AGENTE, "activo": True},
+            )
+            if creado:
+                usuario.set_password("Ventanilla12345")
+                usuario.save(update_fields=["password"])
+                self.stdout.write(
+                    f"  ventanilla{numero} creada: {email} / Ventanilla12345"
+                )
+            else:
+                self.stdout.write(f"  ventanilla{numero} ya existia: {email}")
+
     def _seed_destinos(self):
         creados = actualizados = dias = 0
         media = cargar_media_catalogo()
         for data in DESTINOS_INICIALES:
             payload = {k: v for k, v in data.items()
                        if k not in ("nombre", "pais", "itinerario")}
-            # Si las láminas ya se subieron al almacén, el seed guarda el enlace
-            # público (y su id) en lugar de la ruta local.
+
             enlace = media.get(data.get("imagen_principal") or "")
             if enlace:
                 payload["imagen_principal"] = enlace["url"]
@@ -498,7 +516,7 @@ class Command(BaseCommand):
         media = cargar_media_catalogo()
         for data in PROVEEDORES_INICIALES:
             payload = {k: v for k, v in data.items() if k != "nombre"}
-            # La lámina del prestador también puede vivir en el almacén externo.
+
             logo = payload.pop("logo", None)
             if logo:
                 enlace = media.get(logo)

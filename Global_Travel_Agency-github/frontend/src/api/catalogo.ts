@@ -1,6 +1,3 @@
-/**
- * API de catálogo — destinos, aeropuertos, proveedores (CU3).
- */
 import { api } from '@/lib/axios'
 
 export interface ItinerarioDia {
@@ -105,14 +102,10 @@ export interface FiltrosProveedor {
 }
 
 export const catalogoApi = {
-  // ── Destinos ────────────────────────────────────────────────────────────
+
   listarDestinos: (filtros: FiltrosDestino = {}) =>
     api.get<Paginado<DestinoResumen>>('/destinos/', { params: filtros }).then((r) => r.data),
 
-  /**
-   * Listado para el panel: el personal recibe el destino completo (con
-   * `activo`, `incluye`, `itinerario`…), a diferencia del resumen público.
-   */
   listarDestinosAdmin: (filtros: FiltrosDestino = {}) =>
     api.get<Paginado<Destino>>('/destinos/', { params: filtros }).then((r) => r.data),
 
@@ -133,11 +126,9 @@ export const catalogoApi = {
   toggleActivoDestino: (id: number) =>
     api.post<Destino>(`/destinos/${id}/toggle_activo/`).then((r) => r.data),
 
-  /** Reemplaza el diario de ruta (día a día) del destino. */
   definirItinerario: (id: number, dias: Omit<ItinerarioDia, 'id'>[]) =>
     api.put<ItinerarioDia[]>(`/destinos/${id}/itinerario/`, dias).then((r) => r.data),
 
-  // ── Proveedores ──────────────────────────────────────────────────────────
   listarProveedores: (filtros: FiltrosProveedor = {}) =>
     api.get<Paginado<Proveedor>>('/proveedores/', { params: filtros }).then((r) => r.data),
 

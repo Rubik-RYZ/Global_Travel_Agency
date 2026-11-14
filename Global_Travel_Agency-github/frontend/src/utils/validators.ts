@@ -1,4 +1,3 @@
-/** Helpers Zod comunes reutilizables en todos los formularios. */
 import { z } from 'zod'
 
 export const emailSchema = z
@@ -15,7 +14,6 @@ export const nombreSchema = z
   .min(1, 'Este campo es obligatorio.')
   .max(120, 'Máximo 120 caracteres.')
 
-/** Mensaje de error legible a partir de una respuesta de la API. */
 export function mensajeDeError(error: unknown): string {
   const err = error as {
     response?: { data?: { error?: string; detail?: unknown } }

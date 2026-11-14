@@ -1,7 +1,6 @@
 import { IconoPuerta } from '@/components/ui/Iconos'
 import { LoginForm } from '@/views/auth/components/LoginForm'
 
-/** 1. Iniciar sesión → /login */
 export function LoginView() {
   return (
     <div>

@@ -1,4 +1,3 @@
-/** Cliente HTTP del dominio de acceso, equipo y auditoría (CU1). */
 import { api } from '@/lib/axios'
 import type { Paginated } from '@/types/api.types'
 import type {

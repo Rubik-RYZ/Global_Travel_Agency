@@ -1,2 +1,4 @@
-﻿"""Permisos del dominio 'reportes' (se implementan en su sprint)."""
+﻿from apps.usuarios.permissions import EsAdministrador
 
+class EsAdministradorReportes(EsAdministrador):
+    message = "Solo el administrador puede acceder a los reportes gerenciales."

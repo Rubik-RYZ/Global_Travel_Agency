@@ -3,4 +3,3 @@
 router = DefaultRouter()
 
 urlpatterns = router.urls
-

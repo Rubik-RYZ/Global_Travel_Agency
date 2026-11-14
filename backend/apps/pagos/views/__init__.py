@@ -1,1 +1,8 @@
-"""Capa de presentación del dominio 'pagos' (se implementa en su sprint)."""
+from apps.pagos.views.pagos import (
+    BoletaPDFView,
+    PagoClienteView,
+    PagoListView,
+    VentaVentanillaView,
+)
+
+__all__ = ["BoletaPDFView", "PagoClienteView", "PagoListView", "VentaVentanillaView"]

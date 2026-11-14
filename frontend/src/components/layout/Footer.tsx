@@ -2,7 +2,6 @@ import { Link } from 'react-router-dom'
 
 import { RosaVientos } from '@/components/brand/RosaVientos'
 
-/** Continentes en el orden editorial del catálogo, con su nombre legible. */
 const REGIONES_FOOTER: Array<{ clave: string; nombre: string }> = [
   { clave: 'america_del_sur', nombre: 'América del Sur' },
   { clave: 'europa', nombre: 'Europa' },
@@ -17,17 +16,11 @@ const ENLACES_ATELIER = [
   { a: '/login', texto: 'Mi cuaderno de viaje' },
 ]
 
-/**
- * Pie editorial de 4 columnas: identidad de la casa, cuadernos por región,
- * el atelier y el despacho central. Sustituye al pie mínimo del Sprint 1.
- */
 export function Footer() {
   return (
     <footer className="border-t border-white/10 bg-secondary pb-12 pt-16 font-sans text-xs text-[#c9bfae]">
       <div className="mx-auto max-w-7xl px-6 lg:px-12">
-        {/* ── Retícula superior ─────────────────────────────────────────── */}
         <div className="grid grid-cols-1 gap-10 border-b border-white/10 pb-12 md:grid-cols-2 lg:grid-cols-12">
-          {/* Identidad */}
           <div className="lg:col-span-4">
             <div className="mb-4 flex items-center gap-3">
               <span className="flex h-8 w-8 items-center justify-center rounded-full border border-gold/50 bg-white/5 text-gold">
@@ -48,7 +41,6 @@ export function Footer() {
             </div>
           </div>
 
-          {/* Cuadernos de viaje */}
           <div className="lg:col-span-3">
             <h5 className="mb-4 font-sans text-[11px] font-bold uppercase tracking-[0.2em] text-on-secondary">
               Cuadernos de viaje
@@ -72,7 +64,6 @@ export function Footer() {
             </ul>
           </div>
 
-          {/* El Atelier */}
           <div className="lg:col-span-2">
             <h5 className="mb-4 font-sans text-[11px] font-bold uppercase tracking-[0.2em] text-on-secondary">
               El atelier
@@ -88,7 +79,6 @@ export function Footer() {
             </ul>
           </div>
 
-          {/* Despacho central */}
           <div className="lg:col-span-3">
             <h5 className="mb-4 font-sans text-[11px] font-bold uppercase tracking-[0.2em] text-on-secondary">
               Despacho central
@@ -118,7 +108,6 @@ export function Footer() {
           </div>
         </div>
 
-        {/* ── Barra inferior ────────────────────────────────────────────── */}
         <div className="flex flex-col items-center justify-between gap-4 pt-8 text-[11px] text-[#867b6d] sm:flex-row">
           <p>
             © {new Date().getFullYear()} Illimani Global Travel S.R.L. · La Paz, Bolivia. Todos los

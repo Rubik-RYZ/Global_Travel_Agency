@@ -1,4 +1,3 @@
-"""Rutas del dominio de catálogo (CU3 · CU4 · CU5 · CU6)."""
 from rest_framework.routers import DefaultRouter
 
 from apps.catalogo.views import (

@@ -1,4 +1,3 @@
-"""Serializadores para el dominio de paquetes turísticos y salidas programadas (CU6)."""
 from rest_framework import serializers
 
 from apps.catalogo.models import Paquete, PaqueteSalida
@@ -11,7 +10,6 @@ from apps.catalogo.services.paquetes import (
     crear_paquete,
     crear_salida,
 )
-
 
 class PaqueteSalidaSerializer(serializers.ModelSerializer):
     paquete_nombre = serializers.CharField(source="paquete.nombre", read_only=True)
@@ -32,7 +30,6 @@ class PaqueteSalidaSerializer(serializers.ModelSerializer):
             "cupos_totales",
             "cupos_disponibles",
         ]
-
 
 class PaqueteSalidaWriteSerializer(serializers.ModelSerializer):
     paquete_id = serializers.IntegerField(write_only=True)
@@ -67,7 +64,6 @@ class PaqueteSalidaWriteSerializer(serializers.ModelSerializer):
     def update(self, instance, validated_data):
         return actualizar_salida(instance.id, **validated_data)
 
-
 class PaqueteListSerializer(serializers.ModelSerializer):
     destino_nombre = serializers.CharField(source="destino.nombre", read_only=True)
     destino_pais = serializers.CharField(source="destino.pais", read_only=True)
@@ -97,7 +93,6 @@ class PaqueteListSerializer(serializers.ModelSerializer):
             "salidas_proximas_count",
         ]
 
-
 class PaqueteDetailSerializer(serializers.ModelSerializer):
     destino = DestinoResumenSerializer(read_only=True)
     hotel = HotelDetailSerializer(read_only=True)
@@ -120,7 +115,6 @@ class PaqueteDetailSerializer(serializers.ModelSerializer):
             "salidas",
             "itinerario",
         ]
-
 
 class PaqueteWriteSerializer(serializers.ModelSerializer):
     destino_id = serializers.IntegerField(write_only=True)
@@ -161,4 +155,3 @@ class PaqueteWriteSerializer(serializers.ModelSerializer):
 
     def update(self, instance, validated_data):
         return actualizar_paquete(instance.id, **validated_data)
-

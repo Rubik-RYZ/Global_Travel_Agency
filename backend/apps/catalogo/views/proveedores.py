@@ -1,4 +1,3 @@
-"""Capa de presentación del catálogo — proveedores (CU3)."""
 from django.core.exceptions import ValidationError as DjangoValidationError
 from rest_framework import status, viewsets
 from rest_framework.decorators import action
@@ -8,14 +7,7 @@ from apps.catalogo import services
 from apps.catalogo.permissions import EsAdmin
 from apps.catalogo.serializers import ProveedorSerializer
 
-
 class ProveedorViewSet(viewsets.ModelViewSet):
-    """
-    CRUD de proveedores.
-
-    Solo Admin/Agente pueden leer; solo Admin puede crear/editar.
-    """
-
     serializer_class = ProveedorSerializer
     permission_classes = [EsAdmin]
 

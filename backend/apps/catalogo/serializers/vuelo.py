@@ -1,4 +1,3 @@
-"""Serializadores para el dominio de vuelos (CU4)."""
 from rest_framework import serializers
 
 from apps.catalogo.models import Aeropuerto, Proveedor, Vuelo
@@ -6,10 +5,7 @@ from apps.catalogo.serializers.aeropuerto import AeropuertoSerializer
 from apps.catalogo.serializers.proveedor import ProveedorSerializer
 from apps.catalogo.services.vuelos import crear_vuelo, actualizar_vuelo
 
-
 class VueloListSerializer(serializers.ModelSerializer):
-    """Representación enriquecida para listados y vistas administrativas."""
-
     proveedor_nombre = serializers.CharField(source="proveedor.nombre", read_only=True)
     origen_codigo = serializers.CharField(source="origen.codigo_iata", read_only=True)
     origen_nombre = serializers.CharField(source="origen.nombre", read_only=True)
@@ -38,7 +34,6 @@ class VueloListSerializer(serializers.ModelSerializer):
             "referencia_externa",
         ]
 
-
 class VueloDetailSerializer(serializers.ModelSerializer):
     proveedor = ProveedorSerializer(read_only=True)
     origen = AeropuertoSerializer(read_only=True)
@@ -60,7 +55,6 @@ class VueloDetailSerializer(serializers.ModelSerializer):
             "cupos_disponibles",
             "referencia_externa",
         ]
-
 
 class VueloWriteSerializer(serializers.ModelSerializer):
     proveedor_id = serializers.IntegerField(write_only=True)
@@ -105,4 +99,3 @@ class VueloWriteSerializer(serializers.ModelSerializer):
 
     def update(self, instance, validated_data):
         return actualizar_vuelo(instance.id, **validated_data)
-

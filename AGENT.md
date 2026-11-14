@@ -22,7 +22,7 @@ El equipo trabaja en 4 sprints de desarrollo (S2–S5). La base de datos ya est�
 **Emails**: Resend (llamadas síncronas — sin Celery, sin Redis)  
 **Moneda**: ExchangeRate-API (BOB/USD, free tier)  
 **Aeropuertos**: OurAirports CSV (carga única con management command)  
-**IA/NLP**: scikit-learn — pipeline TF-IDF + LogisticRegression, 7 intents  
+**IA/NLP**: scikit-learn — pipeline TF-IDF + LogisticRegression, 27 intenciones por rol  
 **Mapas**: Leaflet + OpenStreetMap (sin costo)
 
 **Frontend**: React 18 · TypeScript · Vite  
@@ -336,7 +336,7 @@ Antes de implementar los siguientes puntos, proponer opciones al equipo:
 
 - **[PUERTA-1] React Query vs hook useFetch**: Si el modelo tiene dificultades generando código correcto con TanStack Query, reemplazar por un hook `useFetch` simple basado en `useEffect`.
 - **[PUERTA-2] Webhook Stripe en desarrollo**: Requiere CLI de Stripe corriendo en local. Evaluar si se simula o se deja para staging.
-- **[PUERTA-3] Modelo IA para recomendaciones (CU11)**: Filtro colaborativo (usuarios similares) vs content-based (preferencias del perfil). Impacta el diseño de `modelos_ia`.
+- **[PUERTA-3] Modelo IA para recomendaciones (CU11)** — RESUELTA: híbrido de contenido (intereses, presupuesto, salidas, popularidad) + historial del cliente (reservas y aceptaciones), con versiones activables en `modelos_ia`.
 - **[PUERTA-4] Exportación de reportes (CU12)**: ¿Backend genera PDF/Excel (`reportlab`, `openpyxl`) o el frontend renderiza la tabla y el usuario exporta desde el navegador?
 - **[PUERTA-5] Persistencia del modelo NLP**: ¿Guardar modelo entrenado como archivo `.joblib` y cargarlo al iniciar Django, o reentrenar en cada deploy? La primera opción es más eficiente.
 - **[PUERTA-6] Mapas**: ¿Mostrar solo ubicación del destino o también ruta origen→destino del vuelo?

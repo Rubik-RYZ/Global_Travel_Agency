@@ -6,12 +6,16 @@ import { Link, Outlet, useLocation } from 'react-router-dom'
 import { Footer } from '@/components/layout/Footer'
 import { PerfilMenu } from '@/components/layout/PerfilMenu'
 import {
+  IconoChat,
   IconoChevron,
+  IconoDescarga,
+  IconoDestello,
   IconoEdificio,
   IconoEscudo,
   IconoFlechaDerecha,
   IconoMaletin,
   IconoModulos,
+  IconoMoneda,
   IconoPersona,
   IconoPortapapeles,
   IconoSello,
@@ -27,7 +31,7 @@ interface Modulo {
   icono: ReactNode
   fin?: boolean
   soloAdmin?: boolean
-  /** Ruta aún no implementada (CU3): se muestra deshabilitada. */
+
   proximo?: boolean
 }
 
@@ -60,9 +64,30 @@ const MODULOS: Modulo[] = [
     soloAdmin: true,
   },
   {
+    a: '/admin/reportes',
+    titulo: 'Reportes gerenciales',
+    descripcion: 'Ventas, ingresos, ocupación y exportación CSV',
+    icono: <IconoDescarga className="h-4 w-4" />,
+    soloAdmin: true,
+  },
+  {
+    a: '/admin/asistente-ia',
+    titulo: 'Asistente IA',
+    descripcion: 'Intenciones, frases y reentrenamiento del chatbot',
+    icono: <IconoChat className="h-4 w-4" />,
+    soloAdmin: true,
+  },
+  {
+    a: '/admin/recomendaciones',
+    titulo: 'Recomendaciones',
+    descripcion: 'Calidad del recomendador y aceptación de sugerencias',
+    icono: <IconoDestello className="h-4 w-4" />,
+    soloAdmin: true,
+  },
+  {
     a: '/admin/destinos',
     titulo: 'Destinos',
-    descripcion: 'Catálogo de destinos y paquetes turísticos',
+    descripcion: 'Cat��logo de destinos y paquetes tur��sticos',
     icono: <IconoUbicacion className="h-4 w-4" />,
   },
   {
@@ -102,16 +127,18 @@ const MODULOS: Modulo[] = [
     descripcion: 'Control de ventas, expedientes y manifiestos',
     icono: <IconoPortapapeles className="h-4 w-4" />,
   },
+  {
+    a: '/admin/pagos',
+    titulo: 'Libro de pagos',
+    descripcion: 'Cobros, estados, métodos y boletas del viajero',
+    icono: <IconoMoneda className="h-4 w-4" />,
+  },
 ]
 
 function coincideRuta(pathname: string, m: Modulo): boolean {
   if (m.proximo) return false
   return m.fin ? pathname === m.a : pathname === m.a || pathname.startsWith(`${m.a}/`)
 }
-
-/* -------------------------------------------------------------------------- */
-/* Selector de módulo (desplegable)                                           */
-/* -------------------------------------------------------------------------- */
 
 function SelectorModulos({ modulos, actual }: { modulos: Modulo[]; actual: Modulo }) {
   const [abierto, setAbierto] = useState(false)
@@ -238,17 +265,6 @@ function SelectorModulos({ modulos, actual }: { modulos: Modulo[]; actual: Modul
   )
 }
 
-/* -------------------------------------------------------------------------- */
-/* Marco del panel                                                            */
-/* -------------------------------------------------------------------------- */
-
-/**
- * Panel interno (administrador y agente).
- *
- * Sustituye la clásica barra lateral por una **barra superior con un menú
- * desplegable de módulos**, que además muestra el módulo activo como migas de
- * pan. La credencial de sesión vive en `PerfilMenu`.
- */
 export function AdminLayout() {
   const usuario = useAuthStore((s) => s.usuario)
   const { pathname } = useLocation()
@@ -261,7 +277,6 @@ export function AdminLayout() {
 
   return (
     <div className="flex min-h-screen flex-col bg-surface">
-      {/* Franja de contexto */}
       <div className="bg-secondary text-on-secondary">
         <div className="mx-auto flex max-w-7xl items-center justify-between gap-4 px-6 py-2">
           <span className="coord inline-flex items-center gap-2 text-gold">
@@ -274,7 +289,6 @@ export function AdminLayout() {
         </div>
       </div>
 
-      {/* Barra superior */}
       <header className="sticky top-0 z-40 border-b border-parchment-border bg-surface/90 backdrop-blur">
         <div className="mx-auto flex max-w-7xl items-center justify-between gap-4 px-6 py-3">
           <Link to="/admin" className="flex flex-col leading-none">
@@ -288,7 +302,6 @@ export function AdminLayout() {
         </div>
       </header>
 
-      {/* Migas de pan del módulo */}
       <div className="border-b border-parchment-border bg-surface-container-low">
         <div className="mx-auto flex max-w-7xl items-center gap-2 px-6 py-2.5">
           <span className="coord text-on-surface-variant">Panel de gestión</span>
