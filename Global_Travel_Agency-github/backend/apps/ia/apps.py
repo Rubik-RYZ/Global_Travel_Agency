@@ -1,7 +1,0 @@
-﻿from django.apps import AppConfig
-
-class IaConfig(AppConfig):
-    default_auto_field = "django.db.models.BigAutoField"
-    name = "apps.ia"
-    label = "ia"
-    verbose_name = "Asistente conversacional y recomendaciones"
