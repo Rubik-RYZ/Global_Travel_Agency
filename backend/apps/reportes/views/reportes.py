@@ -1,4 +1,3 @@
-"""Endpoints de reportes gerenciales (CU12)."""
 from datetime import timedelta
 
 from django.http import HttpResponse
@@ -19,7 +18,6 @@ from apps.reservas.models import Reserva
 AGRUPACIONES = {"dia", "semana", "mes"}
 CANALES = {Reserva.CANAL_WEB, Reserva.CANAL_AGENTE, Reserva.CANAL_PERSONAL}
 
-
 def _fecha(valor, campo: str):
     if not valor:
         return None
@@ -28,10 +26,7 @@ def _fecha(valor, campo: str):
         raise ValidationError({campo: "Use el formato YYYY-MM-DD."})
     return fecha
 
-
 class ReporteVentasView(APIView):
-    """Ventas, ingresos y desgloses por periodo, canal, paquete y empleado."""
-
     permission_classes = [EsAdministradorReportes]
 
     def get(self, request):
@@ -71,10 +66,7 @@ class ReporteVentasView(APIView):
             )
         )
 
-
 class ReporteOcupacionView(APIView):
-    """Ocupacion de las salidas programadas dentro del rango solicitado."""
-
     permission_classes = [EsAdministradorReportes]
 
     def get(self, request):

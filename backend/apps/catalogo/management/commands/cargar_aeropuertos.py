@@ -1,7 +1,5 @@
-"""Comando para poblar aeropuertos clave vinculados a destinos (CU3 / CU4)."""
 from django.core.management.base import BaseCommand
 from apps.catalogo.models import Aeropuerto, Destino
-
 
 AEROPUERTOS_SEED = [
     {"codigo_iata": "LPB", "nombre": "Aeropuerto Internacional El Alto", "destino_nombre": "Tiwanaku"},
@@ -17,7 +15,6 @@ AEROPUERTOS_SEED = [
     {"codigo_iata": "FTE", "nombre": "Aeropuerto Internacional Comandante Armando Tola (El Calafate)", "destino_nombre": "Patagonia Austral"},
     {"codigo_iata": "EZE", "nombre": "Aeropuerto Internacional Ministro Pistarini (Ezeiza)", "destino_nombre": "Patagonia Austral"},
 ]
-
 
 class Command(BaseCommand):
     help = "Carga aeropuertos iniciales vinculados a destinos"
@@ -46,4 +43,3 @@ class Command(BaseCommand):
                 actualizados += 1
 
         self.stdout.write(self.style.SUCCESS(f"Aeropuertos cargados: {creados} creados, {actualizados} actualizados."))
-

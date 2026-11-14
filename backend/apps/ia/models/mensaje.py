@@ -1,10 +1,6 @@
-"""Mensaje intercambiado en una conversación (CU10)."""
 from django.db import models
 
-
 class Mensaje(models.Model):
-    """Turno de usuario o del agente con su intención y entidades extraídas."""
-
     EMISOR_USUARIO = "usuario"
     EMISOR_AGENTE = "agente"
     EMISOR_CHOICES = [

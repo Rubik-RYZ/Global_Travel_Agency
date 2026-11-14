@@ -1,8 +1,6 @@
-"""Capa de esquema — bitácora de auditoría (CU1)."""
 from rest_framework import serializers
 
 from apps.usuarios.models import Auditoria
-
 
 class AuditoriaSerializer(serializers.ModelSerializer):
     usuario_email = serializers.CharField(

@@ -1,17 +1,10 @@
-"""Handler global de excepciones DRF.
-
-Garantiza que toda respuesta de error de la API tenga la forma:
-    { "error": "<mensaje>", "code": "<código>" }
-y conserva el detalle original (validaciones por campo) en `detail`.
-"""
 from rest_framework.views import exception_handler
-
 
 def api_exception_handler(exc, context):
     response = exception_handler(exc, context)
 
     if response is None:
-        # Excepción no manejada por DRF: dejar que Django la procese.
+
         return None
 
     data = response.data

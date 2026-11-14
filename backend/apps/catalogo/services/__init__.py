@@ -1,4 +1,3 @@
-"""Capa de negocio del catálogo turístico (CU3). Re-exporta los servicios."""
 from apps.catalogo.services.destinos import (
     CAMPOS_DESTINO,
     actualizar_destino,

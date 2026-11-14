@@ -23,9 +23,6 @@ import {
   nombrePais,
 } from '@/lib/editorial'
 
-/* ── Piezas cartográficas ──────────────────────────────────────────────────── */
-
-/** Retícula de latitudes y longitudes que da textura de archivo al atlas. */
 function ReticulaCartografica() {
   return (
     <svg className="h-full w-full text-outline-variant/30" aria-hidden>
@@ -46,7 +43,6 @@ function ReticulaCartografica() {
   )
 }
 
-/** Sello de registro del encabezado (tinta desfasada, como un archivo). */
 function SelloRegistro() {
   return (
     <div
@@ -64,7 +60,6 @@ function SelloRegistro() {
   )
 }
 
-/** Matasellos circular de cada lámina: país, latitud y sello de origen. */
 function SelloDestino({ destino }: { destino: DestinoResumen }) {
   const lat = latitudCorta(destino.latitud)
   const codigo = destino.pais_codigo ?? 'EXP'
@@ -87,8 +82,6 @@ function SelloDestino({ destino }: { destino: DestinoResumen }) {
     </div>
   )
 }
-
-/* ── Filtros ───────────────────────────────────────────────────────────────── */
 
 interface ChipProps {
   activo: boolean
@@ -118,8 +111,6 @@ function Chip({ activo, onClick, children, tono = 'primary' }: ChipProps) {
   )
 }
 
-/* ── Lámina de destino ─────────────────────────────────────────────────────── */
-
 function LaminaDestino({ destino, indice }: { destino: DestinoResumen; indice: number }) {
   const nota = NOTA_MANO[destino.slug ?? ''] ?? destino.region_display ?? 'Ruta de autor'
   const region = destino.region
@@ -135,7 +126,6 @@ function LaminaDestino({ destino, indice }: { destino: DestinoResumen; indice: n
       transition={{ delay: 0.04 + indice * 0.06, duration: 0.45, ease: 'easeOut' }}
       className="group relative flex flex-col overflow-hidden rounded-xl bg-surface-container-lowest/80 p-4 shadow-[0_4px_24px_rgba(45,59,50,0.06)] backdrop-blur-sm transition-all duration-500 hover:-translate-y-1.5 hover:shadow-[0_18px_44px_rgba(45,59,50,0.12)]"
     >
-      {/* Anotación manuscrita que se asoma sobre la foto */}
       <div
         className={`pointer-events-none absolute left-6 top-4 z-20 select-none ${rotacion}`}
       >
@@ -146,7 +136,6 @@ function LaminaDestino({ destino, indice }: { destino: DestinoResumen; indice: n
 
       <SelloDestino destino={destino} />
 
-      {/* Lámina 4/5 */}
       <div className="relative mb-4 aspect-[4/5] w-full overflow-hidden rounded-xl bg-surface-container shadow-inner">
         {destino.imagen_principal ? (
           <img
@@ -162,7 +151,6 @@ function LaminaDestino({ destino, indice }: { destino: DestinoResumen; indice: n
         )}
         <div className="absolute inset-0 bg-gradient-to-t from-inverse-surface/60 via-transparent to-transparent opacity-60" />
 
-        {/* Píldora de duración */}
         {destino.duracion_dias && (
           <div className="absolute bottom-3 left-3 flex items-center gap-1 rounded-full bg-surface/95 px-2.5 py-1 shadow-sm backdrop-blur-sm">
             <IconoReloj className="h-3 w-3 text-tertiary" />
@@ -173,7 +161,6 @@ function LaminaDestino({ destino, indice }: { destino: DestinoResumen; indice: n
         )}
       </div>
 
-      {/* Ficha editorial */}
       <div className="flex flex-1 flex-col">
         <div className="mb-1 flex items-center justify-between gap-2 text-secondary">
           <span className="coord uppercase tracking-widest">{region}</span>
@@ -205,8 +192,6 @@ function LaminaDestino({ destino, indice }: { destino: DestinoResumen; indice: n
   )
 }
 
-/* ── Expedición insignia (panorama partido) ────────────────────────────────── */
-
 function ExpedicionInsignia({ destinos }: { destinos: DestinoResumen[] }) {
   const salar = destinos.find((d) => d.slug === 'salar-de-uyuni-bolivia')
   const tiwanaku = destinos.find((d) => d.slug === 'tiwanaku-bolivia')
@@ -228,7 +213,6 @@ function ExpedicionInsignia({ destinos }: { destinos: DestinoResumen[] }) {
       className="mt-16 overflow-hidden rounded-2xl bg-surface-container-low/95 shadow-[0_6px_30px_rgba(45,59,50,0.06)] backdrop-blur-md"
     >
       <div className="grid grid-cols-1 items-stretch lg:grid-cols-12">
-        {/* Panorama */}
         <div className="relative min-h-[380px] overflow-hidden bg-surface-container lg:col-span-7 lg:min-h-[460px]">
           {salar.imagen_principal && (
             <img
@@ -256,7 +240,6 @@ function ExpedicionInsignia({ destinos }: { destinos: DestinoResumen[] }) {
           </div>
         </div>
 
-        {/* Dossier */}
         <div className="flex flex-col justify-between p-7 lg:col-span-5 lg:p-10">
           <div>
             <div className="mb-3 flex items-center justify-between gap-3">
@@ -324,9 +307,6 @@ function ExpedicionInsignia({ destinos }: { destinos: DestinoResumen[] }) {
   )
 }
 
-/* ── Vista principal ───────────────────────────────────────────────────────── */
-
-/** #15 Explorar destinos — /destinos */
 export function ExplorarDestinosView() {
   const [params, setParams] = useSearchParams()
   const catalogo = useCuadernoDestinos()
@@ -341,7 +321,6 @@ export function ExplorarDestinosView() {
   const [total, setTotal] = useState(0)
   const [cargando, setCargando] = useState(true)
 
-  // Mantiene el campo de búsqueda sincronizado con la URL (llegadas desde la portada).
   useEffect(() => {
     setBusqueda(q)
   }, [q])
@@ -388,8 +367,6 @@ export function ExplorarDestinosView() {
     setParams({})
   }
 
-  // Regiones presentes en el catálogo completo (no en el resultado filtrado),
-  // para que las barras no se vacíen al aplicar un filtro.
   const regiones = useMemo(() => {
     const base = catalogo.length ? catalogo : destinos
     const claves = Array.from(
@@ -413,7 +390,6 @@ export function ExplorarDestinosView() {
 
   return (
     <div className="relative min-h-screen overflow-hidden bg-[#fdfbf7] pb-24">
-      {/* Textura de archivo cartográfico */}
       <div
         aria-hidden
         className="pointer-events-none absolute inset-0 select-none opacity-40 mix-blend-multiply"
@@ -425,7 +401,6 @@ export function ExplorarDestinosView() {
       </div>
 
       <div className="relative z-10 mx-auto max-w-7xl px-6 lg:px-12">
-        {/* ── 1. Encabezado editorial ──────────────────────────────────────── */}
         <header className="relative mx-auto mb-12 max-w-3xl pt-14 text-center">
           <SelloRegistro />
 
@@ -462,12 +437,10 @@ export function ExplorarDestinosView() {
           )}
         </header>
 
-        {/* ── 2. Barra de expedición ───────────────────────────────────────── */}
         <nav
           aria-label="Filtros de expedición"
           className="mb-12 rounded-xl bg-surface-container-low/90 p-5 shadow-[0_2px_12px_rgba(45,59,50,0.04)] backdrop-blur-md"
         >
-          {/* Búsqueda + recuento */}
           <div className="mb-4 flex flex-col gap-3 border-b border-outline-variant/40 pb-4 sm:flex-row sm:items-center sm:justify-between">
             <form onSubmit={aplicarBusqueda} className="relative w-full sm:max-w-xs">
               <IconoLupa className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-on-surface-variant/60" />
@@ -513,7 +486,6 @@ export function ExplorarDestinosView() {
             </div>
           </div>
 
-          {/* Dos raíles de filtros */}
           <div className="flex flex-col gap-5 lg:flex-row lg:items-start lg:justify-between">
             <div className="flex flex-col gap-2">
               <div className="flex items-center gap-1.5 text-on-surface-variant">
@@ -575,7 +547,6 @@ export function ExplorarDestinosView() {
           </div>
         </nav>
 
-        {/* ── 3. Galería de destinos ───────────────────────────────────────── */}
         {cargando ? (
           <div className="grid grid-cols-1 gap-8 md:grid-cols-2 lg:grid-cols-3 lg:gap-10">
             {Array.from({ length: 6 }).map((_, i) => (
@@ -612,12 +583,10 @@ export function ExplorarDestinosView() {
           </main>
         )}
 
-        {/* ── 4. Expedición insignia ───────────────────────────────────────── */}
         {!hayFiltros && !cargando && (
           <ExpedicionInsignia destinos={catalogo.length ? catalogo : destinos} />
         )}
 
-        {/* ── 5. Pie de curador ────────────────────────────────────────────── */}
         <section className="mt-16 flex flex-col items-center justify-between gap-5 rounded-xl bg-surface-container/60 p-6 md:flex-row">
           <div className="flex items-center gap-4">
             <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-secondary-container text-on-secondary-container">

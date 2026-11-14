@@ -1,12 +1,8 @@
-"""Modelo de habitaciones por hotel (CU5)."""
 from django.core.exceptions import ValidationError
 from django.db import models
 from django.db.models import CheckConstraint, Q
 
-
 class Habitacion(models.Model):
-    """Tipología de habitación ofertada en un hotel."""
-
     MONEDA_CHOICES = [
         ("BOB", "Bolivianos"),
         ("USD", "Dólares estadounidenses"),
@@ -49,4 +45,3 @@ class Habitacion(models.Model):
 
     def __str__(self):
         return f"{self.tipo} ({self.capacidad} pers.) - {self.hotel.nombre}"
-

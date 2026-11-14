@@ -1,4 +1,3 @@
-/** Variantes reutilizables de Framer Motion. */
 import type { Variants } from 'framer-motion'
 
 export const fadeIn: Variants = {

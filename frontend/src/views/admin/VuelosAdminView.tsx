@@ -23,19 +23,16 @@ export function VuelosAdminView() {
   const [error, setError] = useState<string | null>(null)
   const [aviso, setAviso] = useState<string | null>(null)
 
-  // Filtros
   const [filtroOrigen, setFiltroOrigen] = useState('')
   const [filtroDestino, setFiltroDestino] = useState('')
   const [filtroAerolinea, setFiltroAerolinea] = useState<string>('')
   const [busqueda, setBusqueda] = useState('')
 
-  // Modal formulario
   const [modalAbierto, setModalAbierto] = useState(false)
   const [editando, setEditando] = useState<Vuelo | null>(null)
   const [ocupado, setOcupado] = useState(false)
   const [errorForm, setErrorForm] = useState<string | null>(null)
 
-  // Campos del formulario
   const [formProveedorId, setFormProveedorId] = useState<number | ''>('')
   const [formNumero, setFormNumero] = useState('')
   const [formOrigen, setFormOrigen] = useState('')
@@ -179,7 +176,6 @@ export function VuelosAdminView() {
     }
   }
 
-  // Métricas
   const totalCupos = useMemo(
     () => vuelos.reduce((acc, v) => acc + (v.cupos_disponibles || 0), 0),
     [vuelos]
@@ -187,7 +183,6 @@ export function VuelosAdminView() {
 
   return (
     <div className="space-y-8">
-      {/* Encabezado */}
       <header className="border-b border-[#231a13]/10 pb-6">
         <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
           <div>
@@ -212,7 +207,6 @@ export function VuelosAdminView() {
           </Button>
         </div>
 
-        {/* Tarjetas informativas de bitácora */}
         <div className="mt-6 grid grid-cols-1 gap-4 sm:grid-cols-3">
           <div className="rounded-xl border border-[#231a13]/10 bg-white/70 p-4 shadow-sm backdrop-blur">
             <div className="text-xs uppercase tracking-wider text-[#231a13]/60">Vuelos en Sistema</div>
@@ -232,7 +226,6 @@ export function VuelosAdminView() {
         </div>
       </header>
 
-      {/* Avisos */}
       {aviso && (
         <div className="flex items-center justify-between rounded-lg border border-[#1b261d]/20 bg-[#1b261d]/5 px-4 py-3 text-sm text-[#141d16]">
           <span>{aviso}</span>
@@ -248,7 +241,6 @@ export function VuelosAdminView() {
         </div>
       )}
 
-      {/* Filtros de búsqueda */}
       <div className="grid grid-cols-1 gap-3 rounded-xl border border-[#231a13]/10 bg-[#faf5eb] p-4 sm:grid-cols-4">
         <div>
           <label className="text-xs font-semibold uppercase text-[#231a13]/70">Origen</label>
@@ -313,7 +305,6 @@ export function VuelosAdminView() {
         </div>
       </div>
 
-      {/* Tabla de vuelos */}
       <div className="overflow-hidden rounded-xl border border-[#231a13]/10 bg-white shadow-sm">
         <table className="min-w-full divide-y divide-[#231a13]/10 text-left text-sm">
           <thead className="bg-[#faf5eb] font-serif text-xs uppercase tracking-wider text-[#231a13]/70">
@@ -425,7 +416,6 @@ export function VuelosAdminView() {
         </table>
       </div>
 
-      {/* Modal Crear / Editar */}
       {modalAbierto && (
         <Modal
           abierto={modalAbierto}

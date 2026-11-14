@@ -1,12 +1,8 @@
-"""Modelo de hoteles asociados a destinos (CU5)."""
 from django.core.exceptions import ValidationError
 from django.db import models
 from django.db.models import CheckConstraint, Q
 
-
 class Hotel(models.Model):
-    """Establecimiento de hospedaje contratado para los paquetes turísticos."""
-
     proveedor = models.ForeignKey(
         "catalogo.Proveedor",
         on_delete=models.PROTECT,
@@ -63,4 +59,3 @@ class Hotel(models.Model):
     def __str__(self):
         estrellas_str = f" ({'★' * self.estrellas})" if self.estrellas else ""
         return f"{self.nombre}{estrellas_str} · {self.destino.nombre}"
-

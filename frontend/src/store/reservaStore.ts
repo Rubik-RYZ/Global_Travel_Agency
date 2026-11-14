@@ -1,7 +1,3 @@
-/**
- * Estado del flujo multi-paso de reserva (CU7).
- * Conserva el progreso entre Selección (#27) -> Pasajeros (#28) -> Confirmación (#29).
- */
 import { create } from 'zustand'
 import { persist } from 'zustand/middleware'
 import type { Pasajero, Reserva } from '@/types/reserva.types'

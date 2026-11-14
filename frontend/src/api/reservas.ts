@@ -1,6 +1,3 @@
-/**
- * Servicios de API para Reservas, Itinerarios y Notificaciones (CU7 · CU8).
- */
 import { api } from '@/lib/axios'
 import type {
   CrearReservaPayload,
@@ -26,7 +23,7 @@ export interface FiltrosReserva {
 }
 
 export const reservasApi = {
-  // ── CU7: Reservas ────────────────────────────────────────────────────────
+
   listarReservas: (filtros: FiltrosReserva = {}) =>
     api.get<Paginado<Reserva>>('/reservas/', { params: filtros }).then((r) => r.data),
 
@@ -39,7 +36,6 @@ export const reservasApi = {
   cancelarReserva: (id: number) =>
     api.post<Reserva>(`/reservas/${id}/cancelar/`).then((r) => r.data),
 
-  // ── CU8: Itinerarios ─────────────────────────────────────────────────────
   obtenerItinerario: (id: number) =>
     api.get<Itinerario>(`/itinerarios/${id}/`).then((r) => r.data),
 
@@ -49,7 +45,6 @@ export const reservasApi = {
   editarActividadesItinerario: (itinerarioId: number, items: ItinerarioItem[]) =>
     api.put<Itinerario>(`/itinerarios/${itinerarioId}/editar_actividades/`, { items }).then((r) => r.data),
 
-  // ── CU8: Notificaciones ──────────────────────────────────────────────────
   listarNotificaciones: () =>
     api.get<Paginado<Notificacion>>('/notificaciones/').then((r) => r.data),
 }

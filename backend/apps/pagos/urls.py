@@ -1,5 +1,4 @@
-﻿"""Rutas del dominio de pagos (CU9)."""
-from django.urls import path
+﻿from django.urls import path
 
 from apps.pagos.views import (
     BoletaPDFView,

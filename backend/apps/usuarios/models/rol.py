@@ -1,10 +1,6 @@
-"""Rol del sistema (CU1)."""
 from django.db import models
 
-
 class Rol(models.Model):
-    """Catálogo fijo de roles (administrador, agente, cliente)."""
-
     id = models.SmallIntegerField(primary_key=True)
     nombre = models.TextField(unique=True)
 

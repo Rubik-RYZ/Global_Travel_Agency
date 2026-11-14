@@ -48,7 +48,6 @@ export function CatalogoPaquetesView() {
   return (
     <div className="min-h-screen bg-[#faf5eb] py-12 px-4 sm:px-6 lg:px-8">
       <div className="mx-auto max-w-7xl">
-        {/* Cabecera Editorial Terranova */}
         <div className="text-center max-w-3xl mx-auto">
           <div className="text-xs font-semibold uppercase tracking-widest text-[#792609]">
             Expediciones y Travesías Diseñadas
@@ -62,7 +61,6 @@ export function CatalogoPaquetesView() {
           </p>
         </div>
 
-        {/* Barra de Filtros */}
         <div className="mt-10 grid grid-cols-1 gap-4 sm:grid-cols-3 rounded-2xl border border-[#231a13]/10 bg-white p-4 shadow-sm">
           <div className="sm:col-span-2 relative">
             <input
@@ -91,14 +89,12 @@ export function CatalogoPaquetesView() {
           </div>
         </div>
 
-        {/* Mensaje de error */}
         {error && (
           <div className="mt-6 rounded-xl border border-red-200 bg-red-50 p-4 text-sm text-red-700">
             {error}
           </div>
         )}
 
-        {/* Listado de Paquetes */}
         <div className="mt-10">
           {cargando ? (
             <div className="py-20 text-center text-[#231a13]/50 font-serif">
@@ -116,7 +112,6 @@ export function CatalogoPaquetesView() {
                   className="flex flex-col justify-between overflow-hidden rounded-2xl border border-[#231a13]/10 bg-white shadow-sm transition-all hover:shadow-md hover:-translate-y-1"
                 >
                   <div>
-                    {/* Imagen de destino si existe */}
                     {p.destino_imagen_principal ? (
                       <div className="h-48 w-full overflow-hidden bg-[#231a13]/5">
                         <img

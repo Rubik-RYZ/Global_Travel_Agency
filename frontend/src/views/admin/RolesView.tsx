@@ -11,7 +11,6 @@ import { ROLES, etiquetaRol } from '@/utils/roles'
 import { mensajeDeError } from '@/utils/validators'
 import { UsuarioFormModal } from '@/views/admin/components/UsuarioFormModal'
 
-/** 8. Panel · Equipo y accesos → /admin/roles */
 export function RolesView() {
   const [roles, setRoles] = useState<Rol[]>([])
   const [usuarios, setUsuarios] = useState<UsuarioEquipo[]>([])
@@ -50,8 +49,6 @@ export function RolesView() {
 
   const activos = usuarios.filter((u) => u.activo).length
 
-  // «Equipo y accesos» solo gestiona cuentas internas: el rol `cliente` no se
-  // ofrece aquí (sus cuentas se crean por registro y su ficha vive en Viajeros).
   const rolesEquipo = useMemo(
     () => roles.filter((r) => r.nombre !== ROLES.CLIENTE),
     [roles],
@@ -76,7 +73,6 @@ export function RolesView() {
         </Button>
       </header>
 
-      {/* Cifras rápidas */}
       <div className="mb-6 grid gap-4 sm:grid-cols-3">
         <div className="rounded-lg border border-parchment-border bg-surface-container-lowest px-5 py-4 shadow-paper">
           <p className="coord">Total cuentas</p>
@@ -127,8 +123,6 @@ export function RolesView() {
     </div>
   )
 }
-
-/* -------------------------------------------------------------------------- */
 
 function TarjetaUsuario({
   usuario,

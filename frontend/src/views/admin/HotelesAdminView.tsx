@@ -30,17 +30,14 @@ export function HotelesAdminView() {
   const [error, setError] = useState<string | null>(null)
   const [aviso, setAviso] = useState<string | null>(null)
 
-  // Filtros
   const [filtroDestino, setFiltroDestino] = useState('')
   const [filtroProveedor, setFiltroProveedor] = useState('')
   const [busqueda, setBusqueda] = useState('')
 
-  // Hotel seleccionado para ver/administrar habitaciones
   const [hotelSeleccionado, setHotelSeleccionado] = useState<Hotel | null>(null)
   const [habitaciones, setHabitaciones] = useState<Habitacion[]>([])
   const [cargandoHabitaciones, setCargandoHabitaciones] = useState(false)
 
-  // Modal Hotel
   const [modalHotelAbierto, setModalHotelAbierto] = useState(false)
   const [editandoHotel, setEditandoHotel] = useState<Hotel | null>(null)
   const [errorHotel, setErrorHotel] = useState<string | null>(null)
@@ -52,7 +49,6 @@ export function HotelesAdminView() {
   const [formHotelDescripcion, setFormHotelDescripcion] = useState('')
   const [formHotelActivo, setFormHotelActivo] = useState(true)
 
-  // Modal Habitación
   const [modalHabAbierto, setModalHabAbierto] = useState(false)
   const [editandoHab, setEditandoHab] = useState<Habitacion | null>(null)
   const [errorHab, setErrorHab] = useState<string | null>(null)
@@ -107,7 +103,6 @@ export function HotelesAdminView() {
     cargarHabitaciones(hotel.id)
   }
 
-  // Manejo Hotel
   const abrirModalNuevoHotel = () => {
     setEditandoHotel(null)
     setFormHotelProveedor(proveedoresHotel[0]?.id || '')
@@ -183,7 +178,6 @@ export function HotelesAdminView() {
     }
   }
 
-  // Manejo Habitación
   const abrirModalNuevaHab = () => {
     if (!hotelSeleccionado) return
     setEditandoHab(null)
@@ -251,7 +245,6 @@ export function HotelesAdminView() {
 
   return (
     <div className="space-y-8">
-      {/* Encabezado */}
       <header className="border-b border-[#231a13]/10 pb-6">
         <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
           <div>
@@ -277,7 +270,6 @@ export function HotelesAdminView() {
         </div>
       </header>
 
-      {/* Avisos */}
       {aviso && (
         <div className="flex items-center justify-between rounded-lg border border-[#1b261d]/20 bg-[#1b261d]/5 px-4 py-3 text-sm text-[#141d16]">
           <span>{aviso}</span>
@@ -293,7 +285,6 @@ export function HotelesAdminView() {
         </div>
       )}
 
-      {/* Filtros */}
       <div className="grid grid-cols-1 gap-3 rounded-xl border border-[#231a13]/10 bg-[#faf5eb] p-4 sm:grid-cols-3">
         <div>
           <label className="text-xs font-semibold uppercase text-[#231a13]/70">Destino</label>
@@ -342,9 +333,7 @@ export function HotelesAdminView() {
         </div>
       </div>
 
-      {/* Grilla: Hoteles y Panel de Habitaciones */}
       <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
-        {/* Lista de Hoteles */}
         <div className="lg:col-span-2 overflow-hidden rounded-xl border border-[#231a13]/10 bg-white shadow-sm">
           <div className="border-b border-[#231a13]/10 bg-[#faf5eb] px-4 py-3 font-serif font-semibold text-[#231a13]">
             Catálogo de Alojamientos ({hoteles.length})
@@ -420,7 +409,6 @@ export function HotelesAdminView() {
           </div>
         </div>
 
-        {/* Panel lateral de Habitaciones del Hotel Seleccionado */}
         <div className="rounded-xl border border-[#231a13]/10 bg-white p-5 shadow-sm">
           {hotelSeleccionado ? (
             <div>
@@ -491,7 +479,6 @@ export function HotelesAdminView() {
         </div>
       </div>
 
-      {/* Modal Hotel */}
       {modalHotelAbierto && (
         <Modal
           abierto={modalHotelAbierto}
@@ -627,7 +614,6 @@ export function HotelesAdminView() {
         </Modal>
       )}
 
-      {/* Modal Habitación */}
       {modalHabAbierto && (
         <Modal
           abierto={modalHabAbierto}

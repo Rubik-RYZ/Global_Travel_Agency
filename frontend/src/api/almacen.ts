@@ -1,6 +1,3 @@
-/**
- * API del almacén externo de archivos (Cloudinary).
- */
 import { api } from '@/lib/axios'
 
 export interface CarpetaAlmacen {
@@ -9,7 +6,7 @@ export interface CarpetaAlmacen {
 }
 
 export interface EstadoAlmacen {
-  /** Si es `false`, la subida está deshabilitada pero el sistema opera igual. */
+
   configurado: boolean
   limite_mb: number
   formatos: string[]
@@ -27,10 +24,6 @@ export interface ArchivoSubido {
   carpeta_clave?: string
 }
 
-/**
- * Estado del almacén cacheado: la respuesta es la misma para toda la sesión y
- * el panel lo consulta desde varias tarjetas a la vez.
- */
 let estadoEnVuelo: Promise<EstadoAlmacen> | null = null
 
 export function estadoAlmacen(): Promise<EstadoAlmacen> {
@@ -49,7 +42,6 @@ export function estadoAlmacen(): Promise<EstadoAlmacen> {
 export const almacenApi = {
   estado: estadoAlmacen,
 
-  /** Sube un archivo a la carpeta indicada y devuelve su URL y `public_id`. */
   subir: (archivo: File, carpeta: string) => {
     const cuerpo = new FormData()
     cuerpo.append('archivo', archivo)
@@ -61,7 +53,6 @@ export const almacenApi = {
       .then((r) => r.data)
   },
 
-  /** Retira del almacén un archivo del proyecto (p. ej. la lámina reemplazada). */
   eliminar: (publicId: string) =>
     api
       .post<{ public_id: string; borrado: boolean }>('/almacen/eliminar/', {

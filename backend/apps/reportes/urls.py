@@ -1,5 +1,4 @@
-﻿"""Rutas del dominio 'reportes' (CU12)."""
-from django.urls import path
+﻿from django.urls import path
 
 from apps.reportes.views import ReporteOcupacionView, ReporteVentasView
 

@@ -1,17 +1,14 @@
-"""Historial persistido del asistente conversacional (CU10)."""
 from rest_framework import mixins, viewsets
 from rest_framework.permissions import IsAuthenticated
 
 from apps.ia.models import Conversacion
 from apps.ia.serializers import ConversacionSerializer
 
-
 class ConversacionViewSet(
     mixins.ListModelMixin,
     mixins.RetrieveModelMixin,
     viewsets.GenericViewSet,
 ):
-    """Conversaciones del usuario autenticado, con sus mensajes."""
 
     permission_classes = [IsAuthenticated]
     serializer_class = ConversacionSerializer

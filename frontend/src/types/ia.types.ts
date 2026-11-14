@@ -1,8 +1,3 @@
-/** Tipos del dominio de IA (CU10/CU11). */
-
-/* -------------------------------------------------------------------------- */
-/* CU10 · Chat e historial                                                    */
-/* -------------------------------------------------------------------------- */
 export interface MensajeChat {
   id: string
   emisor: 'usuario' | 'agente'
@@ -14,9 +9,9 @@ export interface MensajeChat {
 
 export interface ConversacionChat {
   id: string
-  /** Identificador de la conversación en la base de datos, si ya existe. */
+
   servidorId?: string
-  /** Historial que proviene del backend (se puede continuar). */
+
   persistida?: boolean
   titulo?: string
   mensajes: MensajeChat[]
@@ -33,9 +28,6 @@ export interface RespuestaChat {
   conversacion_id: string | null
 }
 
-/* -------------------------------------------------------------------------- */
-/* CU10 · Entrenamiento                                                       */
-/* -------------------------------------------------------------------------- */
 export interface IntencionIA {
   id: number
   nombre: string
@@ -72,9 +64,6 @@ export interface PanelEntrenamiento {
   modelos: ModeloIA[]
 }
 
-/* -------------------------------------------------------------------------- */
-/* CU11 · Recomendaciones                                                     */
-/* -------------------------------------------------------------------------- */
 export interface PaqueteRecomendado {
   id: number
   nombre: string
@@ -109,7 +98,7 @@ export interface RespuestaRecomendaciones {
   } | null
   recomendaciones: Recomendacion[]
   generada_en: string | null
-  /** True cuando el cliente ya tiene reservas o aceptaciones previas. */
+
   usa_historial: boolean
 }
 

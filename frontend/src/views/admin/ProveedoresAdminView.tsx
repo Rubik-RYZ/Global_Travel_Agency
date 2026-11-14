@@ -27,7 +27,6 @@ import {
 } from '@/components/ui/Iconos'
 import { mensajeDeError } from '@/utils/validators'
 
-/** Tipos de prestación homologados (espejo de `TIPOS_PROVEEDOR`). */
 const TIPOS = [
   { valor: 'aerolinea', texto: 'Aerolíneas' },
   { valor: 'hotel', texto: 'Hospedajes' },
@@ -53,14 +52,6 @@ function ubicacion(p: Proveedor): string {
   return [p.ciudad, p.pais].filter(Boolean).join(', ') || 'Sin enclave registrado'
 }
 
-/**
- * 20. Panel · Libreta de Proveedores → /admin/proveedores
- *
- * Directorio de la red de confianza: aerolíneas, hospedajes, transporte y
- * operadores con su ficha operativa real (enclave, enlace, canales y notas).
- * La lámina superior se abre en formato de folio y la estantería inferior
- * permite cambiar de prestador sin salir del archivo.
- */
 export function ProveedoresAdminView() {
   const [proveedores, setProveedores] = useState<Proveedor[]>([])
   const [cargando, setCargando] = useState(true)
@@ -172,7 +163,6 @@ export function ProveedoresAdminView() {
     }
   }
 
-  /** Descarga el dossier filtrado como CSV (abre bien en Excel en español). */
   function exportar() {
     if (filtrados.length === 0) return
     const filas = [
@@ -213,7 +203,6 @@ export function ProveedoresAdminView() {
 
   return (
     <div className="mx-auto max-w-6xl">
-      {/* ── Cabecera de archivo ────────────────────────────────────────── */}
       <header className="flex flex-col gap-6">
         <div className="flex flex-wrap items-center justify-between gap-3">
           <div className="flex flex-wrap items-center gap-2.5">
@@ -250,7 +239,6 @@ export function ProveedoresAdminView() {
           </div>
         </div>
 
-        {/* ── Índice de categorías y enclaves ──────────────────────────── */}
         <div className="flex flex-col gap-4 rounded-lg bg-surface-container-low px-4 py-3 lg:flex-row lg:items-center lg:justify-between">
           <div className="flex flex-wrap items-center gap-1.5">
             <span className="coord mr-1 text-secondary">Categoría:</span>
@@ -354,12 +342,10 @@ export function ProveedoresAdminView() {
         </div>
       ) : (
         <>
-          {/* ── Pliego abierto: lámina + folio operativo ────────────────── */}
           <section
             id="folio-proveedor"
             className="mt-8 grid scroll-mt-28 grid-cols-1 items-start gap-6 lg:grid-cols-12"
           >
-            {/* Página izquierda: identidad y canal directo */}
             <div className="flex flex-col gap-5 lg:col-span-5">
               <div className="relative overflow-hidden rounded-lg bg-surface-container-low p-5 shadow-paper">
                 <div className="absolute right-4 top-4 z-10 -rotate-6 rounded bg-surface-container-highest/90 px-3 py-2 text-center shadow-sm">
@@ -372,7 +358,6 @@ export function ProveedoresAdminView() {
                   </span>
                 </div>
 
-                {/* Lámina del prestador: logotipo subido o sello de la casa */}
                 <div className="relative flex h-64 items-center justify-center overflow-hidden rounded bg-gradient-to-br from-surface-container-high via-surface-container-low to-surface-dim">
                   {seleccionado.logo_url ? (
                     <img
@@ -419,7 +404,6 @@ export function ProveedoresAdminView() {
                 </p>
               </div>
 
-              {/* Canal directo */}
               <div className="flex flex-col gap-3 rounded-lg bg-surface-container p-5 shadow-paper">
                 <div className="flex flex-wrap items-center justify-between gap-2">
                   <span className="coord flex items-center gap-1.5 text-primary">
@@ -444,7 +428,6 @@ export function ProveedoresAdminView() {
               </div>
             </div>
 
-            {/* Página derecha: folio operativo */}
             <div className="flex flex-col gap-5 lg:col-span-7">
               <div className="flex flex-col gap-5 rounded-lg bg-surface-container-lowest p-6 shadow-paper sm:p-7">
                 <div className="flex flex-wrap items-center justify-between gap-3 border-b border-outline-variant/30 pb-3">
@@ -550,7 +533,6 @@ export function ProveedoresAdminView() {
             </div>
           </section>
 
-          {/* ── Estantería de la red ─────────────────────────────────────── */}
           <section className="mt-10 flex flex-col gap-5">
             <div className="flex flex-col justify-between gap-2 md:flex-row md:items-end">
               <div>
@@ -593,10 +575,6 @@ export function ProveedoresAdminView() {
     </div>
   )
 }
-
-/* -------------------------------------------------------------------------- */
-/* Piezas                                                                     */
-/* -------------------------------------------------------------------------- */
 
 function Chip({
   activo,
@@ -803,7 +781,6 @@ function textoOpcional(valor: string): string | null {
   return limpio === '' ? null : limpio
 }
 
-/** Alta y edición de la ficha operativa de un prestador. */
 function ProveedorFormModal({
   abierto,
   proveedor,

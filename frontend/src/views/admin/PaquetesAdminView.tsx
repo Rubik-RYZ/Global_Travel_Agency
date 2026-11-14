@@ -31,13 +31,11 @@ export function PaquetesAdminView() {
   const [filtroDestino, setFiltroDestino] = useState('')
   const [busqueda, setBusqueda] = useState('')
 
-  // Modal
   const [modalAbierto, setModalAbierto] = useState(false)
   const [editando, setEditando] = useState<Paquete | null>(null)
   const [errorForm, setErrorForm] = useState<string | null>(null)
   const [ocupado, setOcupado] = useState(false)
 
-  // Formulario
   const [formDestino, setFormDestino] = useState<number | ''>('')
   const [formHotel, setFormHotel] = useState<number | ''>('')
   const [formNombre, setFormNombre] = useState('')
@@ -157,14 +155,12 @@ export function PaquetesAdminView() {
     }
   }
 
-  // Filtrar hoteles por el destino seleccionado en el formulario
   const hotelesDisponibles = formDestino
     ? hoteles.filter((h) => h.destino === Number(formDestino))
     : hoteles
 
   return (
     <div className="space-y-8">
-      {/* Encabezado */}
       <header className="border-b border-[#231a13]/10 pb-6">
         <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
           <div>
@@ -190,7 +186,6 @@ export function PaquetesAdminView() {
         </div>
       </header>
 
-      {/* Avisos */}
       {aviso && (
         <div className="flex items-center justify-between rounded-lg border border-[#1b261d]/20 bg-[#1b261d]/5 px-4 py-3 text-sm text-[#141d16]">
           <span>{aviso}</span>
@@ -206,7 +201,6 @@ export function PaquetesAdminView() {
         </div>
       )}
 
-      {/* Filtros */}
       <div className="grid grid-cols-1 gap-3 rounded-xl border border-[#231a13]/10 bg-[#faf5eb] p-4 sm:grid-cols-3">
         <div>
           <label className="text-xs font-semibold uppercase text-[#231a13]/70">Destino</label>
@@ -239,7 +233,6 @@ export function PaquetesAdminView() {
         </div>
       </div>
 
-      {/* Tabla de paquetes */}
       <div className="overflow-hidden rounded-xl border border-[#231a13]/10 bg-white shadow-sm">
         <table className="min-w-full divide-y divide-[#231a13]/10 text-left text-sm">
           <thead className="bg-[#faf5eb] font-serif text-xs uppercase tracking-wider text-[#231a13]/70">
@@ -340,7 +333,6 @@ export function PaquetesAdminView() {
         </table>
       </div>
 
-      {/* Modal */}
       {modalAbierto && (
         <Modal
           abierto={modalAbierto}

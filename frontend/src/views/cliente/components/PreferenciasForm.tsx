@@ -21,10 +21,6 @@ interface Props {
   onGuardado: () => void
 }
 
-/**
- * Cuerpo del capítulo «La brújula»: intereses, moneda y presupuesto.
- * Se dibuja sin tarjeta ni cabecera — el capítulo los aporta.
- */
 export function PreferenciasForm({ preferencias, onGuardado }: Props) {
   const [ok, setOk] = useState(false)
   const {

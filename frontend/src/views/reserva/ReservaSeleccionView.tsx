@@ -89,7 +89,6 @@ export function ReservaSeleccionView() {
   return (
     <div className="min-h-screen bg-[#faf5eb] py-12 px-4 sm:px-6 lg:px-8">
       <div className="mx-auto max-w-4xl space-y-8">
-        {/* Pasos */}
         <div className="flex items-center justify-center gap-4 text-xs uppercase tracking-wider font-semibold">
           <span className="text-[#792609] border-b-2 border-[#792609] pb-1">1. Salida y Plazas</span>
           <span className="text-[#231a13]/30">→</span>
@@ -98,7 +97,6 @@ export function ReservaSeleccionView() {
           <span className="text-[#231a13]/50">3. Confirmación</span>
         </div>
 
-        {/* Ficha Principal */}
         <div className="overflow-hidden rounded-2xl border border-[#231a13]/10 bg-white p-6 sm:p-8 shadow-sm">
           <div className="border-b border-[#231a13]/10 pb-6">
             <div className="flex items-center gap-2 text-xs font-bold uppercase text-[#792609]">
@@ -113,7 +111,6 @@ export function ReservaSeleccionView() {
           </div>
 
           <div className="mt-8 space-y-6">
-            {/* Selector de salida */}
             <div>
               <label className="text-xs font-semibold uppercase text-[#231a13]/80 block mb-2">
                 Fecha de Partida Programada
@@ -165,7 +162,6 @@ export function ReservaSeleccionView() {
               )}
             </div>
 
-            {/* Número de viajeros */}
             {salidaSeleccionada && (
               <div className="rounded-xl border border-[#231a13]/10 bg-[#faf5eb]/50 p-5">
                 <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
@@ -204,7 +200,6 @@ export function ReservaSeleccionView() {
               </div>
             )}
 
-            {/* Resumen de liquidación */}
             <div className="border-t border-[#231a13]/10 pt-6 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
               <div>
                 <div className="text-xs uppercase text-[#231a13]/60">Total a liquidar</div>

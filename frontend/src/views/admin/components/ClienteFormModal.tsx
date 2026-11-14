@@ -20,7 +20,6 @@ interface Props {
   onGuardado: () => void
 }
 
-/** Documento digitalizado (URL + identificador en el almacén). */
 interface Documento {
   url: string
   publicId: string
@@ -28,7 +27,6 @@ interface Documento {
 
 const DOC_VACIO: Documento = { url: '', publicId: '' }
 
-/** Alta/edición de un viajero desde el panel (puede no tener cuenta). */
 export function ClienteFormModal({ abierto, onCerrar, cliente, onGuardado }: Props) {
   const editando = cliente !== null
   const [pasaporte, setPasaporte] = useState<Documento>(DOC_VACIO)

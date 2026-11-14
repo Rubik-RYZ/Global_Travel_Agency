@@ -22,7 +22,6 @@ function etiquetaAccion(accion: string): string {
   return accion.replace(/_/g, ' ')
 }
 
-/** 9. Panel · Bitácora de seguridad → /admin/auditoria */
 export function AuditoriaView() {
   const [eventos, setEventos] = useState<Auditoria[]>([])
   const [total, setTotal] = useState(0)
@@ -62,7 +61,6 @@ export function AuditoriaView() {
         </p>
       </header>
 
-      {/* Barra de búsqueda + contador */}
       <section className="mb-6 overflow-hidden rounded-lg border border-parchment-border bg-surface-container-lowest shadow-paper">
         <div className="grid gap-4 border-b border-parchment-border/70 bg-surface-container-low px-5 py-4 sm:grid-cols-[minmax(0,1fr)_auto] sm:items-end">
           <Input
@@ -110,8 +108,6 @@ export function AuditoriaView() {
     </div>
   )
 }
-
-/* -------------------------------------------------------------------------- */
 
 function EventoFila({ evento }: { evento: Auditoria }) {
   return (

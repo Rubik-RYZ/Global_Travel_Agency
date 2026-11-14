@@ -1,12 +1,3 @@
-"""Capa de negocio de CU1 · Seguridad y acceso + CU2 · Clientes.
-
-Toda la lógica del dominio vive aquí: autenticación, registro de clientes,
-recuperación de contraseña y bitácora de auditoría. Los ViewSets solo
-orquestan (regla de capas de AGENT.md).
-
-Este `__init__` re-exporta los servicios para que `from apps.usuarios import
-services` siga funcionando igual.
-"""
 from apps.usuarios.services.acceso import (
     SALT_RECUPERACION,
     TOKEN_RECUPERACION_MAX_AGE,

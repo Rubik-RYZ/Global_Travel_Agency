@@ -1,4 +1,3 @@
-"""Capa de esquema del dominio de pagos (CU9)."""
 from apps.pagos.serializers.pagos import (
     ClienteNuevoSerializer,
     PagoAdminSerializer,

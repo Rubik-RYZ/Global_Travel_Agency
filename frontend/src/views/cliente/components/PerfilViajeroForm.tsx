@@ -17,10 +17,6 @@ interface Props {
   onGuardado: () => void
 }
 
-/**
- * Cuerpo del capítulo «El pasaporte»: datos personales del viajero.
- * Se dibuja sin tarjeta ni cabecera — el capítulo los aporta.
- */
 export function PerfilViajeroForm({ perfil, onGuardado }: Props) {
   const [ok, setOk] = useState(false)
   const {

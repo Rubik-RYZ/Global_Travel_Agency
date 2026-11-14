@@ -1,12 +1,8 @@
-"""Modelo principal de reservas (CU7)."""
 from django.core.exceptions import ValidationError
 from django.db import models
 from django.db.models import CheckConstraint, Q
 
-
 class Reserva(models.Model):
-    """Reserva de plazas para una salida programada de un paquete turístico."""
-
     ESTADO_PENDIENTE = "pendiente"
     ESTADO_CONFIRMADA = "confirmada"
     ESTADO_PAGADA = "pagada"
@@ -97,4 +93,3 @@ class Reserva(models.Model):
 
     def __str__(self):
         return f"{self.codigo} · {self.cliente.nombre_completo} ({self.estado})"
-

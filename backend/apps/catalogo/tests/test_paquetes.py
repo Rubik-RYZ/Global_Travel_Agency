@@ -1,4 +1,3 @@
-"""Tests para el módulo de paquetes y salidas programadas (CU6)."""
 from datetime import date, timedelta
 from decimal import Decimal
 import pytest
@@ -17,7 +16,6 @@ from apps.usuarios.constants import ROL_ADMINISTRADOR, ROL_CLIENTE
 from apps.usuarios.models import Rol, Usuario
 
 ROL_AGENTE = 2
-
 
 @pytest.fixture
 def setup_paquetes(db):
@@ -40,7 +38,6 @@ def setup_paquetes(db):
         "destino": destino,
         "hotel": hotel,
     }
-
 
 @pytest.mark.django_db
 def test_creacion_paquete_y_salida_servicio(setup_paquetes):
@@ -70,7 +67,6 @@ def test_creacion_paquete_y_salida_servicio(setup_paquetes):
     assert salida.cupos_disponibles == 15
     assert salida.fecha_salida == fecha
 
-
 @pytest.mark.django_db
 def test_validacion_salida_fecha_duplicada(setup_paquetes):
     d = setup_paquetes
@@ -85,7 +81,6 @@ def test_validacion_salida_fecha_duplicada(setup_paquetes):
 
     with pytest.raises(ValidationError):
         crear_salida(paquete_id=paquete.id, fecha_salida=fecha, cupos_totales=12)
-
 
 @pytest.mark.django_db
 def test_api_paquetes_y_salidas_crud(setup_paquetes):
@@ -108,7 +103,6 @@ def test_api_paquetes_y_salidas_crud(setup_paquetes):
     assert res_p.status_code == status.HTTP_201_CREATED
     paquete_id = res_p.data["id"]
 
-    # Crear salida
     fecha_sal = (date.today() + timedelta(days=30)).isoformat()
     payload_sal = {
         "paquete_id": paquete_id,
@@ -119,9 +113,7 @@ def test_api_paquetes_y_salidas_crud(setup_paquetes):
     res_s = client_admin.post("/api/v1/salidas/", payload_sal, format="json")
     assert res_s.status_code == status.HTTP_201_CREATED
 
-    # Cliente puede listar públicamente los paquetes
     client_anon = APIClient()
     res_list = client_anon.get("/api/v1/paquetes/")
     assert res_list.status_code == status.HTTP_200_OK
     assert len(res_list.data["results"]) >= 1
-

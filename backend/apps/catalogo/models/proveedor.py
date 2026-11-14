@@ -1,12 +1,8 @@
-"""Proveedor de servicios turísticos (CU3)."""
 from django.db import models
 
 from apps.catalogo.constants import TIPOS_PROVEEDOR
 
-
 class Proveedor(models.Model):
-    """Proveedor de servicios (aerolínea, hotel, transporte, operador)."""
-
     nombre = models.TextField(unique=True)
     tipo = models.TextField(choices=TIPOS_PROVEEDOR)
     pais = models.TextField(null=True, blank=True)
@@ -15,8 +11,7 @@ class Proveedor(models.Model):
     email = models.TextField(null=True, blank=True)
     telefono = models.TextField(null=True, blank=True)
     notas = models.TextField(null=True, blank=True)
-    # Lámina del prestador: logotipo o fotografía de su sede. Se
-    # guardan la URL pública y el identificador del almacén para reemplazarla.
+
     logo_url = models.TextField(null=True, blank=True)
     logo_public_id = models.TextField(null=True, blank=True)
     activo = models.BooleanField(default=True)

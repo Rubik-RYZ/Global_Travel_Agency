@@ -1,10 +1,6 @@
-"""Intención reconocida por el agente conversacional (CU10)."""
 from django.db import models
 
-
 class Intencion(models.Model):
-    """Catálogo de intenciones que puede clasificar el agente."""
-
     id = models.SmallAutoField(primary_key=True)
     nombre = models.TextField(unique=True)
     descripcion = models.TextField(null=True, blank=True)

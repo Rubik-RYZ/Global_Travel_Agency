@@ -1,4 +1,3 @@
-"""Controlador de itinerarios (CU8)."""
 from rest_framework import permissions, status, viewsets
 from rest_framework.decorators import action
 from rest_framework.response import Response
@@ -16,10 +15,7 @@ from apps.usuarios.constants import ROL_ADMINISTRADOR
 
 ROL_AGENTE_ID = 2
 
-
 class ItinerarioViewSet(viewsets.ReadOnlyModelViewSet):
-    """Consulta y edición de itinerarios día por día."""
-
     queryset = Itinerario.objects.select_related("reserva").prefetch_related("items").all()
     serializer_class = ItinerarioDetailSerializer
     permission_classes = [permissions.IsAuthenticated]
@@ -55,4 +51,3 @@ class ItinerarioViewSet(viewsets.ReadOnlyModelViewSet):
         serializer.is_valid(raise_exception=True)
         itinerario_actualizado = serializer.update(itinerario, serializer.validated_data)
         return Response(ItinerarioDetailSerializer(itinerario_actualizado).data)
-

@@ -1,5 +1,3 @@
-/** Tipos del dominio de clientes y preferencias (CU2). */
-
 export interface ClientePreferencia {
   presupuesto_max: string | null
   moneda: string
@@ -7,7 +5,6 @@ export interface ClientePreferencia {
   actualizado_en: string
 }
 
-/** Viajero tal como lo expone el panel (directorio y ficha). */
 export interface Cliente {
   id: number
   usuario: number | null
@@ -29,7 +26,6 @@ export interface Cliente {
   creado_en: string
 }
 
-/** Ficha que ve el propio viajero en «Mi viaje». */
 export interface PerfilViajero {
   id: number
   email: string | null

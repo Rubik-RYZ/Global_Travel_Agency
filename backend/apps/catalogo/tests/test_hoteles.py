@@ -1,4 +1,3 @@
-"""Tests para el módulo de hoteles y habitaciones (CU5)."""
 from decimal import Decimal
 import pytest
 from django.core.exceptions import ValidationError
@@ -16,7 +15,6 @@ from apps.usuarios.constants import ROL_ADMINISTRADOR, ROL_CLIENTE
 from apps.usuarios.models import Rol, Usuario
 
 ROL_AGENTE = 2
-
 
 @pytest.fixture
 def setup_hoteles(db):
@@ -43,7 +41,6 @@ def setup_hoteles(db):
         "prov_otro": prov_otro,
     }
 
-
 @pytest.mark.django_db
 def test_creacion_hotel_y_habitacion_exitoso(setup_hoteles):
     d = setup_hoteles
@@ -69,18 +66,16 @@ def test_creacion_hotel_y_habitacion_exitoso(setup_hoteles):
     assert hab.capacidad == 2
     assert hab.hotel == hotel
 
-
 @pytest.mark.django_db
 def test_validacion_hotel_proveedor_no_hotel(setup_hoteles):
     d = setup_hoteles
     with pytest.raises(ValidationError):
         crear_hotel(
-            proveedor_id=d["prov_otro"].id,  # es tipo 'transporte'
+            proveedor_id=d["prov_otro"].id,
             destino_id=d["destino"].id,
             nombre="Hotel Inválido",
             estrellas=3,
         )
-
 
 @pytest.mark.django_db
 def test_validacion_hotel_estrellas_fuera_rango(setup_hoteles):
@@ -92,7 +87,6 @@ def test_validacion_hotel_estrellas_fuera_rango(setup_hoteles):
             nombre="Hotel Seis Estrellas",
             estrellas=6,
         )
-
 
 @pytest.mark.django_db
 def test_api_hoteles_y_habitaciones_crud(setup_hoteles):
@@ -123,8 +117,6 @@ def test_api_hoteles_y_habitaciones_crud(setup_hoteles):
     res_hab = client_admin.post("/api/v1/habitaciones/", payload_hab, format="json")
     assert res_hab.status_code == status.HTTP_201_CREATED
 
-    # Listado
     res_list = client_admin.get(f"/api/v1/habitaciones/?hotel_id={hotel_id}")
     assert res_list.status_code == status.HTTP_200_OK
     assert len(res_list.data["results"]) == 1
-

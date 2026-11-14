@@ -11,14 +11,6 @@ const secciones = [
   { a: '/mi-cuenta/recomendaciones', texto: 'Pensado para ti' },
 ]
 
-/**
- * Área privada del cliente autenticado («Mi viaje»).
- *
- * Sigue la pauta de la referencia Stitch «Mi viaje · Resumen y Bitácora»: la
- * navegación pública arriba y, debajo, una banda ligera con la sub-navegación
- * del cuaderno de bitácora (Resumen / Perfil y preferencias). Sin bloques
- * pesados: el contenido es el protagonista.
- */
 export function AppLayout() {
   return (
     <div className="flex min-h-screen flex-col bg-surface">

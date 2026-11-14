@@ -91,7 +91,6 @@ function guardarEstado(estado: EstadoChat): void {
   }
 }
 
-/** Conserva los chats locales que aún no tienen conversación en el servidor. */
 function fusionarHistorial(
   previo: EstadoChat,
   servidor: ConversacionChat[],

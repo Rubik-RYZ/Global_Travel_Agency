@@ -1,10 +1,3 @@
-"""Recomendador híbrido de paquetes turísticos (CU11).
-
-Combina señales de contenido (intereses, presupuesto y disponibilidad) con el
-historial del cliente (reservas no canceladas y recomendaciones aceptadas).
-Cada tanda de sugerencias queda agrupada en un ``lote`` para conservar las
-métricas históricas sin duplicar la vista del viajero.
-"""
 from __future__ import annotations
 
 import unicodedata
@@ -28,7 +21,6 @@ NOMBRE_MODELO = "recomendador-hibrido"
 ALGORITMO = "hibrido-contenido-historial"
 TTL_RECOMENDACIONES = timedelta(hours=6)
 
-# Los pesos suman 1.00; el puntaje final se acota a [0.05, 0.99].
 PESOS_DEFECTO = {
     "base": 0.05,
     "intereses": 0.35,
@@ -53,11 +45,8 @@ ALIASES = {
     "nocturno": ("nocturno", "noche", "vida nocturna"),
 }
 
-
 @dataclass
 class PerfilHistorial:
-    """Señales del cliente construidas a partir de su actividad pasada."""
-
     destinos: Counter = field(default_factory=Counter)
     etiquetas: Counter = field(default_factory=Counter)
     paquetes_reservados: set[int] = field(default_factory=set)
@@ -68,12 +57,9 @@ class PerfilHistorial:
     def total_eventos(self) -> int:
         return self.total_reservas + self.total_aceptadas
 
-
 def _normalizar(texto: str | None) -> str:
-    """Minúsculas y sin acentos para comparar etiquetas."""
     base = unicodedata.normalize("NFKD", (texto or "").lower())
     return "".join(caracter for caracter in base if not unicodedata.combining(caracter))
-
 
 def _texto_busqueda(paquete: Paquete) -> str:
     destino = paquete.destino
@@ -91,9 +77,7 @@ def _texto_busqueda(paquete: Paquete) -> str:
     ]
     return _normalizar(" ".join(parte or "" for parte in partes))
 
-
 def _acumular_paquete(perfil: PerfilHistorial, paquete: Paquete) -> None:
-    """Suma destino y etiquetas de un paquete al perfil del cliente."""
     perfil.destinos[paquete.destino_id] += 1
     etiquetas = list(paquete.etiquetas or []) + list(paquete.destino.etiquetas or [])
     for etiqueta in etiquetas:
@@ -101,9 +85,7 @@ def _acumular_paquete(perfil: PerfilHistorial, paquete: Paquete) -> None:
         if limpia:
             perfil.etiquetas[limpia] += 1
 
-
 def _perfil_historial(cliente: Cliente) -> PerfilHistorial:
-    """Historial del cliente: reservas no canceladas y sugerencias aceptadas."""
     perfil = PerfilHistorial()
 
     reservas = (
@@ -126,9 +108,7 @@ def _perfil_historial(cliente: Cliente) -> PerfilHistorial:
 
     return perfil
 
-
 def tiene_historial(cliente: Cliente) -> bool:
-    """Indica si el cliente tiene señales históricas para personalizar."""
     if (
         Reserva.objects.filter(cliente=cliente)
         .exclude(estado=Reserva.ESTADO_CANCELADA)
@@ -137,9 +117,7 @@ def tiene_historial(cliente: Cliente) -> bool:
         return True
     return Recomendacion.objects.filter(cliente=cliente, aceptada=True).exists()
 
-
 def _historial_score(paquete: Paquete, perfil: PerfilHistorial) -> float:
-    """Afinidad del paquete con el historial del cliente, en [0, 1]."""
     if not perfil.total_eventos:
         return NEUTRO
 
@@ -173,15 +151,12 @@ def _historial_score(paquete: Paquete, perfil: PerfilHistorial) -> float:
         ),
     )
 
-
 def obtener_modelo_activo() -> ModeloIA | None:
-    """Versión activa del recomendador, si existe."""
     return (
         ModeloIA.objects.filter(tipo=ModeloIA.TIPO_RECOMENDADOR, activo=True)
         .order_by("-entrenado_en")
         .first()
     )
-
 
 def _pesos_modelo(modelo: ModeloIA | None) -> dict[str, float]:
     metricas = (modelo.metricas or {}) if modelo else {}
@@ -191,17 +166,13 @@ def _pesos_modelo(modelo: ModeloIA | None) -> dict[str, float]:
         for clave, valor in PESOS_DEFECTO.items()
     }
 
-
 def _modelo_recomendador() -> ModeloIA:
-    """Modelo activo; si no hay ninguno, entrena la primera versión."""
     modelo = obtener_modelo_activo()
     if modelo is None:
         modelo = entrenar_recomendador()
     return modelo
 
-
 def _metricas_entrenamiento() -> dict:
-    """Fotografía del histórico que acompaña a cada versión."""
     total = Recomendacion.objects.count()
     mostradas = Recomendacion.objects.filter(mostrada=True).count()
     aceptadas = Recomendacion.objects.filter(aceptada=True).count()
@@ -225,9 +196,7 @@ def _metricas_entrenamiento() -> dict:
         "tasa_aceptacion": tasa,
     }
 
-
 def entrenar_recomendador() -> ModeloIA:
-    """Crea una nueva versión activa con los pesos y métricas actuales."""
     version = timezone.now().strftime("%Y%m%d%H%M%S%f")
     metricas = _metricas_entrenamiento()
 
@@ -246,9 +215,7 @@ def entrenar_recomendador() -> ModeloIA:
             activo=True,
         )
 
-
 def activar_modelo(modelo: ModeloIA) -> ModeloIA:
-    """Activa una versión del recomendador y desactiva las demás."""
     with transaction.atomic():
         actual = ModeloIA.objects.select_for_update().get(
             pk=modelo.pk, tipo=ModeloIA.TIPO_RECOMENDADOR
@@ -261,17 +228,13 @@ def activar_modelo(modelo: ModeloIA) -> ModeloIA:
             actual.save(update_fields=["activo"])
         return actual
 
-
 def listar_modelos_recomendador(limite: int = 20) -> list[ModeloIA]:
-    """Versiones del recomendador, de la más reciente a la más antigua."""
     return list(
         ModeloIA.objects.filter(tipo=ModeloIA.TIPO_RECOMENDADOR)
         .order_by("-entrenado_en")[:limite]
     )
 
-
 def _popularidad() -> dict[int, int]:
-    """Reservas no canceladas por paquete, para desempatar recomendaciones."""
     filas = (
         Reserva.objects.exclude(estado=Reserva.ESTADO_CANCELADA)
         .values("salida__paquete_id")
@@ -282,7 +245,6 @@ def _popularidad() -> dict[int, int]:
         for fila in filas
         if fila["salida__paquete_id"]
     }
-
 
 def _puntaje(
     *,
@@ -326,7 +288,7 @@ def _puntaje(
             else:
                 presupuesto_score = NEUTRO
         else:
-            # Sin tipo de cambio local no penalizamos una moneda distinta.
+
             presupuesto_score = 0.6
     else:
         presupuesto_score = NEUTRO
@@ -340,7 +302,6 @@ def _puntaje(
     puntaje += pesos["historial"] * historial
 
     return Decimal(str(round(max(0.05, min(puntaje, 0.99)), 4)))
-
 
 def _candidatos(excluir_ids: set[int] | None = None):
     hoy = timezone.localdate()
@@ -363,14 +324,13 @@ def _candidatos(excluir_ids: set[int] | None = None):
         qs = qs.exclude(id__in=excluir_ids)
     return list(qs)
 
-
 def generar_recomendaciones(
     cliente: Cliente,
     *,
     forzar: bool = False,
     limite: int = 6,
 ) -> list[Recomendacion]:
-    """Genera y persiste una tanda de recomendaciones para el cliente."""
+
     preferencias = ClientePreferencia.objects.filter(cliente=cliente).first()
     modelo = _modelo_recomendador()
     pesos = _pesos_modelo(modelo)
@@ -436,14 +396,12 @@ def generar_recomendaciones(
         ]
         return Recomendacion.objects.bulk_create(nuevas)
 
-
 def marcar_mostradas(recomendaciones: list[Recomendacion]) -> None:
     ids = [recomendacion.id for recomendacion in recomendaciones if recomendacion.id]
     if ids:
         Recomendacion.objects.filter(id__in=ids, mostrada=False).update(mostrada=True)
         for recomendacion in recomendaciones:
             recomendacion.mostrada = True
-
 
 def aceptar_recomendacion(cliente: Cliente, recomendacion_id: int) -> Recomendacion:
     try:
@@ -461,9 +419,7 @@ def aceptar_recomendacion(cliente: Cliente, recomendacion_id: int) -> Recomendac
         recomendacion.save(update_fields=["aceptada", "mostrada"])
     return recomendacion
 
-
 def resumen_admin() -> dict:
-    """Indicadores de calidad del recomendador para el panel."""
     historial = _metricas_entrenamiento()
 
     por_paquete = list(

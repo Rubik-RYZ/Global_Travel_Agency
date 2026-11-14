@@ -1,12 +1,8 @@
-"""Serializers del panel de entrenamiento del asistente (CU10)."""
 from rest_framework import serializers
 
 from apps.ia.models import FraseEntrenamiento, Intencion, ModeloIA
 
-
 class IntencionAdminSerializer(serializers.ModelSerializer):
-    """Intención con el número de frases activas para el panel."""
-
     total_frases = serializers.IntegerField(read_only=True, default=0)
 
     class Meta:
@@ -14,10 +10,7 @@ class IntencionAdminSerializer(serializers.ModelSerializer):
         fields = ["id", "nombre", "descripcion", "activa", "total_frases"]
         read_only_fields = ["id", "total_frases"]
 
-
 class FraseEntrenamientoSerializer(serializers.ModelSerializer):
-    """Frase etiquetada que alimenta al clasificador."""
-
     intencion_nombre = serializers.CharField(
         source="intencion.nombre", read_only=True
     )
@@ -52,10 +45,7 @@ class FraseEntrenamientoSerializer(serializers.ModelSerializer):
             )
         return attrs
 
-
 class ModeloIASerializer(serializers.ModelSerializer):
-    """Versión entrenada y sus métricas."""
-
     class Meta:
         model = ModeloIA
         fields = [

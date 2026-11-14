@@ -1,4 +1,3 @@
-/** Tipos del dominio de pagos y boleta de viaje (CU9). */
 import type { Paginated } from '@/types/api.types'
 import type { EstadoReserva, Reserva } from '@/types/reserva.types'
 

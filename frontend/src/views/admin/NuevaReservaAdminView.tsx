@@ -407,7 +407,6 @@ export function NuevaReservaAdminView() {
           </div>
         </div>
 
-        {/* Manifiesto de pasajeros */}
         <div className="rounded-2xl border border-[#231a13]/10 bg-white p-6 sm:p-8 shadow-sm space-y-6">
           <h2 className="font-serif text-lg font-bold text-[#231a13]">
             2. Manifiesto de Pasajeros ({pasajeros.length})
@@ -467,7 +466,6 @@ export function NuevaReservaAdminView() {
           </div>
         </div>
 
-        {/* Cobro */}
         <div className="rounded-2xl border border-[#231a13]/10 bg-white p-6 sm:p-8 shadow-sm space-y-6">
           <h2 className="font-serif text-lg font-bold text-[#231a13]">3. Cobro en Ventanilla</h2>
 

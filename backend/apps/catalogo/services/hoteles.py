@@ -1,4 +1,3 @@
-"""Capa de negocio del catálogo — hoteles y habitaciones (CU5)."""
 from __future__ import annotations
 
 from decimal import Decimal
@@ -7,11 +6,6 @@ from django.db import transaction
 from django.db.models import Q, QuerySet
 
 from apps.catalogo.models import Destino, Habitacion, Hotel, Proveedor
-
-
-# ─────────────────────────────────────────────────────────────────────────────
-# HOTELES
-# ─────────────────────────────────────────────────────────────────────────────
 
 def listar_hoteles(
     *,
@@ -40,13 +34,11 @@ def listar_hoteles(
         )
     return qs.order_by("nombre")
 
-
 def obtener_hotel(hotel_id: int) -> Hotel:
     try:
         return Hotel.objects.select_related("proveedor", "destino").prefetch_related("habitaciones").get(pk=hotel_id)
     except Hotel.DoesNotExist:
         raise ValidationError({"hotel_id": "Hotel no encontrado."})
-
 
 @transaction.atomic
 def crear_hotel(
@@ -86,7 +78,6 @@ def crear_hotel(
     hotel.save()
     return hotel
 
-
 @transaction.atomic
 def actualizar_hotel(hotel_id: int, **kwargs) -> Hotel:
     hotel = obtener_hotel(hotel_id)
@@ -122,7 +113,6 @@ def actualizar_hotel(hotel_id: int, **kwargs) -> Hotel:
     hotel.save()
     return hotel
 
-
 @transaction.atomic
 def eliminar_hotel(hotel_id: int) -> None:
     hotel = obtener_hotel(hotel_id)
@@ -130,24 +120,17 @@ def eliminar_hotel(hotel_id: int) -> None:
         raise ValidationError({"hotel": "No se puede eliminar un hotel asignado a paquetes turísticos."})
     hotel.delete()
 
-
-# ─────────────────────────────────────────────────────────────────────────────
-# HABITACIONES
-# ─────────────────────────────────────────────────────────────────────────────
-
 def listar_habitaciones(*, hotel_id: int | None = None) -> QuerySet[Habitacion]:
     qs = Habitacion.objects.select_related("hotel").all()
     if hotel_id:
         qs = qs.filter(hotel_id=hotel_id)
     return qs.order_by("hotel", "precio_noche")
 
-
 def obtener_habitacion(habitacion_id: int) -> Habitacion:
     try:
         return Habitacion.objects.select_related("hotel").get(pk=habitacion_id)
     except Habitacion.DoesNotExist:
         raise ValidationError({"habitacion_id": "Habitación no encontrada."})
-
 
 @transaction.atomic
 def crear_habitacion(
@@ -174,7 +157,6 @@ def crear_habitacion(
     habitacion.save()
     return habitacion
 
-
 @transaction.atomic
 def actualizar_habitacion(habitacion_id: int, **kwargs) -> Habitacion:
     habitacion = obtener_habitacion(habitacion_id)
@@ -198,9 +180,7 @@ def actualizar_habitacion(habitacion_id: int, **kwargs) -> Habitacion:
     habitacion.save()
     return habitacion
 
-
 @transaction.atomic
 def eliminar_habitacion(habitacion_id: int) -> None:
     habitacion = obtener_habitacion(habitacion_id)
     habitacion.delete()
-

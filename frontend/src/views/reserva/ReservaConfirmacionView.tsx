@@ -71,7 +71,6 @@ export function ReservaConfirmacionView() {
     <div className="min-h-screen bg-[#faf5eb] py-16 px-4 sm:px-6 lg:px-8">
       <div className="mx-auto max-w-2xl space-y-8">
         <div className="overflow-hidden rounded-3xl border border-[#231a13]/10 bg-white p-8 sm:p-12 text-center shadow-lg">
-          {/* Sello de Confirmación */}
           <div className="mx-auto flex h-20 w-20 items-center justify-center rounded-full bg-[#792609]/10 text-[#792609]">
             <IconoSello className="h-10 w-10" />
           </div>
@@ -89,7 +88,6 @@ export function ReservaConfirmacionView() {
             El itinerario detallado de la travesía ya ha sido generado por el sistema.
           </p>
 
-          {/* Código de Reserva */}
           <div className="mt-8 rounded-2xl border-2 border-dashed border-[#792609] bg-[#faf5eb]/70 p-6">
             <div className="text-xs uppercase font-semibold text-[#231a13]/60">Código Oficial de Reserva</div>
             <div className="mt-1 font-mono text-3xl sm:text-4xl font-bold tracking-wider text-[#792609]">
@@ -104,7 +102,6 @@ export function ReservaConfirmacionView() {
             </div>
           </div>
 
-          {/* Resumen */}
           <div className="mt-8 grid grid-cols-2 gap-4 border-t border-[#231a13]/10 pt-6 text-left text-xs">
             <div>
               <span className="text-[#231a13]/50 block">Viajeros registrados:</span>
@@ -118,7 +115,6 @@ export function ReservaConfirmacionView() {
             </div>
           </div>
 
-          {/* Pago en línea */}
           {usuario && !pagada && (
             <div className="mt-8 rounded-2xl border border-[#231a13]/10 bg-[#faf5eb]/50 p-6 text-left space-y-4">
               <h2 className="font-serif text-lg font-bold text-[#231a13]">Pago en línea</h2>
@@ -178,7 +174,6 @@ export function ReservaConfirmacionView() {
             </div>
           )}
 
-          {/* Acciones */}
           <div className="mt-10 flex flex-col sm:flex-row items-center justify-center gap-4">
             <Link
               to={`/mi-cuenta/viajes/${reserva.id}/itinerario`}

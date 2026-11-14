@@ -36,7 +36,6 @@ function mensaje(emisor: MensajeChat['emisor'], texto: string): MensajeChat {
   return { id: crearId(), emisor, texto, creado_en: new Date().toISOString() }
 }
 
-/** 40. Diseña tu viaje · asistente público → /diseña-tu-viaje */
 export function DisenaTuViajeView() {
   const usuario = useAuthStore((s) => s.usuario)
   const [mensajes, setMensajes] = useState<MensajeChat[]>([

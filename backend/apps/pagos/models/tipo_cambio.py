@@ -3,7 +3,6 @@ from django.db.models import F, Q
 
 from .pago import Pago
 
-
 class TipoCambio(models.Model):
     fecha = models.DateField()
     moneda_origen = models.CharField(max_length=3, choices=Pago.Moneda.choices)

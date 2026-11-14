@@ -1,12 +1,8 @@
-"""Serializers del historial de conversaciones del asistente (CU10)."""
 from rest_framework import serializers
 
 from apps.ia.models import Conversacion, Mensaje
 
-
 class MensajeHistorialSerializer(serializers.ModelSerializer):
-    """Turno guardado en la base de datos."""
-
     intencion_nombre = serializers.CharField(
         source="intencion.nombre", read_only=True, default=None
     )
@@ -22,10 +18,7 @@ class MensajeHistorialSerializer(serializers.ModelSerializer):
             "creado_en",
         ]
 
-
 class ConversacionSerializer(serializers.ModelSerializer):
-    """Hilo completo con sus mensajes, visible sólo para su dueño."""
-
     mensajes = MensajeHistorialSerializer(many=True, read_only=True)
     titulo = serializers.SerializerMethodField()
 

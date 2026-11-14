@@ -4,7 +4,6 @@ from django.core.validators import MinValueValidator
 from django.db import models
 from django.db.models import Q
 
-
 class Pago(models.Model):
     class Moneda(models.TextChoices):
         BOB = "BOB", "Boliviano"
@@ -32,7 +31,7 @@ class Pago(models.Model):
     estado = models.CharField(
         max_length=20, choices=Estado.choices, default=Estado.PENDIENTE
     )
-    # Solo el ID de Stripe, nunca datos de tarjeta
+
     stripe_payment_id = models.TextField(unique=True, null=True, blank=True)
     creado_en = models.DateTimeField(auto_now_add=True)
 

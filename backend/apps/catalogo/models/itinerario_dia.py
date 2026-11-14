@@ -1,16 +1,8 @@
-"""Día del itinerario de un destino (CU3).
-
-Es contenido descriptivo del catálogo (el diario de ruta que ve el visitante),
-distinto de los itinerarios de una reserva (CU8).
-"""
 from django.db import models
 
 from apps.catalogo.models.destino import Destino
 
-
 class ItinerarioDia(models.Model):
-    """Un día del itinerario de un destino (diario de ruta día a día)."""
-
     destino = models.ForeignKey(
         Destino,
         on_delete=models.CASCADE,

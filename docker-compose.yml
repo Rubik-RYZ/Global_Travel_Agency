@@ -1,8 +1,3 @@
-# =====================================================================
-# Illimani Global Travel S.R.L. — Infraestructura local
-# backend (Django 4.2 / Python 3.11) + frontend (React 18 / Vite) + PostgreSQL 15
-# =====================================================================
-
 services:
   db:
     image: postgres:15

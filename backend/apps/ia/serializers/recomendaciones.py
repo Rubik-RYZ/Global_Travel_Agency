@@ -1,4 +1,3 @@
-"""Serializers del recomendador de paquetes (CU11)."""
 from rest_framework import serializers
 
 from apps.catalogo.models import Paquete
@@ -6,10 +5,7 @@ from apps.ia.models import Recomendacion
 from apps.ia.serializers.entrenamiento import ModeloIASerializer
 from apps.usuarios.serializers.cliente import ClientePreferenciaSerializer
 
-
 class PaqueteRecomendadoSerializer(serializers.ModelSerializer):
-    """Resumen suficiente para pintar una tarjeta de recomendación."""
-
     destino_nombre = serializers.CharField(source="destino.nombre", read_only=True)
     destino_pais = serializers.CharField(source="destino.pais", read_only=True)
     destino_imagen = serializers.CharField(
@@ -35,10 +31,7 @@ class PaqueteRecomendadoSerializer(serializers.ModelSerializer):
             "destino_caracter",
         ]
 
-
 class RecomendacionSerializer(serializers.ModelSerializer):
-    """Recomendación con el paquete anidado."""
-
     paquete = PaqueteRecomendadoSerializer(read_only=True)
     puntaje_porcentaje = serializers.SerializerMethodField()
 
@@ -57,20 +50,14 @@ class RecomendacionSerializer(serializers.ModelSerializer):
     def get_puntaje_porcentaje(self, obj: Recomendacion) -> int:
         return round(float(obj.puntaje) * 100)
 
-
 class RespuestaRecomendacionesSerializer(serializers.Serializer):
-    """Respuesta completa para la vista 'Pensado para ti'."""
-
     modelo = ModeloIASerializer(allow_null=True)
     preferencias = ClientePreferenciaSerializer(allow_null=True)
     recomendaciones = RecomendacionSerializer(many=True)
     generada_en = serializers.DateTimeField(allow_null=True)
     usa_historial = serializers.BooleanField()
 
-
 class RecomendacionAdminSerializer(serializers.ModelSerializer):
-    """Fila reciente del panel de calidad de recomendaciones."""
-
     cliente = serializers.SerializerMethodField()
     paquete = serializers.CharField(source="paquete.nombre", read_only=True)
     destino = serializers.CharField(

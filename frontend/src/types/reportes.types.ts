@@ -1,4 +1,3 @@
-/** Tipos de los reportes gerenciales (CU12). */
 export type Agrupacion = 'dia' | 'semana' | 'mes'
 export type Canal = 'web' | 'agente' | 'personal'
 

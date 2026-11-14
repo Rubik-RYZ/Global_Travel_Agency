@@ -1,12 +1,8 @@
-"""Modelo de salidas programadas de paquetes turísticos (CU6)."""
 from django.core.exceptions import ValidationError
 from django.db import models
 from django.db.models import CheckConstraint, F, Q, UniqueConstraint
 
-
 class PaqueteSalida(models.Model):
-    """Fecha específica de salida para un paquete con cupos y vuelos asignados."""
-
     paquete = models.ForeignKey(
         "catalogo.Paquete",
         on_delete=models.CASCADE,
@@ -72,4 +68,3 @@ class PaqueteSalida(models.Model):
 
     def __str__(self):
         return f"{self.paquete.nombre} · {self.fecha_salida.strftime('%d/%m/%Y')} ({self.cupos_disponibles}/{self.cupos_totales} cupos)"
-

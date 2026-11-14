@@ -1,8 +1,3 @@
-"""Capa de dominio del catálogo turístico (CU3, CU4, CU5, CU6).
-
-IMPORTANTE: re-exportar TODAS las entidades. Si se olvida una, Django la
-considera eliminada y genera una migración que borra su tabla.
-"""
 from apps.catalogo.models.aeropuerto import Aeropuerto
 from apps.catalogo.models.destino import Destino
 from apps.catalogo.models.habitacion import Habitacion

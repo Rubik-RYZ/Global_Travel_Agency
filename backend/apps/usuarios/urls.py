@@ -1,8 +1,3 @@
-"""Rutas del dominio de usuarios (CU1 · seguridad y acceso).
-
-Se usa router DRF para los recursos CRUD y rutas explícitas para los
-endpoints de acceso (login/refresh/logout/registro/recuperación).
-"""
 from django.urls import path
 from rest_framework.routers import DefaultRouter
 

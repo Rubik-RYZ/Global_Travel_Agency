@@ -1,4 +1,3 @@
-"""Carga manual del tipo de cambio: python manage.py cargar_tipo_cambio USD 12.00"""
 from datetime import date
 from decimal import Decimal, InvalidOperation
 
@@ -7,7 +6,6 @@ from django.utils import timezone
 
 from apps.pagos.models import Pago
 from apps.pagos.services.tipo_cambio import guardar_tasa
-
 
 class Command(BaseCommand):
     help = "Guarda el tipo de cambio de un día (por defecto hoy) hacia BOB u otra moneda."

@@ -1,4 +1,3 @@
-"""Serializadores del dominio de pagos (CU9)."""
 from django.core.exceptions import ValidationError as DjangoValidationError
 from rest_framework import serializers
 
@@ -8,12 +7,9 @@ from apps.reservas.serializers.reserva import PasajeroInputSerializer
 METODOS_VENTANILLA = ["efectivo", "tarjeta", "qr", "transferencia"]
 METODOS_CLIENTE = ["tarjeta", "qr"]
 
-
 def _como_drf_validation(exc: DjangoValidationError):
-    """Convierte los errores de dominio (Django) al formato de DRF."""
     detalle = getattr(exc, "message_dict", None) or exc.messages
     raise serializers.ValidationError(detalle)
-
 
 class PagoSerializer(serializers.ModelSerializer):
     class Meta:
@@ -30,10 +26,7 @@ class PagoSerializer(serializers.ModelSerializer):
             "creado_en",
         ]
 
-
 class PagoAdminSerializer(serializers.ModelSerializer):
-    """Pago con contexto de reserva y cliente para el libro de pagos (CU9)."""
-
     reserva_codigo = serializers.CharField(source="reserva.codigo", read_only=True)
     reserva_estado = serializers.CharField(source="reserva.estado", read_only=True)
     cliente_id = serializers.IntegerField(source="reserva.cliente_id", read_only=True)
@@ -75,7 +68,6 @@ class PagoAdminSerializer(serializers.ModelSerializer):
             "creado_en",
         ]
 
-
 class ClienteNuevoSerializer(serializers.Serializer):
     nombres = serializers.CharField(max_length=150)
     apellidos = serializers.CharField(max_length=150)
@@ -91,12 +83,10 @@ class ClienteNuevoSerializer(serializers.Serializer):
     fecha_nacimiento = serializers.DateField(required=False, allow_null=True)
 
     def to_internal_value(self, data):
-        # Un formulario puede enviar "" cuando la fecha es opcional.
         if hasattr(data, "copy") and data.get("fecha_nacimiento") == "":
             data = data.copy()
             data["fecha_nacimiento"] = None
         return super().to_internal_value(data)
-
 
 class VentaVentanillaSerializer(serializers.Serializer):
     cliente_id = serializers.IntegerField(required=False)
@@ -132,7 +122,6 @@ class VentaVentanillaSerializer(serializers.Serializer):
             )
         except DjangoValidationError as exc:
             _como_drf_validation(exc)
-
 
 class PagoClienteSerializer(serializers.Serializer):
     reserva_id = serializers.IntegerField()

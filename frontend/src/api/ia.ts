@@ -1,4 +1,3 @@
-/** Cliente HTTP del asistente conversacional y recomendador (CU10/CU11). */
 import { api } from '@/lib/axios'
 import type {
   ConversacionChat,
@@ -64,7 +63,7 @@ export interface IntencionPayload {
 }
 
 export const iaApi = {
-  /* CU10 · chat e historial */
+
   chat: (mensaje: string, conversacionId?: string | null) =>
     api
       .post<RespuestaChat>('/ia/chat/', {
@@ -78,7 +77,6 @@ export const iaApi = {
       .get<ConversacionServidor[]>('/ia/conversaciones/')
       .then((respuesta) => respuesta.data.map(mapearConversacion)),
 
-  /* CU10 · panel de entrenamiento */
   panelEntrenamiento: () =>
     api.get<PanelEntrenamiento>('/ia/admin/panel/').then((respuesta) => respuesta.data),
 
@@ -107,7 +105,6 @@ export const iaApi = {
     eliminar: (id: number) => api.delete(`/ia/admin/frases/${id}/`).then((r) => r.data),
   },
 
-  /* CU11 · recomendaciones */
   recomendaciones: (forzar = false) =>
     api
       .get<RespuestaRecomendaciones>('/ia/recomendaciones/', {

@@ -1,12 +1,8 @@
-"""Conversación mantenida con el agente conversacional (CU10)."""
 import uuid
 
 from django.db import models
 
-
 class Conversacion(models.Model):
-    """Hilo de diálogo con su estado (slots) y última actividad."""
-
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     usuario = models.ForeignKey(
         "usuarios.Usuario",

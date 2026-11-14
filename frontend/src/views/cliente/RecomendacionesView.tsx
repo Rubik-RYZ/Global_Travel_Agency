@@ -20,7 +20,6 @@ import { textoInteres } from '@/utils/catalogos'
 import { formatearFecha, formatearMoneda } from '@/utils/formatters'
 import { mensajeDeError } from '@/utils/validators'
 
-/** 42. Mi viaje · Pensado para ti → /mi-cuenta/recomendaciones */
 export function RecomendacionesView() {
   const [datos, setDatos] = useState<RespuestaRecomendaciones | null>(null)
   const [cargando, setCargando] = useState(true)

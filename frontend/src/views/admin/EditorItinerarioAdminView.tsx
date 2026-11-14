@@ -23,7 +23,6 @@ export function EditorItinerarioAdminView() {
   const [error, setError] = useState<string | null>(null)
   const [aviso, setAviso] = useState<string | null>(null)
 
-  // Modal para agregar o editar un item
   const [modalAbierto, setModalAbierto] = useState(false)
   const [itemEditandoIdx, setItemEditandoIdx] = useState<number | null>(null)
   const [formDia, setFormDia] = useState(1)
@@ -104,7 +103,7 @@ export function EditorItinerarioAdminView() {
     setGuardando(true)
     setError(null)
     try {
-      // Re-indexar orden secuencial por día
+
       const itemsConOrden = items.map((it, idx) => ({
         ...it,
         orden: idx + 1,
@@ -135,7 +134,6 @@ export function EditorItinerarioAdminView() {
     )
   }
 
-  // Agrupar items por día
   const itemsPorDia = items.reduce<Record<number, { item: ItinerarioItem; idx: number }[]>>((acc, it, idx) => {
     if (!acc[it.dia]) acc[it.dia] = []
     acc[it.dia].push({ item: it, idx })
@@ -253,7 +251,6 @@ export function EditorItinerarioAdminView() {
         </div>
       )}
 
-      {/* Modal Actividad */}
       {modalAbierto && (
         <Modal
           abierto={modalAbierto}

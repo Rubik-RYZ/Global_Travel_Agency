@@ -1,4 +1,3 @@
-"""Capa de esquema del dominio 'ia' (CU10 + CU11)."""
 from apps.ia.serializers.chat import MensajeEntradaSerializer, RespuestaChatSerializer
 from apps.ia.serializers.conversacion import (
     ConversacionSerializer,

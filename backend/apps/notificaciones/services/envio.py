@@ -1,13 +1,3 @@
-"""Envío de correo transaccional.
-
-Reglas de la casa:
-
-* Si el entorno tiene `RESEND_API_KEY`, los correos salen por la API de Resend.
-* Si no la tiene, el sistema **sigue funcionando**: el correo se imprime en el
-  log del servidor (útil en desarrollo y en demos sin conectividad) y se anota
-  como omitido en la bitácora. Nunca se lanza un error 500 al usuario.
-* Cada envío queda registrado en `Auditoria` para poder rastrearlo.
-"""
 from __future__ import annotations
 
 import logging
@@ -18,20 +8,10 @@ from apps.notificaciones import plantillas
 
 logger = logging.getLogger(__name__)
 
-
-# ---------------------------------------------------------------------
-# Estado
-# ---------------------------------------------------------------------
 def correo_configurado() -> bool:
-    """¿Hay clave de Resend en el entorno?"""
     return bool(getattr(settings, "RESEND_API_KEY", ""))
 
-
-# ---------------------------------------------------------------------
-# Auditoría
-# ---------------------------------------------------------------------
 def _auditar(*, accion: str, usuario=None, detalle: dict | None = None) -> None:
-    """Import diferido: `usuarios.services` importa este módulo."""
     from apps.usuarios.services import registrar_auditoria
 
     registrar_auditoria(
@@ -42,10 +22,6 @@ def _auditar(*, accion: str, usuario=None, detalle: dict | None = None) -> None:
         detalle=detalle,
     )
 
-
-# ---------------------------------------------------------------------
-# Envío base
-# ---------------------------------------------------------------------
 def enviar(
     *,
     para: str,
@@ -55,7 +31,7 @@ def enviar(
     usuario=None,
     evento: str = "generico",
 ) -> bool:
-    """Envía (o registra) un correo y devuelve si salió por la red."""
+
     destinatario = (para or "").strip()
     if not destinatario:
         return False
@@ -88,7 +64,7 @@ def enviar(
                 **({"text": texto} if texto else {}),
             }
         )
-    except Exception as exc:  # red, cuota, remitente no verificado...
+    except Exception as exc:
         logger.warning("No se pudo enviar «%s» a %s: %s", asunto, destinatario, exc)
         _auditar(
             accion="correo_fallido",
@@ -104,12 +80,7 @@ def enviar(
     )
     return True
 
-
-# ---------------------------------------------------------------------
-# Eventos del sistema
-# ---------------------------------------------------------------------
 def bienvenida_cliente(*, usuario, nombres: str) -> bool:
-    """Alta de una cuenta de viajero desde el formulario público."""
     return enviar(
         para=getattr(usuario, "email", ""),
         asunto="Bienvenido a Illimani Global Travel",
@@ -118,9 +89,7 @@ def bienvenida_cliente(*, usuario, nombres: str) -> bool:
         evento="bienvenida_cliente",
     )
 
-
 def recuperacion_password(*, usuario, enlace: str) -> bool:
-    """Solicitud de restablecimiento de contraseña."""
     return enviar(
         para=getattr(usuario, "email", ""),
         asunto="Restablezca su contraseña — Illimani Global Travel",
@@ -134,9 +103,7 @@ def recuperacion_password(*, usuario, enlace: str) -> bool:
         evento="recuperacion_password",
     )
 
-
 def password_restablecido(*, usuario) -> bool:
-    """Confirmación de que la contraseña cambió."""
     return enviar(
         para=getattr(usuario, "email", ""),
         asunto="Su contraseña fue actualizada — Illimani Global Travel",
@@ -145,9 +112,7 @@ def password_restablecido(*, usuario) -> bool:
         evento="password_restablecido",
     )
 
-
 def ficha_viajero_abierta(*, cliente, usuario=None) -> bool:
-    """El personal abre la ficha de un viajero desde el panel."""
     correo = getattr(usuario, "email", None) if usuario else None
     if not correo:
         return False

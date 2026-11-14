@@ -1,14 +1,10 @@
-"""Capa de presentación del catálogo — aeropuertos (CU3)."""
 from rest_framework import viewsets
 from rest_framework.permissions import AllowAny
 
 from apps.catalogo.models import Aeropuerto
 from apps.catalogo.serializers import AeropuertoSerializer
 
-
 class AeropuertoViewSet(viewsets.ReadOnlyModelViewSet):
-    """Listado de aeropuertos (solo lectura, público)."""
-
     serializer_class = AeropuertoSerializer
     permission_classes = [AllowAny]
 

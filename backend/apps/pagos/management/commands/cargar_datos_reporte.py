@@ -1,14 +1,3 @@
-"""Datos de demostración para los reportes gerenciales (CU12).
-
-Crea seis clientes con cuenta, cinco vuelos internacionales, dos paquetes
-a otros países, salidas en fin de semana y reservas/pagos repartidos en
-distintos fines de semana para que las gráficas tengan datos variados.
-
-Uso:
-    python manage.py cargar_datos_reporte
-
-Requiere haber ejecutado antes ``python manage.py seed_data``.
-"""
 from __future__ import annotations
 
 from datetime import date, datetime, time
@@ -92,7 +81,6 @@ CLIENTES = [
     },
 ]
 
-# Salidas: (paquete, clave, fecha, vuelo_ida, vuelo_vuelta)
 SALIDAS = [
     ("machu", "machu_2026_06_06", date(2026, 6, 6), "ob771", "la2401"),
     ("machu", "machu_2026_08_08", date(2026, 8, 8), None, None),
@@ -227,13 +215,11 @@ RESERVAS = [
     },
 ]
 
-
 def _aware(fecha: date, hora: int, minuto: int = 0) -> datetime:
     return timezone.make_aware(
         datetime.combine(fecha, time(hora, minuto)),
         timezone.get_current_timezone(),
     )
-
 
 class Command(BaseCommand):
     help = (

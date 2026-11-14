@@ -43,7 +43,6 @@ function Kpi({
   )
 }
 
-/** 43. Panel · Calidad de recomendaciones → /admin/recomendaciones */
 function metricaNumero(modelo: ModeloIA, clave: string): number {
   const valor = modelo.metricas?.[clave]
   return typeof valor === 'number' ? valor : 0

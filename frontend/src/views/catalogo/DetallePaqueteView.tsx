@@ -81,7 +81,6 @@ export function DetallePaqueteView() {
   return (
     <div className="min-h-screen bg-[#faf5eb] py-12 px-4 sm:px-6 lg:px-8">
       <div className="mx-auto max-w-6xl space-y-10">
-        {/* Enlace de regreso */}
         <div>
           <Link
             to="/viajes"
@@ -91,7 +90,6 @@ export function DetallePaqueteView() {
           </Link>
         </div>
 
-        {/* Cabecera del Paquete */}
         <div className="grid grid-cols-1 gap-8 lg:grid-cols-3">
           <div className="lg:col-span-2 space-y-4">
             <div className="flex items-center gap-2 text-xs font-bold uppercase tracking-widest text-[#792609]">
@@ -127,7 +125,6 @@ export function DetallePaqueteView() {
             )}
           </div>
 
-          {/* Tarjeta Lateral de Salidas y Reserva */}
           <div className="rounded-2xl border border-[#231a13]/10 bg-white p-6 shadow-sm space-y-6">
             <div>
               <div className="text-xs uppercase tracking-wider text-[#231a13]/60">Tarifa por persona</div>

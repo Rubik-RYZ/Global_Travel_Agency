@@ -1,4 +1,3 @@
-"""Tests del libro de pagos del panel (CU9)."""
 from datetime import date, timedelta
 from decimal import Decimal
 
@@ -13,7 +12,6 @@ from apps.usuarios.constants import ROL_ADMINISTRADOR, ROL_CLIENTE
 from apps.usuarios.models import Cliente, Rol, Usuario
 
 ROL_AGENTE = 2
-
 
 @pytest.fixture
 def setup_pagos(db):
@@ -91,12 +89,10 @@ def setup_pagos(db):
         "pendiente": pago_pendiente,
     }
 
-
 def _cliente(usuario):
     api = APIClient()
     api.force_authenticate(user=usuario)
     return api
-
 
 @pytest.mark.django_db
 def test_libro_pagos_admin_lista_y_totales(setup_pagos):
@@ -116,7 +112,6 @@ def test_libro_pagos_admin_lista_y_totales(setup_pagos):
     assert fila["paquete_nombre"] == "Valle de la Luna 2D/1N"
     assert fila["destino_nombre"] == "Valle de la Luna"
 
-
 @pytest.mark.django_db
 def test_libro_pagos_agente_puede_consultar(setup_pagos):
     datos = setup_pagos
@@ -125,7 +120,6 @@ def test_libro_pagos_agente_puede_consultar(setup_pagos):
     assert respuesta.status_code == status.HTTP_200_OK
     assert respuesta.data["count"] == 2
 
-
 @pytest.mark.django_db
 def test_libro_pagos_cliente_prohibido(setup_pagos):
     datos = setup_pagos
@@ -133,13 +127,11 @@ def test_libro_pagos_cliente_prohibido(setup_pagos):
 
     assert respuesta.status_code == status.HTTP_403_FORBIDDEN
 
-
 @pytest.mark.django_db
 def test_libro_pagos_requiere_autenticacion():
     respuesta = APIClient().get("/api/v1/pagos/")
 
     assert respuesta.status_code == status.HTTP_401_UNAUTHORIZED
-
 
 @pytest.mark.django_db
 def test_libro_pagos_filtra_por_estado_y_busqueda(setup_pagos):

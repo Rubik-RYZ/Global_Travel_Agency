@@ -1,4 +1,3 @@
-"""Tests del recomendador híbrido, sus versiones y su panel (CU11)."""
 from datetime import date, timedelta
 from decimal import Decimal
 
@@ -13,7 +12,6 @@ from apps.ia.services import recomendaciones as svc
 from apps.reservas.models import Reserva
 from apps.usuarios.constants import ROL_ADMINISTRADOR, ROL_CLIENTE
 from apps.usuarios.models import Cliente, ClientePreferencia, Rol, Usuario
-
 
 @pytest.fixture
 def base(db):
@@ -95,7 +93,6 @@ def base(db):
         "salidas": salidas,
     }
 
-
 def _reservar(cliente, salida, codigo, estado=Reserva.ESTADO_CONFIRMADA):
     return Reserva.objects.create(
         codigo=codigo,
@@ -106,7 +103,6 @@ def _reservar(cliente, salida, codigo, estado=Reserva.ESTADO_CONFIRMADA):
         total=Decimal("800.00"),
         moneda="USD",
     )
-
 
 @pytest.mark.django_db
 def test_entrenar_crea_version_y_desactiva_anteriores(base):
@@ -121,7 +117,6 @@ def test_entrenar_crea_version_y_desactiva_anteriores(base):
     assert segunda.metricas["pesos"]["historial"] == pytest.approx(0.25)
     assert svc.obtener_modelo_activo().id == segunda.id
 
-
 @pytest.mark.django_db
 def test_activar_modelo_deja_uno_solo_activo(base):
     primera = svc.entrenar_recomendador()
@@ -133,7 +128,6 @@ def test_activar_modelo_deja_uno_solo_activo(base):
     segunda.refresh_from_db()
     assert primera.activo is True
     assert segunda.activo is False
-
 
 @pytest.mark.django_db
 def test_prioriza_intereses_y_presupuesto(base):
@@ -150,7 +144,6 @@ def test_prioriza_intereses_y_presupuesto(base):
     assert recomendaciones[0].paquete_id == base["playa"].id
     assert len({recomendacion.lote for recomendacion in recomendaciones}) == 1
 
-
 @pytest.mark.django_db
 def test_historial_impulsa_destino_ya_reservado(base):
     _reservar(
@@ -166,7 +159,6 @@ def test_historial_impulsa_destino_ya_reservado(base):
     assert ids[0] == base["playa_2"].id
     assert svc.tiene_historial(base["cliente"]) is True
 
-
 @pytest.mark.django_db
 def test_reserva_cancelada_no_excluye_ni_aporta_historial(base):
     _reservar(
@@ -181,7 +173,6 @@ def test_reserva_cancelada_no_excluye_ni_aporta_historial(base):
 
     assert base["cultural"].id in ids
     assert svc.tiene_historial(base["cliente"]) is False
-
 
 @pytest.mark.django_db
 def test_lote_conserva_historial_y_se_renueva_al_forzar(base):
@@ -204,7 +195,6 @@ def test_lote_conserva_historial_y_se_renueva_al_forzar(base):
         Recomendacion.objects.filter(cliente=base["cliente"]).count()
         == total_inicial * 2
     )
-
 
 @pytest.mark.django_db
 def test_aceptar_solo_propia_e_idempotente(base):
@@ -236,7 +226,6 @@ def test_aceptar_solo_propia_e_idempotente(base):
     with pytest.raises(ValidationError):
         svc.aceptar_recomendacion(otro_cliente, elegida.id)
 
-
 @pytest.mark.django_db
 def test_api_recomendaciones_incluye_usa_historial(base):
     client = APIClient()
@@ -256,7 +245,6 @@ def test_api_recomendaciones_incluye_usa_historial(base):
     assert respuesta.status_code == status.HTTP_200_OK
     assert respuesta.data["usa_historial"] is True
     assert len(respuesta.data["recomendaciones"]) >= 1
-
 
 @pytest.mark.django_db
 def test_api_entrenar_y_activar_exige_administrador(base):
@@ -288,7 +276,6 @@ def test_api_entrenar_y_activar_exige_administrador(base):
         "/api/v1/ia/admin/recomendador/entrenar/"
     )
     assert denegado.status_code == status.HTTP_403_FORBIDDEN
-
 
 @pytest.mark.django_db
 def test_api_panel_admin_expone_historial_y_versiones(base):

@@ -1,4 +1,3 @@
-"""Flujo de respuesta del asistente conversacional (CU10)."""
 from __future__ import annotations
 
 from decimal import Decimal
@@ -19,9 +18,7 @@ from apps.ia.services.asistente import (
 )
 from apps.ia.services.clasificador import obtener_clasificador
 
-
 def _conversacion_existente(usuario, conversacion_id) -> Conversacion | None:
-    """Carga una conversación propia; nunca permite reutilizar la de otro usuario."""
     if not getattr(usuario, "is_authenticated", False) or not conversacion_id:
         return None
     try:
@@ -32,7 +29,6 @@ def _conversacion_existente(usuario, conversacion_id) -> Conversacion | None:
         raise ValidationError(
             {"conversacion_id": "La conversación no existe o no pertenece al usuario."}
         ) from exc
-
 
 def _persistir_intercambio(
     *,
@@ -45,7 +41,7 @@ def _persistir_intercambio(
     conversacion: Conversacion | None = None,
     estado: dict | None = None,
 ) -> Conversacion | None:
-    """Guarda el turno completo cuando el usuario tiene sesión."""
+
     if not getattr(usuario, "is_authenticated", False):
         return None
 
@@ -110,9 +106,7 @@ def _persistir_intercambio(
         )
         return conversacion_actual
 
-
 def procesar_mensaje(usuario, texto: str, conversacion_id=None) -> dict:
-    """Clasifica el mensaje, valida el rol, responde y persiste el turno."""
     conversacion = _conversacion_existente(usuario, conversacion_id)
     estado = dict(conversacion.estado_dialogo or {}) if conversacion else {}
     pendiente = estado.get("pendiente")

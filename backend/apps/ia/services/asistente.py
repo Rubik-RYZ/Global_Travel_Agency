@@ -1,9 +1,3 @@
-"""Respuestas con datos reales y acciones seguras del asistente (CU10).
-
-La clasificación decide la intención, pero la respuesta y cualquier efecto se
-construyen aquí consultando la base de datos y validando de nuevo el rol. Las
-acciones destructivas o con costo quedan pendientes de confirmación explícita.
-"""
 from __future__ import annotations
 
 import re
@@ -104,34 +98,26 @@ NEGATIVOS = {
     "olvídalo",
 }
 
-
 def _normalizar(texto: str | None) -> str:
     base = unicodedata.normalize("NFKD", (texto or "").lower())
     return "".join(caracter for caracter in base if not unicodedata.combining(caracter))
 
-
 def _limpio(texto: str | None) -> str:
     return re.sub(r"\s+", " ", (texto or "").strip())
-
 
 def _es_afirmativo(texto: str) -> bool:
     return _normalizar(_limpio(texto)) in {_normalizar(item) for item in AFIRMATIVOS}
 
-
 def _es_negativo(texto: str) -> bool:
     return _normalizar(_limpio(texto)) in {_normalizar(item) for item in NEGATIVOS}
-
 
 def _dinero(valor, moneda: str) -> str:
     return f"{moneda} {Decimal(valor):,.2f}"
 
-
 def _fecha(valor: date | datetime) -> str:
     return valor.strftime("%d/%m/%Y")
 
-
 def clasificar_por_palabras(texto: str) -> str | None:
-    """Refuerza intenciones críticas cuando el modelo duda con frases nuevas."""
     normalizado = _normalizar(texto)
     codigo = _extraer_codigo(texto)
 
@@ -169,14 +155,12 @@ def clasificar_por_palabras(texto: str) -> str | None:
         return "estado_reserva"
     return None
 
-
 def _tokens(texto: str | None) -> list[str]:
     return [
         token
         for token in re.findall(r"[a-z0-9]{3,}", _normalizar(texto))
         if token not in STOPWORDS
     ]
-
 
 def _puntaje_nombre(nombre: str | None, texto: str) -> int:
     nombre_normalizado = _normalizar(nombre)
@@ -186,7 +170,6 @@ def _puntaje_nombre(nombre: str | None, texto: str) -> int:
         return 100 + len(nombre_normalizado)
     return sum(1 for token in _tokens(nombre) if token in _normalizar(texto))
 
-
 def _paquetes() -> list[Paquete]:
     return list(
         Paquete.objects.filter(activo=True, destino__activo=True)
@@ -194,7 +177,6 @@ def _paquetes() -> list[Paquete]:
         .prefetch_related("salidas")
         .order_by("nombre")
     )
-
 
 def _mejor_paquete(texto: str, paquetes: list[Paquete] | None = None) -> Paquete | None:
     candidatos = paquetes if paquetes is not None else _paquetes()
@@ -211,10 +193,8 @@ def _mejor_paquete(texto: str, paquetes: list[Paquete] | None = None) -> Paquete
             mejor_puntaje = puntaje
     return mejor
 
-
 def _destinos() -> list[Destino]:
     return list(Destino.objects.filter(activo=True).order_by("nombre"))
-
 
 def _salidas_futuras(paquete_id: int | None = None) -> list[PaqueteSalida]:
     hoy = timezone.localdate()
@@ -232,7 +212,6 @@ def _salidas_futuras(paquete_id: int | None = None) -> list[PaqueteSalida]:
         qs = qs.filter(paquete_id=paquete_id)
     return list(qs)
 
-
 def _proximas_salidas(paquete: Paquete, limite: int = 3) -> list[PaqueteSalida]:
     hoy = timezone.localdate()
     return [
@@ -240,7 +219,6 @@ def _proximas_salidas(paquete: Paquete, limite: int = 3) -> list[PaqueteSalida]:
         for salida in paquete.salidas.all()
         if salida.fecha_salida >= hoy and salida.cupos_disponibles > 0
     ][:limite]
-
 
 def _linea_paquete(paquete: Paquete) -> str:
     salidas = _proximas_salidas(paquete)
@@ -255,11 +233,9 @@ def _linea_paquete(paquete: Paquete) -> str:
         f"{_dinero(paquete.precio_base, paquete.moneda)}{salida_txt}"
     )
 
-
 def _extraer_codigo(texto: str) -> str | None:
     encontrado = re.search(r"\bRES-\d{4}-\d{1,6}\b", texto, re.IGNORECASE)
     return encontrado.group(0).upper() if encontrado else None
-
 
 def _extraer_personas(texto: str) -> int:
     normalizado = _normalizar(texto)
@@ -291,7 +267,6 @@ def _extraer_personas(texto: str) -> int:
             return valor
     return 1
 
-
 def _extraer_fecha(texto: str) -> date | None:
     patrones = (
         (r"\b(\d{4})-(\d{2})-(\d{2})\b", ("year", "month", "day")),
@@ -310,7 +285,6 @@ def _extraer_fecha(texto: str) -> date | None:
             continue
     return None
 
-
 def _extraer_monto(texto: str) -> Decimal | None:
     sin_codigo = re.sub(
         r"\bRES-\d{4}-\d{1,6}\b", "", texto, flags=re.IGNORECASE
@@ -328,14 +302,12 @@ def _extraer_monto(texto: str) -> Decimal | None:
     except InvalidOperation:
         return None
 
-
 def _extraer_metodo(texto: str) -> str:
     normalizado = _normalizar(texto)
     for metodo in ("transferencia", "efectivo", "tarjeta", "qr"):
         if metodo in normalizado:
             return metodo
     return "efectivo"
-
 
 def _rango_ventas(texto: str) -> tuple[date, date, str]:
     hoy = timezone.localdate()
@@ -350,10 +322,8 @@ def _rango_ventas(texto: str) -> tuple[date, date, str]:
         return date(hoy.year, hoy.month, 1), hoy, "mes en curso"
     return date(hoy.year, hoy.month, 1), hoy, "mes en curso"
 
-
 def _cliente_de(usuario):
     return getattr(usuario, "cliente", None)
-
 
 def _reservas_visibles(usuario):
     qs = Reserva.objects.select_related(
@@ -366,14 +336,11 @@ def _reservas_visibles(usuario):
         return qs.filter(cliente=cliente)
     return qs
 
-
 def _reserva_visible_codigo(usuario, codigo: str) -> Reserva | None:
     return _reservas_visibles(usuario).filter(codigo__iexact=codigo).first()
 
-
 def _reserva_visible_id(usuario, reserva_id: int | str) -> Reserva | None:
     return _reservas_visibles(usuario).filter(pk=reserva_id).first()
-
 
 def _reserva_base(usuario, texto: str) -> Reserva | None:
     codigo = _extraer_codigo(texto)
@@ -382,7 +349,6 @@ def _reserva_base(usuario, texto: str) -> Reserva | None:
     if rol_para_permisos(usuario) == NOMBRE_CLIENTE:
         return _reservas_visibles(usuario).first()
     return None
-
 
 def _formatear_reserva(reserva: Reserva) -> str:
     pagado = total_pagado(reserva)
@@ -397,7 +363,6 @@ def _formatear_reserva(reserva: Reserva) -> str:
         f"{_dinero(saldo, reserva.moneda)}"
     )
 
-
 def _mensaje_error(exc: DjangoValidationError) -> str:
     detalle = getattr(exc, "message_dict", None)
     if detalle:
@@ -406,7 +371,6 @@ def _mensaje_error(exc: DjangoValidationError) -> str:
             for campo, valores in detalle.items()
         )
     return "; ".join(str(item) for item in getattr(exc, "messages", [str(exc)]))
-
 
 def _listar_salidas(texto: str, *, limite: int = 8) -> str:
     paquete = _mejor_paquete(texto)
@@ -428,7 +392,6 @@ def _listar_salidas(texto: str, *, limite: int = 8) -> str:
         )
     return "\n".join(lineas)
 
-
 def _salida_para_reserva(texto: str, personas: int) -> PaqueteSalida | None:
     paquete = _mejor_paquete(texto)
     if paquete is None:
@@ -442,7 +405,6 @@ def _salida_para_reserva(texto: str, personas: int) -> PaqueteSalida | None:
             return salida
     return None
 
-
 def _resumen_pendiente(intencion: str, resumen: str, **datos) -> tuple[str, dict]:
     pendiente = {"intencion": intencion, "resumen": resumen, **datos}
     respuesta = (
@@ -450,7 +412,6 @@ def _resumen_pendiente(intencion: str, resumen: str, **datos) -> tuple[str, dict
         "¿Confirmas la operación? Responde «sí» para continuar o «no» para cancelar."
     )
     return respuesta, {"pendiente": pendiente}
-
 
 def _responder_info(usuario, texto: str, intencion: str) -> str:
     paquetes = _paquetes()
@@ -645,7 +606,6 @@ def _responder_info(usuario, texto: str, intencion: str) -> str:
         "precios, disponibilidad, requisitos, pagos y reservas. ¿Puedes reformularlo?"
     )
 
-
 def _responder_estado_reserva(usuario, texto: str) -> str:
     codigo = _extraer_codigo(texto)
     if codigo:
@@ -663,7 +623,6 @@ def _responder_estado_reserva(usuario, texto: str) -> str:
         )
 
     return "Indícame el código de reserva (por ejemplo RES-2026-000001) o busca por documento."
-
 
 def _responder_buscar_reserva(usuario, texto: str) -> str:
     codigo = _extraer_codigo(texto)
@@ -696,7 +655,6 @@ def _responder_buscar_reserva(usuario, texto: str) -> str:
     return "Reservas encontradas:\n" + "\n\n".join(
         _formatear_reserva(reserva) for reserva in list(unicos.values())[:5]
     )
-
 
 def _responder_registrar_pago(usuario, texto: str, estado: dict) -> tuple[str, dict]:
     reserva = _reserva_base(usuario, texto)
@@ -739,7 +697,6 @@ def _responder_registrar_pago(usuario, texto: str, estado: dict) -> tuple[str, d
         metodo=metodo,
     )
 
-
 def _responder_cancelar(usuario, texto: str, estado: dict) -> tuple[str, dict]:
     reserva = _reserva_base(usuario, texto)
     if reserva is None:
@@ -763,7 +720,6 @@ def _responder_cancelar(usuario, texto: str, estado: dict) -> tuple[str, dict]:
         reserva_id=reserva.id,
         codigo=reserva.codigo,
     )
-
 
 def _responder_modificar(usuario, texto: str, estado: dict) -> tuple[str, dict]:
     reserva = _reserva_base(usuario, texto)
@@ -836,7 +792,6 @@ def _responder_modificar(usuario, texto: str, estado: dict) -> tuple[str, dict]:
         nueva_salida_id=nueva_salida.id,
     )
 
-
 def _responder_iniciar_reserva(usuario, texto: str, estado: dict) -> tuple[str, dict]:
     if rol_para_permisos(usuario) != NOMBRE_CLIENTE:
         return (
@@ -884,7 +839,6 @@ def _responder_iniciar_reserva(usuario, texto: str, estado: dict) -> tuple[str, 
         num_personas=1,
     )
 
-
 def _responder_resumen_ventas(texto: str) -> str:
     desde, hasta, etiqueta = _rango_ventas(texto)
     datos = resumen_ventas(desde=desde, hasta=hasta)
@@ -896,7 +850,6 @@ def _responder_resumen_ventas(texto: str) -> str:
         f"• Ingresos: BOB {datos['ingresos_bob']:,.2f}\n"
         f"• Ticket promedio: BOB {datos['ticket_promedio_bob']:,.2f}"
     )
-
 
 def _responder_ocupacion() -> str:
     hoy = timezone.localdate()
@@ -915,7 +868,6 @@ def _responder_ocupacion() -> str:
         )
     return "\n".join(lineas)
 
-
 def construir_respuesta(
     usuario,
     texto: str,
@@ -923,7 +875,7 @@ def construir_respuesta(
     estado: dict | None = None,
     conversacion_id=None,
 ) -> tuple[str, dict]:
-    """Devuelve (respuesta, estado_dialogo) para una intención permitida."""
+
     estado = dict(estado or {})
     estado.pop("pendiente", None)
 
@@ -982,14 +934,13 @@ def construir_respuesta(
 
     return _responder_info(usuario, texto, "fallback"), estado
 
-
 def ejecutar_pendiente(
     usuario,
     pendiente: dict,
     *,
     conversacion_id=None,
 ) -> tuple[str, dict]:
-    """Ejecuta una acción previamente confirmada y limpia el estado pendiente."""
+
     intencion = pendiente.get("intencion", "")
     if not puede_usar_intencion(usuario, intencion):
         return "Tu rol ya no tiene permiso para completar esa operación.", {}
@@ -1074,9 +1025,7 @@ def ejecutar_pendiente(
 
     return "La operación pendiente ya no es válida.", {}
 
-
 def respuesta_denegada(usuario, intencion: str) -> str:
-    """Mensaje específico cuando el rol no puede usar una intención."""
     rol = rol_para_permisos(usuario)
     if rol == ROL_ANONIMO:
         return (

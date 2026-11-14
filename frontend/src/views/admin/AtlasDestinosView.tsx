@@ -38,12 +38,10 @@ function romano(n: number): string {
   return ROMANOS[n - 1] ?? String(n)
 }
 
-/** Cursor/cabecera del atlas por número de lámina. */
 function capitulo(d: Destino, i: number): string {
   return `Capítulo ${romano(i + 1)} · ${nombrePais(d.pais, d.pais_codigo)}`
 }
 
-/** Opciones de continente para el selector de la cápsula de búsqueda. */
 const OPCIONES_CONTINENTE = [
   { valor: '', texto: 'Todos los cuadernos' },
   ...ORDEN_REGIONES.map((r) => ({ valor: r, texto: etiquetaRegion(r) })),
@@ -58,14 +56,6 @@ const OPCIONES_ESTADO = [
 
 type Vista = 'grid' | 'list'
 
-/**
- * 17. Panel · Atlas Maestro de Enclaves → /admin/destinos
- *
- * Catálogo de destinos con la veta editorial del cuaderno de viajes: fichas
- * comerciales reales (duración, inversión, carácter) y acciones de curación.
- * El personal recibe el destino completo (con `activo`), de modo que el filtro
- * por estado se resuelve en el cliente sobre una sola carga del catálogo.
- */
 export function AtlasDestinosView() {
   const usuario = useAuthStore((s) => s.usuario)
   const puedeEditar = esAdmin(usuario?.rol) || usuario?.rol === 'agente'
@@ -159,7 +149,6 @@ export function AtlasDestinosView() {
 
   return (
     <div className="mx-auto max-w-6xl">
-      {/* ── SECTION 1 · Cabecera maestra y métricas ─────────────────────── */}
       <header className="flex flex-col gap-8">
         <div className="flex flex-wrap items-center justify-between gap-4">
           <div className="inline-flex items-center gap-3 rounded-full bg-surface-container-high px-4 py-1.5">
@@ -202,7 +191,6 @@ export function AtlasDestinosView() {
           )}
         </div>
 
-        {/* Placas de métricas */}
         <div className="grid gap-5 pt-2 md:grid-cols-3">
           <Metrica
             etiqueta="Enclaves archivados"
@@ -228,7 +216,6 @@ export function AtlasDestinosView() {
         </div>
       </header>
 
-      {/* ── SECTION 2 · Cápsula de búsqueda y filtros ──────────────────── */}
       <section className="mt-10 flex flex-col gap-5 rounded-lg bg-surface-container-low p-6 shadow-paper sm:p-8">
         <form
           onSubmit={(e) => {
@@ -357,7 +344,6 @@ export function AtlasDestinosView() {
         </p>
       )}
 
-      {/* ── SECTION 3 · Láminas abiertas al viajero ────────────────────── */}
       <section className="mt-10 flex flex-col gap-6">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-3">
@@ -423,7 +409,6 @@ export function AtlasDestinosView() {
         )}
       </section>
 
-      {/* ── SECTION 4 · Pie editorial ──────────────────────────────────── */}
       <section className="relative mt-12 flex flex-col items-center justify-between gap-8 overflow-hidden rounded-lg bg-surface-container p-8 md:flex-row lg:p-12">
         <div className="pointer-events-none absolute -bottom-10 -right-10 opacity-[0.07]">
           <RosaVientos className="h-64 w-64 text-forest-night" />
@@ -457,10 +442,6 @@ export function AtlasDestinosView() {
     </div>
   )
 }
-
-/* -------------------------------------------------------------------------- */
-/* Piezas                                                                     */
-/* -------------------------------------------------------------------------- */
 
 function Metrica({
   etiqueta,
@@ -526,7 +507,6 @@ function Chip({
   )
 }
 
-/** Sello postal circular con el código del país y su latitud. */
 function SelloPostal({ destino }: { destino: Destino }) {
   return (
     <div className="flex h-16 w-16 -rotate-6 flex-col items-center justify-center rounded-full bg-parchment/90 p-1.5 text-center text-primary shadow-sm backdrop-blur-sm">
@@ -581,7 +561,6 @@ function LaminaEnclave({
   return (
     <article className="group flex flex-col justify-between overflow-hidden rounded-lg bg-parchment shadow-paper transition-all duration-300 hover:shadow-paper-lg">
       <div className="flex flex-col gap-6 p-7 sm:p-9">
-        {/* Registro superior */}
         <div className="flex items-start justify-between gap-4">
           <div className="flex flex-col">
             <span className="coord text-terracotta">{capitulo(destino, indice)}</span>
@@ -598,7 +577,6 @@ function LaminaEnclave({
           </div>
         </div>
 
-        {/* Lámina */}
         <div className="relative h-72 overflow-hidden rounded-xl bg-surface-dim sm:h-80">
           {destino.imagen_principal ? (
             <img
@@ -630,7 +608,6 @@ function LaminaEnclave({
           )}
         </div>
 
-        {/* Título y narrativa */}
         <div className="flex flex-col gap-2.5">
           <h2 className="font-display text-2xl text-primary transition-colors group-hover:text-terracotta">
             {destino.nombre}
@@ -642,7 +619,6 @@ function LaminaEnclave({
           )}
         </div>
 
-        {/* Tabla de espécimen (datos comerciales reales) */}
         <div className="grid grid-cols-2 gap-3 rounded-xl bg-surface-container p-4 sm:grid-cols-3">
           <Especimen
             etiqueta="Duración"
@@ -661,7 +637,6 @@ function LaminaEnclave({
         </div>
       </div>
 
-      {/* Franja de acciones */}
       <div className="flex flex-wrap items-center justify-between gap-3 bg-surface-container-high px-7 py-4">
         <div className="flex flex-wrap items-center gap-2">
           <Link

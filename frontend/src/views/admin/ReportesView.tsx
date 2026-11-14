@@ -43,10 +43,6 @@ function metricaDe(valor: string) {
   return valor.charAt(0).toUpperCase() + valor.slice(1)
 }
 
-/* -------------------------------------------------------------------------- */
-/* Piezas de la pantalla                                                      */
-/* -------------------------------------------------------------------------- */
-
 function Panel({
   titulo,
   descripcion,
@@ -145,10 +141,6 @@ function FilaVacia({ columnas }: { columnas: number }) {
   )
 }
 
-/* -------------------------------------------------------------------------- */
-/* Grafico de barras (SVG, sin dependencias externas)                         */
-/* -------------------------------------------------------------------------- */
-
 function GraficoBarras({
   serie,
   metrica,
@@ -236,10 +228,6 @@ function GraficoBarras({
     </div>
   )
 }
-
-/* -------------------------------------------------------------------------- */
-/* Pantalla                                                                   */
-/* -------------------------------------------------------------------------- */
 
 export function ReportesView() {
   const [desde, setDesde] = useState(isoLocal(HACE_29))
@@ -340,7 +328,6 @@ export function ReportesView() {
         </div>
       )}
 
-      {/* Filtros */}
       <section className="rounded-lg border border-parchment-border bg-surface-container-lowest p-4 shadow-paper">
         <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-5">
           <div>
@@ -415,7 +402,6 @@ export function ReportesView() {
         </p>
       ) : (
         <>
-          {/* Indicadores */}
           <div className={`grid gap-4 sm:grid-cols-2 lg:grid-cols-3 ${cargando ? 'opacity-60' : ''}`}>
             <Kpi
               etiqueta="Reservas válidas"
@@ -455,7 +441,6 @@ export function ReportesView() {
             />
           </div>
 
-          {/* Gráfico */}
           <Panel
             titulo="Evolución del periodo"
             descripcion="Alterna entre ingresos aprobados y cantidad de reservas válidas."
@@ -484,7 +469,6 @@ export function ReportesView() {
             <GraficoBarras serie={datos?.serie ?? []} metrica={metrica} />
           </Panel>
 
-          {/* Canal y método */}
           <div className="grid gap-6 lg:grid-cols-2">
             <Panel
               titulo="Ventas por canal"
@@ -533,7 +517,6 @@ export function ReportesView() {
             </Panel>
           </div>
 
-          {/* Paquetes */}
           <Panel
             titulo="Rendimiento por paquete"
             descripcion="Los paquetes se ordenan por ingresos aprobados dentro del periodo."
@@ -562,7 +545,6 @@ export function ReportesView() {
             </TablaSimple>
           </Panel>
 
-          {/* Destinos y empleados */}
           <div className="grid gap-6 lg:grid-cols-2">
             <Panel
               titulo="Rendimiento por destino"
@@ -617,7 +599,6 @@ export function ReportesView() {
             </Panel>
           </div>
 
-          {/* Ocupación */}
           <Panel
             titulo="Ocupación de salidas"
             descripcion="Próximos 90 días · cupos vendidos sobre cupos totales de cada salida."

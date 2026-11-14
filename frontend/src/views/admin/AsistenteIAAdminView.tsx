@@ -50,7 +50,6 @@ function metrica(panel: PanelEntrenamiento, clave: string): string {
   return typeof valor === 'number' ? String(valor) : String(valor)
 }
 
-/** 41. Panel · Entrenamiento del asistente → /admin/asistente-ia */
 export function AsistenteIAAdminView() {
   const [panel, setPanel] = useState<PanelEntrenamiento | null>(null)
   const [seleccionId, setSeleccionId] = useState<number | null>(null)

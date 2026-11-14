@@ -1,4 +1,3 @@
-"""Serializadores para el dominio de hoteles y habitaciones (CU5)."""
 from rest_framework import serializers
 
 from apps.catalogo.models import Habitacion, Hotel
@@ -11,7 +10,6 @@ from apps.catalogo.services.hoteles import (
     crear_hotel,
 )
 
-
 class HabitacionSerializer(serializers.ModelSerializer):
     class Meta:
         model = Habitacion
@@ -23,7 +21,6 @@ class HabitacionSerializer(serializers.ModelSerializer):
             "precio_noche",
             "moneda",
         ]
-
 
 class HabitacionWriteSerializer(serializers.ModelSerializer):
     hotel_id = serializers.IntegerField(write_only=True)
@@ -51,7 +48,6 @@ class HabitacionWriteSerializer(serializers.ModelSerializer):
     def update(self, instance, validated_data):
         return actualizar_habitacion(instance.id, **validated_data)
 
-
 class HotelListSerializer(serializers.ModelSerializer):
     proveedor_nombre = serializers.CharField(source="proveedor.nombre", read_only=True)
     destino_nombre = serializers.CharField(source="destino.nombre", read_only=True)
@@ -75,7 +71,6 @@ class HotelListSerializer(serializers.ModelSerializer):
             "habitaciones_count",
         ]
 
-
 class HotelDetailSerializer(serializers.ModelSerializer):
     proveedor = ProveedorSerializer(read_only=True)
     destino = DestinoResumenSerializer(read_only=True)
@@ -96,7 +91,6 @@ class HotelDetailSerializer(serializers.ModelSerializer):
             "activo",
             "habitaciones",
         ]
-
 
 class HotelWriteSerializer(serializers.ModelSerializer):
     proveedor_id = serializers.IntegerField(write_only=True)
@@ -140,4 +134,3 @@ class HotelWriteSerializer(serializers.ModelSerializer):
 
     def update(self, instance, validated_data):
         return actualizar_hotel(instance.id, **validated_data)
-

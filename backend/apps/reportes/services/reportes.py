@@ -1,8 +1,3 @@
-"""Agregaciones de reportes gerenciales calculadas sobre las tablas existentes.
-
-No se crean tablas nuevas: ventas e ingresos salen de `reservas` y `pagos`,
-mientras que la ocupacion se deriva de `paquete_salidas`.
-"""
 from __future__ import annotations
 
 import csv
@@ -25,16 +20,13 @@ AGRUPACIONES = {
 
 ETIQUETAS_CANAL = dict(Reserva.CANAL_CHOICES)
 
-
 def _num(valor) -> float:
     return round(float(valor or 0), 2)
-
 
 def _clave_periodo(valor, agrupacion: str) -> str:
     if agrupacion == "mes":
         return valor.strftime("%Y-%m")
     return valor.strftime("%Y-%m-%d")
-
 
 def _etiqueta_periodo(valor, agrupacion: str) -> str:
     if agrupacion == "mes":
@@ -42,7 +34,6 @@ def _etiqueta_periodo(valor, agrupacion: str) -> str:
     if agrupacion == "semana":
         return f"Sem {valor.strftime('%d/%m')}"
     return valor.strftime("%d/%m")
-
 
 def _reservas(desde: date, hasta: date, canal: str | None = None):
     qs = Reserva.objects.filter(
@@ -53,10 +44,8 @@ def _reservas(desde: date, hasta: date, canal: str | None = None):
         qs = qs.filter(canal=canal)
     return qs
 
-
 def _reservas_validas(desde: date, hasta: date, canal: str | None = None):
     return _reservas(desde, hasta, canal).exclude(estado=Reserva.ESTADO_CANCELADA)
-
 
 def _pagos(desde: date, hasta: date, canal: str | None = None):
     qs = Pago.objects.filter(
@@ -68,7 +57,6 @@ def _pagos(desde: date, hasta: date, canal: str | None = None):
         qs = qs.filter(reserva__canal=canal)
     return qs
 
-
 def _fila(periodo: str, etiqueta: str) -> dict:
     return {
         "periodo": periodo,
@@ -77,7 +65,6 @@ def _fila(periodo: str, etiqueta: str) -> dict:
         "pasajeros": 0,
         "ingresos_bob": 0.0,
     }
-
 
 def resumen_ventas(*, desde: date, hasta: date, canal: str | None = None) -> dict:
     validas = _reservas_validas(desde, hasta, canal)
@@ -99,7 +86,6 @@ def resumen_ventas(*, desde: date, hasta: date, canal: str | None = None) -> dic
         "ingresos_bob": _num(ingresos),
         "ticket_promedio_bob": _num(Decimal(ingresos) / pagadas) if pagadas else 0.0,
     }
-
 
 def serie_ventas(
     *, desde: date, hasta: date, agrupacion: str = "dia", canal: str | None = None
@@ -134,7 +120,6 @@ def serie_ventas(
         fila["ingresos_bob"] = _num(item["ingresos"])
 
     return [filas[clave] for clave in sorted(filas)]
-
 
 def por_canal(*, desde: date, hasta: date, canal: str | None = None) -> list[dict]:
     filas: dict[str, dict] = {}
@@ -173,7 +158,6 @@ def por_canal(*, desde: date, hasta: date, canal: str | None = None) -> list[dic
         fila["ingresos_bob"] = _num(item["ingresos"])
 
     return sorted(filas.values(), key=lambda f: f["ingresos_bob"], reverse=True)
-
 
 def por_paquete(*, desde: date, hasta: date, canal: str | None = None) -> list[dict]:
     filas: dict[int | None, dict] = {}
@@ -224,7 +208,6 @@ def por_paquete(*, desde: date, hasta: date, canal: str | None = None) -> list[d
 
     return sorted(filas.values(), key=lambda f: f["ingresos_bob"], reverse=True)
 
-
 def por_destino(*, desde: date, hasta: date, canal: str | None = None) -> list[dict]:
     filas: dict[str, dict] = {}
 
@@ -270,7 +253,6 @@ def por_destino(*, desde: date, hasta: date, canal: str | None = None) -> list[d
 
     return sorted(filas.values(), key=lambda f: f["ingresos_bob"], reverse=True)
 
-
 def por_metodo(*, desde: date, hasta: date, canal: str | None = None) -> list[dict]:
     filas = (
         _pagos(desde, hasta, canal)
@@ -286,7 +268,6 @@ def por_metodo(*, desde: date, hasta: date, canal: str | None = None) -> list[di
         }
         for item in filas
     ]
-
 
 def por_empleado(*, desde: date, hasta: date, canal: str | None = None) -> list[dict]:
     filas: dict[int | None, dict] = {}
@@ -331,7 +312,6 @@ def por_empleado(*, desde: date, hasta: date, canal: str | None = None) -> list[
         reverse=True,
     )
 
-
 def reporte_ventas(
     *, desde: date, hasta: date, agrupacion: str = "dia", canal: str | None = None
 ) -> dict:
@@ -352,7 +332,6 @@ def reporte_ventas(
         "por_metodo": por_metodo(desde=desde, hasta=hasta, canal=canal),
         "por_empleado": por_empleado(desde=desde, hasta=hasta, canal=canal),
     }
-
 
 def csv_ventas(
     *, desde: date, hasta: date, agrupacion: str = "dia", canal: str | None = None
@@ -456,7 +435,6 @@ def csv_ventas(
         ])
 
     return "\ufeff" + buffer.getvalue()
-
 
 def reporte_ocupacion(
     *, desde: date, hasta: date, paquete_id: int | None = None

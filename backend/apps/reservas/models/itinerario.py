@@ -1,10 +1,6 @@
-"""Modelo de itinerario personalizado por reserva (CU8)."""
 from django.db import models
 
-
 class Itinerario(models.Model):
-    """Itinerario cronológico asignado a una reserva de viaje."""
-
     GENERADO_SISTEMA = "sistema"
     GENERADO_IA = "ia"
     GENERADO_PERSONAL = "personal"
@@ -34,4 +30,3 @@ class Itinerario(models.Model):
 
     def __str__(self):
         return f"Itinerario de {self.reserva.codigo} ({self.generado_por})"
-

@@ -1,10 +1,6 @@
-"""Versiones de modelos de IA y sus métricas (CU10 / CU11)."""
 from django.db import models
 
-
 class ModeloIA(models.Model):
-    """Versión entrenada de un clasificador de intenciones o recomendador."""
-
     TIPO_CLASIFICADOR = "clasificador_intenciones"
     TIPO_RECOMENDADOR = "recomendador"
     TIPO_CHOICES = [

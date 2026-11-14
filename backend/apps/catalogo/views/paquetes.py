@@ -1,4 +1,3 @@
-"""Controladores de paquetes turísticos y salidas programadas (CU6)."""
 from rest_framework import status, viewsets
 from rest_framework.response import Response
 
@@ -19,10 +18,7 @@ from apps.catalogo.services.paquetes import (
     obtener_salida,
 )
 
-
 class PaqueteViewSet(viewsets.ModelViewSet):
-    """ViewSet para explorar y administrar paquetes turísticos."""
-
     permission_classes = [EsAdminOAgente]
 
     def get_queryset(self):
@@ -45,10 +41,7 @@ class PaqueteViewSet(viewsets.ModelViewSet):
         eliminar_paquete(paquete_id)
         return Response(status=status.HTTP_204_NO_CONTENT)
 
-
 class PaqueteSalidaViewSet(viewsets.ModelViewSet):
-    """ViewSet para el calendario de salidas programadas y disponibilidad de cupos."""
-
     permission_classes = [EsAdminOAgente]
 
     def get_queryset(self):
@@ -68,4 +61,3 @@ class PaqueteSalidaViewSet(viewsets.ModelViewSet):
         salida_id = int(kwargs["pk"])
         eliminar_salida(salida_id)
         return Response(status=status.HTTP_204_NO_CONTENT)
-

@@ -1,4 +1,3 @@
-"""Controladores de pagos (CU9): libro, ventanilla, compra del cliente y boleta PDF."""
 from decimal import Decimal
 
 from django.db.models import Q, Sum
@@ -31,7 +30,6 @@ ESTADOS_PAGO = set(Pago.Estado.values)
 MONEDAS_PAGO = set(Pago.Moneda.values)
 METODOS_PAGO = {"efectivo", "tarjeta", "qr", "transferencia"}
 
-
 def _fecha(valor, campo: str):
     if not valor:
         return None
@@ -39,7 +37,6 @@ def _fecha(valor, campo: str):
     if not fecha:
         raise ValidationError({campo: "Use el formato YYYY-MM-DD."})
     return fecha
-
 
 def _entero(valor, campo: str):
     if valor in (None, ""):
@@ -49,14 +46,11 @@ def _entero(valor, campo: str):
     except (TypeError, ValueError):
         raise ValidationError({campo: "Use un identificador numerico."})
 
-
 def _monto(valor):
     return str((valor or Decimal("0.00")).quantize(Decimal("0.01")))
 
-
 def _es_personal(usuario) -> bool:
     return getattr(usuario, "rol_id", None) in ROLES_VENTANILLA
-
 
 def _respuesta_venta(reserva, pago) -> dict:
     return {
@@ -65,10 +59,7 @@ def _respuesta_venta(reserva, pago) -> dict:
         "boleta_url": f"/api/v1/pagos/boleta/{reserva.id}/",
     }
 
-
 class PagoListView(generics.ListAPIView):
-    """Libro de pagos del panel (administrador y agente)."""
-
     serializer_class = PagoAdminSerializer
     permission_classes = [EsPanel]
 
@@ -134,10 +125,7 @@ class PagoListView(generics.ListAPIView):
         }
         return respuesta
 
-
 class VentaVentanillaView(APIView):
-    """Venta presencial: solo administradores o agentes (empleados de ventanilla)."""
-
     permission_classes = [IsAuthenticated]
 
     def post(self, request):
@@ -157,10 +145,7 @@ class VentaVentanillaView(APIView):
         reserva, pago = serializer.save()
         return Response(_respuesta_venta(reserva, pago), status=status.HTTP_201_CREATED)
 
-
 class PagoClienteView(APIView):
-    """Pago en linea del viajero autenticado (solo tarjeta o QR, simulacion)."""
-
     permission_classes = [IsAuthenticated]
 
     def post(self, request):
@@ -173,10 +158,7 @@ class PagoClienteView(APIView):
             _respuesta_venta(pago.reserva, pago), status=status.HTTP_201_CREATED
         )
 
-
 class BoletaPDFView(APIView):
-    """Descarga la boleta PDF de una reserva pagada (personal o su titular)."""
-
     permission_classes = [IsAuthenticated]
 
     def get(self, request, reserva_id):

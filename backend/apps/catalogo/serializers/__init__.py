@@ -1,4 +1,3 @@
-"""Capa de esquema del catálogo turístico (CU3 · CU4). Re-exporta los serializers."""
 from apps.catalogo.serializers.aeropuerto import AeropuertoSerializer
 from apps.catalogo.serializers.destino import (
     DestinoResumenSerializer,

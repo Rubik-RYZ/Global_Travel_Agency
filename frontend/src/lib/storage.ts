@@ -1,5 +1,3 @@
-/** Almacenamiento de tokens (localStorage) compartido entre axios y el store. */
-
 export const ACCESS_TOKEN_KEY = 'illimani.access'
 export const REFRESH_TOKEN_KEY = 'illimani.refresh'
 

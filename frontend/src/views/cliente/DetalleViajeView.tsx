@@ -74,7 +74,6 @@ export function DetalleViajeView() {
 
   return (
     <div className="space-y-8">
-      {/* Cabecera */}
       <div className="border-b border-[#231a13]/10 pb-6 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
           <Link to="/mi-cuenta/viajes" className="text-xs uppercase font-semibold text-[#792609] hover:underline block mb-2">
@@ -126,7 +125,6 @@ export function DetalleViajeView() {
         </div>
       )}
 
-      {/* Resumen de Expedición */}
       <div className="grid grid-cols-1 gap-6 sm:grid-cols-3">
         <div className="rounded-xl border border-[#231a13]/10 bg-white p-5 shadow-sm">
           <div className="text-xs uppercase text-[#231a13]/50">Titular de la Reserva</div>
@@ -151,7 +149,6 @@ export function DetalleViajeView() {
         </div>
       </div>
 
-      {/* Lista de Pasajeros */}
       <div className="rounded-2xl border border-[#231a13]/10 bg-white p-6 shadow-sm">
         <h2 className="font-serif text-lg font-bold text-[#231a13] mb-4">
           Manifiesto de Pasajeros ({reserva.pasajeros?.length || 0})

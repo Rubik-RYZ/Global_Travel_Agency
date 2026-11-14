@@ -1,4 +1,3 @@
-"""Panel de entrenamiento del asistente conversacional (CU10)."""
 from django.db.models import ProtectedError
 from rest_framework import viewsets
 from rest_framework.exceptions import ValidationError
@@ -18,10 +17,7 @@ from apps.ia.services.entrenamiento import (
 )
 from apps.usuarios.permissions import EsAdministrador
 
-
 class _ReentrenarAlGuardar:
-    """Mantiene el clasificador sincronizado con los cambios del catálogo."""
-
     def _reentrenar(self):
         reentrenar_clasificador()
 
@@ -47,10 +43,7 @@ class _ReentrenarAlGuardar:
             ) from exc
         self._reentrenar()
 
-
 class IntencionViewSet(_ReentrenarAlGuardar, viewsets.ModelViewSet):
-    """CRUD de intenciones para el administrador."""
-
     permission_classes = [EsAdministrador]
     serializer_class = IntencionAdminSerializer
     pagination_class = None
@@ -58,10 +51,7 @@ class IntencionViewSet(_ReentrenarAlGuardar, viewsets.ModelViewSet):
     def get_queryset(self):
         return listar_intenciones()
 
-
 class FraseEntrenamientoViewSet(_ReentrenarAlGuardar, viewsets.ModelViewSet):
-    """CRUD de frases etiquetadas para el administrador."""
-
     permission_classes = [EsAdministrador]
     serializer_class = FraseEntrenamientoSerializer
     pagination_class = None
@@ -75,7 +65,6 @@ class FraseEntrenamientoViewSet(_ReentrenarAlGuardar, viewsets.ModelViewSet):
         if texto:
             qs = qs.filter(texto__icontains=texto)
         return qs.order_by("intencion__nombre", "id")
-
 
 def _panel_serializado() -> dict:
     datos = resumen_entrenamiento()
@@ -92,19 +81,13 @@ def _panel_serializado() -> dict:
         "modelos": ModeloIASerializer(datos["modelos"], many=True).data,
     }
 
-
 class PanelEntrenamientoView(APIView):
-    """Resumen del catálogo y de la última versión entrenada."""
-
     permission_classes = [EsAdministrador]
 
     def get(self, request):
         return Response(_panel_serializado())
 
-
 class ReentrenarView(APIView):
-    """Reentrena el clasificador con las frases vigentes de la BD."""
-
     permission_classes = [EsAdministrador]
 
     def post(self, request):

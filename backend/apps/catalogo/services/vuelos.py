@@ -1,4 +1,3 @@
-"""Capa de negocio del catálogo — vuelos (CU4)."""
 from __future__ import annotations
 
 from datetime import datetime
@@ -9,7 +8,6 @@ from django.db.models import F, Q, QuerySet
 
 from apps.catalogo.models import Aeropuerto, Proveedor, Vuelo
 
-
 def listar_vuelos(
     *,
     origen: str | None = None,
@@ -19,7 +17,7 @@ def listar_vuelos(
     solo_disponibles: bool = False,
     q: str | None = None,
 ) -> QuerySet[Vuelo]:
-    """Lista vuelos con filtros por ruta, fecha, aerolínea y disponibilidad."""
+
     qs = Vuelo.objects.select_related("proveedor", "origen", "destino").all()
     if origen:
         qs = qs.filter(origen_id=origen.upper())
@@ -40,13 +38,11 @@ def listar_vuelos(
         )
     return qs.order_by("salida", "numero_vuelo")
 
-
 def obtener_vuelo(vuelo_id: int) -> Vuelo:
     try:
         return Vuelo.objects.select_related("proveedor", "origen", "destino").get(pk=vuelo_id)
     except Vuelo.DoesNotExist:
         raise ValidationError({"vuelo_id": "Vuelo no encontrado."})
-
 
 @transaction.atomic
 def crear_vuelo(
@@ -114,7 +110,6 @@ def crear_vuelo(
     vuelo.save()
     return vuelo
 
-
 @transaction.atomic
 def actualizar_vuelo(vuelo_id: int, **kwargs) -> Vuelo:
     vuelo = obtener_vuelo(vuelo_id)
@@ -159,12 +154,10 @@ def actualizar_vuelo(vuelo_id: int, **kwargs) -> Vuelo:
     vuelo.save()
     return vuelo
 
-
 @transaction.atomic
 def eliminar_vuelo(vuelo_id: int) -> None:
     vuelo = obtener_vuelo(vuelo_id)
-    # Si está asignado a salidas programadas protegidas
+
     if vuelo.salidas_ida.exists() or vuelo.salidas_vuelta.exists():
         raise ValidationError({"vuelo": "No se puede eliminar un vuelo asignado a salidas programadas de paquetes."})
     vuelo.delete()
-

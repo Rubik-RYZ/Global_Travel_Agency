@@ -1,8 +1,3 @@
-"""Venta presencial en ventanilla (CU9).
-
-Resuelve (o registra) al cliente walk-in y emite la reserva + el pago total en
-una sola transaccion, reutilizando `crear_reserva_pagada`.
-"""
 from __future__ import annotations
 
 from django.core.exceptions import ValidationError
@@ -10,7 +5,6 @@ from django.db import transaction
 
 from apps.pagos.services.pagos import crear_reserva_pagada
 from apps.usuarios.models import Cliente
-
 
 def _resolver_cliente(*, cliente_id=None, cliente_nuevo=None) -> Cliente:
     if cliente_id:
@@ -31,7 +25,6 @@ def _resolver_cliente(*, cliente_id=None, cliente_nuevo=None) -> Cliente:
         fecha_nacimiento=cliente_nuevo.get("fecha_nacimiento"),
     )
 
-
 @transaction.atomic
 def registrar_venta_ventanilla(
     *,
@@ -43,7 +36,7 @@ def registrar_venta_ventanilla(
     metodo: str = "efectivo",
     registrado_por=None,
 ):
-    """Registra la venta completa de mostrador (cliente + reserva + pago)."""
+
     cliente = _resolver_cliente(cliente_id=cliente_id, cliente_nuevo=cliente_nuevo)
     return crear_reserva_pagada(
         cliente_id=cliente.id,

@@ -1,10 +1,6 @@
-"""Bitácora de auditoría (CU1)."""
 from django.db import models
 
-
 class Auditoria(models.Model):
-    """Bitácora de seguridad: logins, cambios y acciones relevantes."""
-
     usuario = models.ForeignKey(
         "usuarios.Usuario",
         on_delete=models.SET_NULL,

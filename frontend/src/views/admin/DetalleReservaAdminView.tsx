@@ -149,7 +149,6 @@ export function DetalleReservaAdminView() {
         </div>
       )}
 
-      {/* Datos generales */}
       <div className="grid grid-cols-1 gap-6 sm:grid-cols-4">
         <div className="rounded-xl border border-[#231a13]/10 bg-white p-5 shadow-sm">
           <div className="text-xs uppercase text-[#231a13]/50">Cliente / Titular</div>
@@ -179,7 +178,6 @@ export function DetalleReservaAdminView() {
         </div>
       </div>
 
-      {/* Manifiesto de pasajeros */}
       <div className="rounded-2xl border border-[#231a13]/10 bg-white p-6 shadow-sm">
         <h2 className="font-serif text-lg font-bold text-[#231a13] mb-4">
           Manifiesto de Pasajeros Registrados ({reserva.pasajeros?.length || 0})

@@ -1,8 +1,3 @@
-"""Capa de presentación de CU1 · Seguridad y acceso + CU2 · Clientes.
-
-Re-exporta las vistas para que `from apps.usuarios.views import ...` siga
-funcionando igual.
-"""
 from apps.usuarios.views.acceso import (
     LoginView,
     LogoutView,

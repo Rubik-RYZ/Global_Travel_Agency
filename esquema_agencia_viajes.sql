@@ -1,6 +1,3 @@
--- Esquema actual: agencia_viajes (PostgreSQL 15)
--- 27 tablas de aplicación; se excluyen auth_*, django_* y token_blacklist_*.
-
 SET client_encoding = 'UTF8';
 SET standard_conforming_strings = on;
 
@@ -669,7 +666,6 @@ CREATE INDEX vuelos_origen_6e462295_like
 CREATE INDEX vuelos_proveedor_id_073e26be
     ON vuelos USING btree (proveedor_id);
 
--- Datos base
 INSERT INTO roles (id, nombre) VALUES
     (1, 'administrador'),
     (2, 'agente'),
@@ -705,6 +701,3 @@ INSERT INTO intenciones (nombre, descripcion, activa) VALUES
     ('resumen_ventas', 'El administrador consulta ventas e ingresos.', TRUE),
     ('reporte_ocupacion', 'El administrador consulta ocupación de paquetes o salidas.', TRUE)
 ON CONFLICT (nombre) DO NOTHING;
-
--- Las 546 frases se cargan con:
--- python manage.py cargar_intenciones_ia

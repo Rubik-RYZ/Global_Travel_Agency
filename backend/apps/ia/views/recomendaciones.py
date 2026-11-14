@@ -1,4 +1,3 @@
-"""Endpoints del recomendador de paquetes (CU11)."""
 from django.shortcuts import get_object_or_404
 from rest_framework.response import Response
 from rest_framework.views import APIView
@@ -23,9 +22,7 @@ from apps.usuarios.models import ClientePreferencia
 from apps.usuarios.permissions import EsAdministrador, EsCliente
 from apps.usuarios.services.clientes import cliente_de_usuario
 
-
 def _panel_recomendaciones_data() -> dict:
-    """Panel administrativo: calidad, historial y versiones del recomendador."""
     datos = resumen_admin()
     return {
         "resumen": datos["resumen"],
@@ -43,10 +40,7 @@ def _panel_recomendaciones_data() -> dict:
         "historial": datos["historial"],
     }
 
-
 class RecomendacionesView(APIView):
-    """Recomendaciones del viajero autenticado, persistidas en la BD."""
-
     permission_classes = [EsCliente]
 
     def get(self, request):
@@ -85,10 +79,7 @@ class RecomendacionesView(APIView):
             ).data
         )
 
-
 class AceptarRecomendacionView(APIView):
-    """Marca una recomendación como aceptada (clic en el paquete)."""
-
     permission_classes = [EsCliente]
 
     def post(self, request, pk: int):
@@ -98,29 +89,20 @@ class AceptarRecomendacionView(APIView):
         recomendacion = aceptar_recomendacion(cliente, pk)
         return Response(RecomendacionSerializer(recomendacion).data)
 
-
 class PanelRecomendacionesView(APIView):
-    """Indicadores de calidad del recomendador para el administrador."""
-
     permission_classes = [EsAdministrador]
 
     def get(self, request):
         return Response(_panel_recomendaciones_data())
 
-
 class EntrenarRecomendadorView(APIView):
-    """Genera una nueva versión activa del recomendador."""
-
     permission_classes = [EsAdministrador]
 
     def post(self, request):
         entrenar_recomendador()
         return Response(_panel_recomendaciones_data())
 
-
 class ActivarModeloRecomendadorView(APIView):
-    """Activa una versión anterior del recomendador."""
-
     permission_classes = [EsAdministrador]
 
     def post(self, request, pk: int):

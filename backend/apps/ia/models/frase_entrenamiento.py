@@ -1,10 +1,6 @@
-"""Frases de entrenamiento asociadas a una intención (CU10)."""
 from django.db import models
 
-
 class FraseEntrenamiento(models.Model):
-    """Ejemplo de texto etiquetado con la intención que representa."""
-
     ORIGEN_MANUAL = "manual"
     ORIGEN_HISTORIAL = "historial"
     ORIGEN_CHOICES = [

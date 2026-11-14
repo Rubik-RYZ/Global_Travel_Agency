@@ -1,4 +1,3 @@
-"""Capa de negocio del catálogo — paquetes turísticos y salidas programadas (CU6)."""
 from __future__ import annotations
 
 from datetime import date
@@ -8,11 +7,6 @@ from django.db import transaction
 from django.db.models import F, Q, QuerySet
 
 from apps.catalogo.models import Destino, Hotel, Paquete, PaqueteSalida, Vuelo
-
-
-# ─────────────────────────────────────────────────────────────────────────────
-# PAQUETES
-# ─────────────────────────────────────────────────────────────────────────────
 
 def listar_paquetes(
     *,
@@ -34,7 +28,6 @@ def listar_paquetes(
         )
     return qs.order_by("nombre")
 
-
 def obtener_paquete(paquete_id: int) -> Paquete:
     try:
         return (
@@ -44,7 +37,6 @@ def obtener_paquete(paquete_id: int) -> Paquete:
         )
     except Paquete.DoesNotExist:
         raise ValidationError({"paquete_id": "Paquete turístico no encontrado."})
-
 
 @transaction.atomic
 def crear_paquete(
@@ -86,7 +78,6 @@ def crear_paquete(
     paquete.save()
     return paquete
 
-
 @transaction.atomic
 def actualizar_paquete(paquete_id: int, **kwargs) -> Paquete:
     paquete = obtener_paquete(paquete_id)
@@ -126,20 +117,14 @@ def actualizar_paquete(paquete_id: int, **kwargs) -> Paquete:
     paquete.save()
     return paquete
 
-
 @transaction.atomic
 def eliminar_paquete(paquete_id: int) -> None:
     paquete = obtener_paquete(paquete_id)
-    # Si tiene salidas con reservas
+
     for salida in paquete.salidas.all():
         if salida.reservas.exists():
             raise ValidationError({"paquete": "No se puede eliminar un paquete con reservas registradas."})
     paquete.delete()
-
-
-# ─────────────────────────────────────────────────────────────────────────────
-# SALIDAS PROGRAMADAS
-# ─────────────────────────────────────────────────────────────────────────────
 
 def listar_salidas(
     *,
@@ -156,13 +141,11 @@ def listar_salidas(
         qs = qs.filter(cupos_disponibles__gt=0)
     return qs.order_by("fecha_salida")
 
-
 def obtener_salida(salida_id: int) -> PaqueteSalida:
     try:
         return PaqueteSalida.objects.select_related("paquete", "vuelo_ida", "vuelo_vuelta").get(pk=salida_id)
     except PaqueteSalida.DoesNotExist:
         raise ValidationError({"salida_id": "Salida programada no encontrada."})
-
 
 @transaction.atomic
 def crear_salida(
@@ -210,7 +193,6 @@ def crear_salida(
     salida.save()
     return salida
 
-
 @transaction.atomic
 def actualizar_salida(salida_id: int, **kwargs) -> PaqueteSalida:
     salida = obtener_salida(salida_id)
@@ -241,11 +223,9 @@ def actualizar_salida(salida_id: int, **kwargs) -> PaqueteSalida:
     salida.save()
     return salida
 
-
 @transaction.atomic
 def eliminar_salida(salida_id: int) -> None:
     salida = obtener_salida(salida_id)
     if salida.reservas.exists():
         raise ValidationError({"salida": "No se puede eliminar una salida que ya tiene reservas asociadas."})
     salida.delete()
-

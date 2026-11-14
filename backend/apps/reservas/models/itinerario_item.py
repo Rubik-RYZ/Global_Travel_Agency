@@ -1,11 +1,7 @@
-"""Actividades e hitos día por día del itinerario (CU8)."""
 from django.db import models
 from django.db.models import UniqueConstraint
 
-
 class ItinerarioItem(models.Model):
-    """Actividad o escala horaria dentro de un día del itinerario."""
-
     itinerario = models.ForeignKey(
         "reservas.Itinerario",
         on_delete=models.CASCADE,
@@ -35,4 +31,3 @@ class ItinerarioItem(models.Model):
     def __str__(self):
         hora_str = f" a las {self.hora.strftime('%H:%M')}" if self.hora else ""
         return f"Día {self.dia}{hora_str}: {self.titulo}"
-

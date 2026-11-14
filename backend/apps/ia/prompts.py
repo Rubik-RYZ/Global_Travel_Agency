@@ -1,4 +1,3 @@
-"""Prompts del asistente conversacional según el rol (CU10)."""
 from apps.ia.permissions import (
     ROL_ANONIMO,
     intenciones_permitidas,
@@ -41,9 +40,7 @@ ocupación. Aun así, valida siempre los filtros y confirma las acciones sensibl
 antes de ejecutarlas. No expongas credenciales ni secretos.""",
 }
 
-
 def prompt_para_rol(rol: str | None = ROL_ANONIMO) -> str:
-    """Devuelve el prompt completo con las intenciones habilitadas del rol."""
     clave = rol if rol in PROMPTS_POR_ROL else ROL_ANONIMO
     habilitadas = ", ".join(sorted(intenciones_permitidas(clave)))
     return (
@@ -51,14 +48,10 @@ def prompt_para_rol(rol: str | None = ROL_ANONIMO) -> str:
         f"Intenciones habilitadas para este rol: {habilitadas}."
     )
 
-
 def prompt_para_usuario(usuario) -> str:
-    """Devuelve el prompt que corresponde al rol efectivo del usuario."""
     return prompt_para_rol(rol_para_permisos(usuario))
 
-
 def construir_prompt(usuario, contexto: str | None = None) -> str:
-    """Agrega al prompt del rol los datos recuperados para responder."""
     prompt = prompt_para_usuario(usuario)
     if contexto:
         prompt = f"{prompt}\n\nDatos recuperados para esta consulta:\n{contexto}"

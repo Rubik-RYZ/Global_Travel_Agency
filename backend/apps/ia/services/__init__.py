@@ -1,4 +1,3 @@
-"""Capa de negocio del dominio 'ia' (CU10 + CU11)."""
 from apps.ia.services.chat import procesar_mensaje
 from apps.ia.services.clasificador import (
     ClasificadorIntenciones,

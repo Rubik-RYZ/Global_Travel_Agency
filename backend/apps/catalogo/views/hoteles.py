@@ -1,4 +1,3 @@
-"""Controladores de hoteles y habitaciones (CU5)."""
 from rest_framework import status, viewsets
 from rest_framework.response import Response
 
@@ -18,10 +17,7 @@ from apps.catalogo.services.hoteles import (
     obtener_hotel,
 )
 
-
 class HotelViewSet(viewsets.ModelViewSet):
-    """ViewSet CRUD para la administración de hoteles asociados a destinos."""
-
     permission_classes = [EsAdminOAgente]
 
     def get_queryset(self):
@@ -46,10 +42,7 @@ class HotelViewSet(viewsets.ModelViewSet):
         eliminar_hotel(hotel_id)
         return Response(status=status.HTTP_204_NO_CONTENT)
 
-
 class HabitacionViewSet(viewsets.ModelViewSet):
-    """ViewSet CRUD para las habitaciones de un hotel."""
-
     permission_classes = [EsAdminOAgente]
 
     def get_queryset(self):
@@ -66,4 +59,3 @@ class HabitacionViewSet(viewsets.ModelViewSet):
         habitacion_id = int(kwargs["pk"])
         eliminar_habitacion(habitacion_id)
         return Response(status=status.HTTP_204_NO_CONTENT)
-

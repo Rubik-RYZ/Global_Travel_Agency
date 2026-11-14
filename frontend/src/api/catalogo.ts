@@ -1,6 +1,3 @@
-/**
- * API de catálogo — destinos, aeropuertos, proveedores, vuelos, hoteles, paquetes (CU3, CU4, CU5, CU6).
- */
 import { api } from '@/lib/axios'
 import type {
   Aeropuerto,
@@ -151,7 +148,7 @@ export interface FiltrosSalida {
 }
 
 export const catalogoApi = {
-  // ── Destinos ────────────────────────────────────────────────────────────
+
   listarDestinos: (filtros: FiltrosDestino = {}) =>
     api.get<Paginado<DestinoResumen>>('/destinos/', { params: filtros }).then((r) => r.data),
 
@@ -178,11 +175,9 @@ export const catalogoApi = {
   definirItinerario: (id: number, dias: Omit<ItinerarioDia, 'id'>[]) =>
     api.put<ItinerarioDia[]>(`/destinos/${id}/itinerario/`, dias).then((r) => r.data),
 
-  // ── Aeropuertos ─────────────────────────────────────────────────────────
   listarAeropuertos: (params: { q?: string; destino_id?: number } = {}) =>
     api.get<Paginado<Aeropuerto>>('/aeropuertos/', { params }).then((r) => r.data),
 
-  // ── Proveedores ──────────────────────────────────────────────────────────
   listarProveedores: (filtros: FiltrosProveedor = {}) =>
     api.get<Paginado<Proveedor>>('/proveedores/', { params: filtros }).then((r) => r.data),
 
@@ -198,7 +193,6 @@ export const catalogoApi = {
   toggleActivoProveedor: (id: number) =>
     api.post<Proveedor>(`/proveedores/${id}/toggle_activo/`).then((r) => r.data),
 
-  // ── CU4: Vuelos ──────────────────────────────────────────────────────────
   listarVuelos: (filtros: FiltrosVuelo = {}) =>
     api.get<Paginado<Vuelo>>('/vuelos/', { params: filtros }).then((r) => r.data),
 
@@ -214,7 +208,6 @@ export const catalogoApi = {
   eliminarVuelo: (id: number) =>
     api.delete(`/vuelos/${id}/`).then((r) => r.data),
 
-  // ── CU5: Hoteles y Habitaciones ──────────────────────────────────────────
   listarHoteles: (filtros: FiltrosHotel = {}) =>
     api.get<Paginado<Hotel>>('/hoteles/', { params: filtros }).then((r) => r.data),
 
@@ -242,7 +235,6 @@ export const catalogoApi = {
   eliminarHabitacion: (id: number) =>
     api.delete(`/habitaciones/${id}/`).then((r) => r.data),
 
-  // ── CU6: Paquetes y Salidas ──────────────────────────────────────────────
   listarPaquetes: (filtros: FiltrosPaquete = {}) =>
     api.get<Paginado<Paquete>>('/paquetes/', { params: filtros }).then((r) => r.data),
 

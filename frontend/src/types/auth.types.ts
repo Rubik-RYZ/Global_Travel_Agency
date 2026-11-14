@@ -1,4 +1,3 @@
-/** Tipos del dominio de autenticación, equipo y auditoría (CU1). */
 import type { RolNombre } from '@/utils/roles'
 
 export interface Usuario {

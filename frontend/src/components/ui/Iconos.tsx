@@ -50,18 +50,8 @@ import {
 } from '@heroicons/react/24/outline'
 import type { SVGProps } from 'react'
 
-/**
- * Set de iconos de la casa.
- *
- * Son envoltorios finos sobre **Heroicons** (outline, 24px, trazo 1.5 —
- * exactamente el aire editorial de imprenta de `design.md`), con nombres en
- * español para el dominio. Todos aceptan `className` y traen tamaño por
- * defecto, de modo que las vistas no cambian al migrar.
- */
-
 type Props = SVGProps<SVGSVGElement>
 
-/* --- Acceso y seguridad --- */
 export function IconoSobre({ className = 'h-4 w-4', ...props }: Props) {
   return <EnvelopeIcon className={className} {...props} />
 }
@@ -78,7 +68,6 @@ export function IconoSalir({ className = 'h-4 w-4', ...props }: Props) {
   return <ArrowLeftEndOnRectangleIcon className={className} {...props} />
 }
 
-/* --- Identidad y documentos --- */
 export function IconoPasaporte({ className = 'h-4 w-4', ...props }: Props) {
   return <IdentificationIcon className={className} {...props} />
 }
@@ -98,7 +87,6 @@ export function IconoSello({ className = 'h-4 w-4', ...props }: Props) {
   return <CheckBadgeIcon className={className} {...props} />
 }
 
-/* --- Geografía y navegación --- */
 export function IconoGlobo({ className = 'h-4 w-4', ...props }: Props) {
   return <GlobeAltIcon className={className} {...props} />
 }
@@ -118,7 +106,6 @@ export function IconoBuzon({ className = 'h-4 w-4', ...props }: Props) {
   return <InboxIcon className={className} {...props} />
 }
 
-/* --- Acciones --- */
 export function IconoLupa({ className = 'h-4 w-4', ...props }: Props) {
   return <MagnifyingGlassIcon className={className} {...props} />
 }
@@ -141,7 +128,6 @@ export function IconoSubir({ className = 'h-4 w-4', ...props }: Props) {
   return <ArrowUpTrayIcon className={className} {...props} />
 }
 
-/* --- Flechas y chevrons --- */
 export function IconoFlechaIzquierda({ className = 'h-4 w-4', ...props }: Props) {
   return <ArrowLeftIcon className={className} {...props} />
 }
@@ -155,7 +141,6 @@ export function IconoChevronArriba({ className = 'h-3 w-3', ...props }: Props) {
   return <ChevronUpIcon className={className} {...props} />
 }
 
-/* --- Varios --- */
 export function IconoMoneda({ className = 'h-4 w-4', ...props }: Props) {
   return <CurrencyDollarIcon className={className} {...props} />
 }
@@ -172,7 +157,6 @@ export function IconoTelefono({ className = 'h-4 w-4', ...props }: Props) {
   return <PhoneIcon className={className} {...props} />
 }
 
-/* --- Panel / navegación --- */
 export function IconoModulos({ className = 'h-4 w-4', ...props }: Props) {
   return <Squares2X2Icon className={className} {...props} />
 }
@@ -180,7 +164,6 @@ export function IconoMenu({ className = 'h-4 w-4', ...props }: Props) {
   return <Bars3Icon className={className} {...props} />
 }
 
-/* --- Catálogo editorial: carácter de viaje, regiones y ficha --- */
 export function IconoLibro({ className = 'h-4 w-4', ...props }: Props) {
   return <BookOpenIcon className={className} {...props} />
 }
@@ -215,7 +198,6 @@ export function IconoPausa({ className = 'h-4 w-4', ...props }: Props) {
   return <PauseCircleIcon className={className} {...props} />
 }
 
-/* --- Asistente conversacional --- */
 export function IconoChat({ className = 'h-5 w-5', ...props }: Props) {
   return <ChatBubbleLeftRightIcon className={className} {...props} />
 }

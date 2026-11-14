@@ -1,4 +1,3 @@
-"""Capa de negocio de pagos (dominio de pagos)."""
 from __future__ import annotations
 
 import logging
@@ -17,7 +16,6 @@ logger = logging.getLogger(__name__)
 
 CERO = Decimal("0.00")
 DOS_DECIMALES = Decimal("0.01")
-
 
 def listar_pagos(
     *,
@@ -55,23 +53,18 @@ def listar_pagos(
         qs = qs.filter(creado_en__date__lte=hasta)
     return qs.order_by("-creado_en")
 
-
 def obtener_pago(pago_id: int) -> Pago:
     try:
         return Pago.objects.select_related("reserva", "reserva__cliente").get(pk=pago_id)
     except Pago.DoesNotExist:
         raise ValidationError({"pago_id": "Pago no encontrado."})
 
-
 def total_pagado(reserva: Reserva) -> Decimal:
-    """Suma de los pagos aprobados de la reserva (en la moneda de la reserva)."""
     suma = reserva.pagos.filter(estado=Pago.Estado.APROBADO).aggregate(total=Sum("monto"))
     return suma["total"] or CERO
 
-
 def saldo_pendiente(reserva: Reserva) -> Decimal:
     return max(reserva.total - total_pagado(reserva), CERO)
-
 
 @transaction.atomic
 def registrar_pago(
@@ -83,12 +76,12 @@ def registrar_pago(
     stripe_payment_id: str | None = None,
     estado: str = Pago.Estado.APROBADO,
 ) -> Pago:
-    """Registra un pago de forma atómica y, si cubre el total, marca la reserva como pagada."""
+
     if estado not in Pago.Estado.values:
         raise ValidationError({"estado": f"Estado de pago inválido: {estado}."})
 
     try:
-        # of=("self",) bloquea solo la reserva (evita error con joins opcionales)
+
         reserva = (
             Reserva.objects.select_for_update(of=("self",))
             .select_related("cliente", "cliente__usuario")
@@ -102,7 +95,6 @@ def registrar_pago(
     if reserva.estado == Reserva.ESTADO_PAGADA:
         raise ValidationError({"reserva": "La reserva ya está pagada."})
 
-    # El pago se hace en la moneda de la reserva (mantiene simple el saldo)
     if moneda and moneda != reserva.moneda:
         raise ValidationError({"moneda": f"Esta reserva se paga en {reserva.moneda}."})
     moneda = reserva.moneda
@@ -118,11 +110,9 @@ def registrar_pago(
     if monto_dec > saldo:
         raise ValidationError({"monto": f"El monto supera el saldo pendiente ({saldo} {moneda})."})
 
-    # Evita registrar dos veces el mismo cobro de Stripe
     if stripe_payment_id and Pago.objects.filter(stripe_payment_id=stripe_payment_id).exists():
         raise ValidationError({"stripe_payment_id": "Este pago ya fue registrado."})
 
-    # Convierte a bolivianos y congela la tasa usada en el propio pago
     monto_bob, tasa, fuente = convertir_a_bob(monto_dec, moneda)
     logger.info("Pago reserva %s: %s %s -> %s BOB (tasa %s, fuente %s)",
                 reserva.codigo, monto_dec, moneda, monto_bob, tasa, fuente)
@@ -142,13 +132,10 @@ def registrar_pago(
         reserva.estado = Reserva.ESTADO_PAGADA
         reserva.save(update_fields=["estado", "actualizada_en"])
 
-    # El correo sale solo si la transacción se confirmó
     transaction.on_commit(lambda: _notificar_comprobante(pago.pk))
     return pago
 
-
 def _notificar_comprobante(pago_id: int) -> None:
-    """Registra la notificación y envía el comprobante. Nunca rompe el flujo del pago."""
     try:
         pago = Pago.objects.select_related("reserva", "reserva__cliente", "reserva__cliente__usuario").get(pk=pago_id)
         if pago.estado != Pago.Estado.APROBADO:
@@ -191,7 +178,7 @@ def crear_reserva_pagada(
     metodo: str = "efectivo",
     registrado_por=None,
 ):
-    """Reserva de mostrador: crea la reserva y registra el pago total en una sola transaccion."""
+
     from apps.reservas.services.reservas import crear_reserva
 
     reserva = crear_reserva(
@@ -206,10 +193,8 @@ def crear_reserva_pagada(
     reserva.refresh_from_db()
     return reserva, pago
 
-
 @transaction.atomic
 def registrar_pago_cliente(*, usuario, reserva_id: int, metodo: str = "tarjeta") -> Pago:
-    """Pago en linea del propio viajero: solo tarjeta o QR, siempre aprobado (simulado)."""
     if metodo not in ("tarjeta", "qr"):
         raise ValidationError({"metodo": "En linea solo se acepta tarjeta o QR."})
 
@@ -225,7 +210,6 @@ def registrar_pago_cliente(*, usuario, reserva_id: int, metodo: str = "tarjeta")
     if reserva.cliente_id != cliente.id:
         raise ValidationError({"reserva_id": "No puedes pagar una reserva de otro cliente."})
 
-    # Sin pasarela real: la confirmacion se simula y siempre valida.
     return registrar_pago(
         reserva_id=reserva.pk,
         monto=None,

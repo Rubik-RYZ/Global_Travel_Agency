@@ -28,13 +28,11 @@ export function SalidasAdminView() {
 
   const [filtroPaquete, setFiltroPaquete] = useState('')
 
-  // Modal
   const [modalAbierto, setModalAbierto] = useState(false)
   const [editando, setEditando] = useState<PaqueteSalida | null>(null)
   const [errorForm, setErrorForm] = useState<string | null>(null)
   const [ocupado, setOcupado] = useState(false)
 
-  // Formulario
   const [formPaquete, setFormPaquete] = useState<number | ''>('')
   const [formFecha, setFormFecha] = useState('')
   const [formVueloIda, setFormVueloIda] = useState<number | ''>('')
@@ -149,7 +147,6 @@ export function SalidasAdminView() {
 
   return (
     <div className="space-y-8">
-      {/* Encabezado */}
       <header className="border-b border-[#231a13]/10 pb-6">
         <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
           <div>
@@ -175,7 +172,6 @@ export function SalidasAdminView() {
         </div>
       </header>
 
-      {/* Avisos */}
       {aviso && (
         <div className="flex items-center justify-between rounded-lg border border-[#1b261d]/20 bg-[#1b261d]/5 px-4 py-3 text-sm text-[#141d16]">
           <span>{aviso}</span>
@@ -191,7 +187,6 @@ export function SalidasAdminView() {
         </div>
       )}
 
-      {/* Filtro por paquete */}
       <div className="rounded-xl border border-[#231a13]/10 bg-[#faf5eb] p-4 max-w-md">
         <label className="text-xs font-semibold uppercase text-[#231a13]/70">Filtrar por Paquete</label>
         <select
@@ -208,7 +203,6 @@ export function SalidasAdminView() {
         </select>
       </div>
 
-      {/* Tabla de salidas */}
       <div className="overflow-hidden rounded-xl border border-[#231a13]/10 bg-white shadow-sm">
         <table className="min-w-full divide-y divide-[#231a13]/10 text-left text-sm">
           <thead className="bg-[#faf5eb] font-serif text-xs uppercase tracking-wider text-[#231a13]/70">
@@ -308,7 +302,6 @@ export function SalidasAdminView() {
         </table>
       </div>
 
-      {/* Modal */}
       {modalAbierto && (
         <Modal
           abierto={modalAbierto}

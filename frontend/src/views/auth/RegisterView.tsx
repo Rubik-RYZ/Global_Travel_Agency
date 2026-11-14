@@ -1,7 +1,6 @@
 import { IconoPasaporte } from '@/components/ui/Iconos'
 import { RegisterForm } from '@/views/auth/components/RegisterForm'
 
-/** 2. Crear cuenta → /registro */
 export function RegisterView() {
   return (
     <div>
